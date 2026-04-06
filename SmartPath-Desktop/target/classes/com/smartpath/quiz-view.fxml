@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.smartpath.controller.QuizController"
+      spacing="10"
+      style="-fx-padding: 20;">
+
+    <Label text="Gestion des Quiz"
+           style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+    <HBox spacing="8">
+        <TextField fx:id="txtTitre"     promptText="Titre du quiz"   prefWidth="180"/>
+        <TextField fx:id="txtContenu"   promptText="Contenu"         prefWidth="200"/>
+        <TextField fx:id="txtDuree"     promptText="Duree (min)"     prefWidth="100"/>
+        <TextField fx:id="txtMatiereId" promptText="Matiere ID"      prefWidth="90"/>
+        <Button text="Ajouter"   onAction="#handleAdd"/>
+        <Button text="Modifier"  onAction="#handleUpdate"/>
+        <Button text="Supprimer" onAction="#handleDelete"/>
+    </HBox>
+
+    <TableView fx:id="tableView" VBox.vgrow="ALWAYS">
+        <columns>
+            <TableColumn fx:id="colId"      text="ID"      prefWidth="50"/>
+            <TableColumn fx:id="colTitre"   text="Titre"   prefWidth="220"/>
+            <TableColumn fx:id="colContenu" text="Contenu" prefWidth="300"/>
+            <TableColumn fx:id="colDuree"   text="Duree"   prefWidth="80"/>
+        </columns>
+    </TableView>
+
+</VBox>
