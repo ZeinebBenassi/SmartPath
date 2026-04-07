@@ -29,18 +29,18 @@ public class QuizAdminController {
     @FXML private ComboBox<String> profil3Combo;
     @FXML private ComboBox<String> profil4Combo;
 
-    private static final String[] PROFILS = {"Technologique", "CrÃ©atif", "Management", "Humain"};
+    private static final String[] PROFILS = {"Technologique", "Créatif", "Management", "Humain"};
 
     private static final String[] SAMPLE_QUESTIONS = {
-        "1. Quel type d'activitÃ©s vous attire le plus ?",
-        "2. Vous prÃ©fÃ©rez travailler :",
-        "3. Dans un projet, vous prenez le rÃ´le de :",
-        "4. Quelle matiÃ¨re prÃ©fÃ©rez-vous ?",
-        "5. Votre environnement de travail idÃ©al ?",
+        "1. Quel type d'activités vous attire le plus ?",
+        "2. Vous préférez travailler :",
+        "3. Dans un projet, vous prenez le rôle de :",
+        "4. Quelle matière préférez-vous ?",
+        "5. Votre environnement de travail idéal ?",
         "6. Qu'est-ce qui vous motive le plus ?",
         "7. Votre rapport aux nouvelles technologies ?",
-        "8. Comment gÃ©rez-vous un problÃ¨me complexe ?",
-        "9. Votre style de communication prÃ©fÃ©rÃ© ?",
+        "8. Comment gérez-vous un problème complexe ?",
+        "9. Votre style de communication préféré ?",
         "10. Votre objectif professionnel principal ?"
     };
 
@@ -68,13 +68,13 @@ public class QuizAdminController {
         if (editorTitle != null) editorTitle.setText("Modifier : Question " + (idx + 1));
         if (ordreField  != null) ordreField.setText(String.valueOf(idx + 1));
 
-        // Simulation chargement donnÃ©es
+        // Simulation chargement données
         if (questionTextArea != null)
             questionTextArea.setText(selected.substring(selected.indexOf(". ") + 2));
         if (categorieCombo   != null) categorieCombo.getSelectionModel().select(idx % 4);
-        if (rep1Field  != null) rep1Field.setText("Analyser des donnÃ©es et rÃ©soudre des problÃ¨mes logiques");
-        if (rep2Field  != null) rep2Field.setText("CrÃ©er des designs et interfaces visuelles");
-        if (rep3Field  != null) rep3Field.setText("GÃ©rer des Ã©quipes et des projets");
+        if (rep1Field  != null) rep1Field.setText("Analyser des données et résoudre des problèmes logiques");
+        if (rep2Field  != null) rep2Field.setText("Créer des designs et interfaces visuelles");
+        if (rep3Field  != null) rep3Field.setText("Gérer des équipes et des projets");
         if (rep4Field  != null) rep4Field.setText("Comprendre et aider les gens");
         if (profil1Combo != null) profil1Combo.getSelectionModel().select(0);
         if (profil2Combo != null) profil2Combo.getSelectionModel().select(1);
@@ -97,7 +97,7 @@ public class QuizAdminController {
         if (questionTextArea == null || questionTextArea.getText().isEmpty()) {
             if (saveStatus != null) {
                 saveStatus.setStyle("-fx-text-fill: #e94560; -fx-font-size: 12;");
-                saveStatus.setText("âš  Le texte de la question est requis.");
+                saveStatus.setText("⚠ Le texte de la question est requis.");
             }
             return;
         }
@@ -108,7 +108,7 @@ public class QuizAdminController {
         }
         if (saveStatus != null) {
             saveStatus.setStyle("-fx-text-fill: #00c896; -fx-font-size: 12;");
-            saveStatus.setText("âœ“ Question enregistrÃ©e.");
+            saveStatus.setText("✓ Question enregistrée.");
         }
     }
 
@@ -130,7 +130,7 @@ public class QuizAdminController {
     @FXML public void cancelEdit() {
         clearEditor();
         if (questionsList != null) questionsList.getSelectionModel().clearSelection();
-        if (editorTitle != null) editorTitle.setText("SÃ©lectionnez une question Ã  modifier");
+        if (editorTitle != null) editorTitle.setText("Sélectionnez une question à modifier");
     }
 
     @FXML public void previewQuiz() {

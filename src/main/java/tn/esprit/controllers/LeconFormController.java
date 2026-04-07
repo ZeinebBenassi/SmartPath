@@ -21,8 +21,8 @@ public class LeconFormController {
     public void initialize() {
         if (matiereCombo != null) {
             matiereCombo.setItems(FXCollections.observableArrayList(
-                "MathÃ©matiques", "Informatique", "Physique",
-                "Ã‰conomie", "Anglais", "Base de donnÃ©es"
+                "Mathématiques", "Informatique", "Physique",
+                "Économie", "Anglais", "Base de données"
             ));
         }
     }
@@ -33,12 +33,12 @@ public class LeconFormController {
             return;
         }
         if (matiereCombo == null || matiereCombo.getValue() == null) {
-            showError("Veuillez sÃ©lectionner une matiÃ¨re.");
+            showError("Veuillez sélectionner une matière.");
             return;
         }
         // Simulation sauvegarde
         new Alert(Alert.AlertType.INFORMATION,
-            "LeÃ§on \"" + titreField.getText() + "\" enregistrÃ©e avec succÃ¨s.", ButtonType.OK).showAndWait();
+            "Leçon \"" + titreField.getText() + "\" enregistrée avec succès.", ButtonType.OK).showAndWait();
         goBack();
     }
 

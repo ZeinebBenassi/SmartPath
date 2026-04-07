@@ -16,7 +16,7 @@ public class ForgotPasswordController {
     @FXML private Button sendCodeBtn;
     @FXML private Button resetBtn;
 
-    // Champs cachÃ©s au dÃ©but
+    // Champs cachés au début
     @FXML private javafx.scene.layout.VBox step2Box;
 
     private UserService userService = new UserService();
@@ -28,7 +28,7 @@ public class ForgotPasswordController {
         step2Box.setManaged(false);
     }
 
-    // Ã‰tape 1 : envoyer le code
+    // Étape 1 : envoyer le code
     @FXML
     public void handleSendCode() {
         currentEmail = emailField.getText().trim();
@@ -39,22 +39,22 @@ public class ForgotPasswordController {
 
         String token = userService.generateResetToken(currentEmail);
         if (token == null) {
-            showMessage("Aucun compte trouvÃ© avec cet email.", "red");
+            showMessage("Aucun compte trouvé avec cet email.", "red");
             return;
         }
 
         // En production : envoyer par email. Ici on affiche dans la console.
-        System.out.println("ðŸ”‘ Code de rÃ©initialisation : " + token);
-        showMessage("Code envoyÃ© ! (visible dans la console IntelliJ)", "green");
+        System.out.println("Code de réinitialisation : " + token);
+        showMessage("Code envoyé ! (visible dans la console IntelliJ)", "green");
 
-        // Afficher l'Ã©tape 2
+        // Afficher l'étape 2
         step2Box.setVisible(true);
         step2Box.setManaged(true);
         emailField.setDisable(true);
         sendCodeBtn.setDisable(true);
     }
 
-    // Ã‰tape 2 : valider le code et changer le mot de passe
+    // Étape 2 : valider le code et changer le mot de passe
     @FXML
     public void handleReset() {
         String token   = tokenField.getText().trim();
@@ -70,16 +70,16 @@ public class ForgotPasswordController {
             return;
         }
         if (newPwd.length() < 6) {
-            showMessage("Le mot de passe doit contenir au moins 6 caractÃ¨res.", "red");
+            showMessage("Le mot de passe doit contenir au moins 6 caractères.", "red");
             return;
         }
 
         boolean success = userService.resetPassword(currentEmail, token, newPwd);
         if (success) {
-            showMessage("âœ… Mot de passe rÃ©initialisÃ© avec succÃ¨s !", "green");
+            showMessage("✓ Mot de passe réinitialisé avec succès !", "green");
             resetBtn.setDisable(true);
         } else {
-            showMessage("Code invalide ou expirÃ©.", "red");
+            showMessage("Code invalide ou expiré.", "red");
         }
     }
 

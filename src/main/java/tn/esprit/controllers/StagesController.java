@@ -45,9 +45,9 @@ public class StagesController {
         if (offreDuree      != null) offreDuree.setText("6 mois");
         if (offreType       != null) offreType.setText("Stage PFE");
         if (offreDescription!= null) offreDescription.setText(
-            "Nous recherchons un(e) stagiaire motivÃ©(e) pour rejoindre notre Ã©quipe. " +
-            "Vous participerez au dÃ©veloppement de nouvelles fonctionnalitÃ©s et Ã  l'amÃ©lioration " +
-            "de nos systÃ¨mes existants dans un environnement agile et dynamique.");
+            "Nous recherchons un(e) stagiaire motivé(e) pour rejoindre notre équipe. " +
+            "Vous participerez au développement de nouvelles fonctionnalités et à l'amélioration " +
+            "de nos systèmes existants dans un environnement agile et dynamique.");
         if (offreCompetences!= null) offreCompetences.setText("Java, Spring Boot, SQL, Git, Agile");
         if (btnPostuler     != null) btnPostuler.setVisible(true);
     }
@@ -68,7 +68,7 @@ public class StagesController {
 
     @FXML public void postuler() {
         new Alert(Alert.AlertType.INFORMATION,
-            "Votre candidature a Ã©tÃ© envoyÃ©e avec succÃ¨s !", ButtonType.OK).showAndWait();
+            "Votre candidature a été envoyée avec succès !", ButtonType.OK).showAndWait();
     }
 
     @FXML public void handleSearch() {}

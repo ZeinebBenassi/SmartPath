@@ -40,7 +40,7 @@ public class GestionUsersController {
         if (colEmail  != null) colEmail.setCellValueFactory(new PropertyValueFactory<>("email"));
         if (colRole   != null) colRole.setCellValueFactory(new PropertyValueFactory<>("type"));
 
-        // Filtre rÃ´le
+        // Filtre rôle
         if (roleFilter != null) {
             roleFilter.setItems(FXCollections.observableArrayList("Tous", "admin", "prof", "etudiant"));
             roleFilter.getSelectionModel().selectFirst();

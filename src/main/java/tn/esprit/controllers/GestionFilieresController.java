@@ -41,13 +41,13 @@ public class GestionFilieresController {
 
     @FXML public void addFiliere() {
         new Alert(Alert.AlertType.INFORMATION,
-            "Formulaire d'ajout de filiÃ¨re Ã  implÃ©menter.", ButtonType.OK).showAndWait();
+            "Formulaire d'ajout de filière à implémenter.", ButtonType.OK).showAndWait();
     }
 
     @FXML public void saveFiliere() {
         if (messageLabel != null) {
             messageLabel.setStyle("-fx-text-fill: #10b981; -fx-font-size: 12;");
-            messageLabel.setText("Filiere enregistree (simulation).");
+            messageLabel.setText("Filière enregistrée (simulation).");
         }
     }
 
@@ -60,7 +60,7 @@ public class GestionFilieresController {
         }
         if (messageLabel != null) {
             messageLabel.setStyle("-fx-text-fill: #e94560; -fx-font-size: 12;");
-            messageLabel.setText("Filiere supprimee (simulation).");
+            messageLabel.setText("Filière supprimée (simulation).");
         }
     }
 

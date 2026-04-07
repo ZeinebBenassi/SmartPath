@@ -23,8 +23,6 @@ public class DashboardEtudiantController {
     @FXML private Button btnCours;
     @FXML private Button btnQuiz;
     @FXML private Button btnStages;
-    @FXML private Button btnReleve;
-    @FXML private Button btnProfil;
     @FXML private Button btnRetourDashboard;
 
     @FXML private StackPane contentArea;
@@ -91,16 +89,6 @@ public class DashboardEtudiantController {
         navigate("/tn/esprit/interfaces/Stages.fxml");
     }
 
-    @FXML public void showReleve() {
-        setActiveButton(btnReleve);
-        navigate("/tn/esprit/interfaces/Releve.fxml");
-    }
-
-    @FXML public void showProfil() {
-        setActiveButton(btnProfil);
-        navigate("/tn/esprit/interfaces/Profil.fxml");
-    }
-
     @FXML public void returnToSourceDashboard() {
         String source = sourceDashboardType;
         if (source == null || source.isBlank() || "etudiant".equals(source)) return;
@@ -133,10 +121,6 @@ public class DashboardEtudiantController {
                 CoursController.setCurrentUser(currentUser);
             } else if (fxml.endsWith("Stages.fxml")) {
                 StagesController.setCurrentUser(currentUser);
-            } else if (fxml.endsWith("Releve.fxml")) {
-                ReleveController.setCurrentUser(currentUser);
-            } else if (fxml.endsWith("Profil.fxml")) {
-                ProfilController.setCurrentUser(currentUser);
             }
             FXMLLoader loader = new FXMLLoader(getClass().getResource(fxml));
             Parent root = loader.load();
@@ -173,7 +157,7 @@ public class DashboardEtudiantController {
     }
 
     private void setActiveButton(Button active) {
-        Button[] all = {btnAccueil, btnAboutContact, btnCours, btnQuiz, btnStages, btnReleve, btnProfil};
+        Button[] all = {btnAccueil, btnAboutContact, btnCours, btnQuiz, btnStages};
         for (Button b : all) {
             if (b == null) continue;
             if (b == active) {

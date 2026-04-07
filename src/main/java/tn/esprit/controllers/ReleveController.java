@@ -30,7 +30,7 @@ public class ReleveController {
             if (filiereLabel != null) filiereLabel.setText("Informatique");
         }
 
-        // DonnÃ©es exemple
+        // Données exemple
         if (colMatiere != null) colMatiere.setCellValueFactory(new PropertyValueFactory<>("matiere"));
         if (colNote    != null) colNote.setCellValueFactory(new PropertyValueFactory<>("note"));
         if (colCoeff   != null) colCoeff.setCellValueFactory(new PropertyValueFactory<>("coeff"));
@@ -38,12 +38,12 @@ public class ReleveController {
 
         if (notesTable != null) {
             notesTable.setItems(FXCollections.observableArrayList(
-                new NoteRow("MathÃ©matiques",     "15.5", "4", "Bien"),
-                new NoteRow("Informatique",       "17.0", "5", "TrÃ¨s bien"),
+                new NoteRow("Mathématiques",     "15.5", "4", "Bien"),
+                new NoteRow("Informatique",       "17.0", "5", "Très bien"),
                 new NoteRow("Physique",           "12.0", "3", "Assez bien"),
                 new NoteRow("Anglais",            "14.5", "2", "Bien"),
-                new NoteRow("Ã‰conomie",           "11.0", "2", "Passable"),
-                new NoteRow("Base de donnÃ©es",    "16.0", "4", "TrÃ¨s bien")
+                new NoteRow("Économie",           "11.0", "2", "Passable"),
+                new NoteRow("Base de données",    "16.0", "4", "Très bien")
             ));
         }
 
@@ -53,7 +53,7 @@ public class ReleveController {
 
     @FXML public void exportPDF() {
         new Alert(Alert.AlertType.INFORMATION,
-            "Export PDF en cours de dÃ©veloppement.", ButtonType.OK).showAndWait();
+            "Export PDF en cours de développement.", ButtonType.OK).showAndWait();
     }
 
     @FXML public void goBack() {
@@ -64,7 +64,7 @@ public class ReleveController {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    // â”€â”€ Inner class pour les lignes du tableau â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // Inner class pour les lignes du tableau
     public static class NoteRow {
         private final String matiere;
         private final String note;

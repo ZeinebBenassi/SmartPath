@@ -38,13 +38,13 @@ public class GestionOffresController {
 
     @FXML public void addOffre() {
         new Alert(Alert.AlertType.INFORMATION,
-            "Formulaire d'ajout d'offre Ã  implÃ©menter.", ButtonType.OK).showAndWait();
+            "Formulaire d'ajout d'offre à implémenter.", ButtonType.OK).showAndWait();
     }
 
     @FXML public void saveOffre() {
         if (messageLabel != null) {
             messageLabel.setStyle("-fx-text-fill: #10b981; -fx-font-size: 12;");
-            messageLabel.setText("Offre enregistree (simulation).");
+            messageLabel.setText("Offre enregistrée (simulation).");
         }
     }
 
@@ -57,7 +57,7 @@ public class GestionOffresController {
         }
         if (messageLabel != null) {
             messageLabel.setStyle("-fx-text-fill: #e94560; -fx-font-size: 12;");
-            messageLabel.setText("Offre supprimee (simulation).");
+            messageLabel.setText("Offre supprimée (simulation).");
         }
     }
 

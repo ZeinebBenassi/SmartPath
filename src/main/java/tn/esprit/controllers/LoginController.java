@@ -31,7 +31,7 @@ public class LoginController {
             errorLabel.setStyle("-fx-text-fill: #00c896; -fx-font-size: 12;");
             errorLabel.setText("Bienvenue " + user.getNom() + " ! (" + user.getType() + ")");
 
-            // Navigation selon le rÃ´le
+            // Navigation selon le rôle
             try {
                 String fxml;
                 switch (user.getType()) {
@@ -54,8 +54,8 @@ public class LoginController {
                 Parent root = FXMLLoader.load(getClass().getResource(fxml));
                 emailField.getScene().setRoot(root);
             } catch (Exception e) {
-                // Dashboard pas encore crÃ©Ã© â€” message de succÃ¨s suffit
-                System.out.println("Dashboard Ã  crÃ©er pour : " + user.getType());
+                // Dashboard pas encore créé - message de succès suffit
+                System.out.println("Dashboard à créer pour : " + user.getType());
             }
         } else {
             showError("Email ou mot de passe incorrect.");

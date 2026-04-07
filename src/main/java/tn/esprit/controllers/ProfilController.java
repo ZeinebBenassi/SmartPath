@@ -47,24 +47,24 @@ public class ProfilController {
         String roleDisplay = switch (currentUser.getType()) {
             case "admin"    -> "Administrateur";
             case "prof"     -> "Professeur";
-            case "etudiant" -> "Ã‰tudiant";
+            case "etudiant" -> "Étudiant";
             default         -> currentUser.getType();
         };
         if (roleLabel != null) roleLabel.setText(roleDisplay);
 
         if (emailLabel     != null) emailLabel.setText(currentUser.getEmail());
         if (telephoneLabel != null) telephoneLabel.setText(
-            currentUser.getTelephone() != null ? currentUser.getTelephone() : "Non renseignÃ©");
+            currentUser.getTelephone() != null ? currentUser.getTelephone() : "Non renseigné");
         if (adresseLabel   != null) adresseLabel.setText(
-            currentUser.getAdresse() != null ? currentUser.getAdresse() : "Non renseignÃ©e");
+            currentUser.getAdresse() != null ? currentUser.getAdresse() : "Non renseignée");
         if (cinLabel       != null) cinLabel.setText(
-            currentUser.getCin() != null ? currentUser.getCin() : "Non renseignÃ©");
+            currentUser.getCin() != null ? currentUser.getCin() : "Non renseigné");
         if (dateNaissanceLabel != null) dateNaissanceLabel.setText(
-            currentUser.getDateNaissance() != null ? currentUser.getDateNaissance().toString() : "Non renseignÃ©e");
+            currentUser.getDateNaissance() != null ? currentUser.getDateNaissance().toString() : "Non renseignée");
         if (membreDepuisLabel  != null) membreDepuisLabel.setText(
-            currentUser.getCreatedAt() != null ? new SimpleDateFormat("yyyy-MM-dd").format(currentUser.getCreatedAt()) : "â€”");
+            currentUser.getCreatedAt() != null ? new SimpleDateFormat("yyyy-MM-dd").format(currentUser.getCreatedAt()) : "—");
 
-        // PrÃ©remplir les champs
+        // Préremplir les champs
         if (nomField     != null) nomField.setText(currentUser.getNom());
         if (prenomField  != null) prenomField.setText(currentUser.getPrenom());
         if (telephoneField!= null && currentUser.getTelephone() != null)
@@ -75,7 +75,7 @@ public class ProfilController {
 
     @FXML public void saveProfile() {
         if (currentUser == null) return;
-        // Mise Ã  jour locale (DB Ã  brancher via UserService.update)
+        // Mise à jour locale (DB à brancher via UserService.update)
         if (nomField    != null && !nomField.getText().isEmpty())
             currentUser.setNom(nomField.getText());
         if (prenomField != null && !prenomField.getText().isEmpty())
@@ -85,9 +85,9 @@ public class ProfilController {
 
         if (statusLabel != null) {
             statusLabel.setStyle("-fx-text-fill: #00c896; -fx-font-size: 12;");
-            statusLabel.setText("âœ“ Profil mis Ã  jour avec succÃ¨s.");
+            statusLabel.setText("✓ Profil mis à jour avec succès.");
         }
-        // RafraÃ®chir l'affichage
+        // Rafraîchir l'affichage
         initialize();
     }
 
@@ -102,10 +102,10 @@ public class ProfilController {
             return;
         }
         if (newPwdField.getText().length() < 6) {
-            showStatus("Le mot de passe doit contenir au moins 6 caractÃ¨res.", false);
+            showStatus("Le mot de passe doit contenir au moins 6 caractères.", false);
             return;
         }
-        showStatus("âœ“ Mot de passe modifiÃ© avec succÃ¨s.", true);
+        showStatus("✓ Mot de passe modifié avec succès.", true);
         oldPwdField.clear(); newPwdField.clear(); confirmPwdField.clear();
     }
 
@@ -130,7 +130,7 @@ public class ProfilController {
     }
 
     @FXML public void uploadPhoto() {
-        new Alert(Alert.AlertType.INFORMATION, "FonctionnalitÃ© upload photo Ã  implÃ©menter.", ButtonType.OK).showAndWait();
+        new Alert(Alert.AlertType.INFORMATION, "Fonctionnalité d'upload photo à implémenter.", ButtonType.OK).showAndWait();
     }
 }
 
