@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="tn.esprit.controllers.ReleveController"
+            prefWidth="1000" prefHeight="700"
+            style="-fx-background-color: #f4f6fb;">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="16" style="-fx-padding: 16 24; -fx-background-color: white; -fx-border-color: #e2e8f4; -fx-border-width: 0 0 1 0;">
+            <Button text="← Retour" onAction="#goBack" style="-fx-background-color: transparent; -fx-text-fill: #5a6a8a; -fx-font-size: 13;"/>
+            <Label text="Relevé de notes" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button text="Exporter PDF" onAction="#exportPDF" style="-fx-background-color: transparent; -fx-text-fill: #2563eb; -fx-border-color: #bfdbfe; -fx-border-radius: 8; -fx-padding: 8 18;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <StackPane style="-fx-padding: 24;">
+            <VBox alignment="CENTER" spacing="10" style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #e2e8f4; -fx-border-radius: 14; -fx-padding: 40;">
+                <Label text="À faire" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #2563eb;"/>
+                <Label text="Écran Relevé en préparation" style="-fx-font-size: 14; -fx-text-fill: #5a6a8a;"/>
+            </VBox>
+
+            <Label fx:id="moyenneGenerale" visible="false" managed="false"/>
+            <Label fx:id="mentionLabel" visible="false" managed="false"/>
+            <Label fx:id="niveauLabel" visible="false" managed="false"/>
+            <Label fx:id="filiereLabel" visible="false" managed="false"/>
+            <TableView fx:id="notesTable" visible="false" managed="false">
+                <columns>
+                    <TableColumn fx:id="colMatiere"/>
+                    <TableColumn fx:id="colNote"/>
+                    <TableColumn fx:id="colCoeff"/>
+                    <TableColumn fx:id="colMention"/>
+                </columns>
+            </TableView>
+        </StackPane>
+    </center>
+
+</BorderPane>
+

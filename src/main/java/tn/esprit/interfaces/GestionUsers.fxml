@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="tn.esprit.controllers.GestionUsersController"
+            prefWidth="1100" prefHeight="700"
+            style="-fx-background-color: #0f0f1a;">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="16"
+              style="-fx-padding: 16 24; -fx-background-color: #1a1a2e; -fx-border-color: #2d2d5e; -fx-border-width: 0 0 1 0;">
+            <Button text="← Retour" onAction="#goBack"
+                    style="-fx-background-color: transparent; -fx-text-fill: #aaaacc; -fx-font-size: 13; -fx-cursor: hand;"/>
+            <Label text="Gestion des utilisateurs" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: white;"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <TextField fx:id="searchField" promptText="Rechercher..."
+                       style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-prompt-text-fill: #555577; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 14; -fx-font-size: 12;"
+                       prefWidth="220" onKeyReleased="#handleSearch"/>
+            <ComboBox fx:id="roleFilter" promptText="Tous les rôles"
+                      style="-fx-background-color: #16213e; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8;"
+                      prefWidth="160" onAction="#handleFilter"/>
+        </HBox>
+    </top>
+
+    <center>
+        <VBox style="-fx-background-color: #0f0f1a; -fx-padding: 24;" spacing="16">
+
+            <TableView fx:id="usersTable" VBox.vgrow="ALWAYS"
+                       style="-fx-background-color: #1a1a2e; -fx-border-color: #2d2d5e; -fx-border-radius: 12; -fx-background-radius: 12;">
+                <columns>
+                    <TableColumn fx:id="colId" text="ID" prefWidth="60"/>
+                    <TableColumn fx:id="colNom" text="Nom" prefWidth="130"/>
+                    <TableColumn fx:id="colPrenom" text="Prénom" prefWidth="130"/>
+                    <TableColumn fx:id="colEmail" text="Email" prefWidth="220"/>
+                    <TableColumn fx:id="colRole" text="Rôle" prefWidth="110"/>
+                    <TableColumn fx:id="colStatus" text="Statut" prefWidth="100"/>
+                    <TableColumn fx:id="colDate" text="Inscription" prefWidth="130"/>
+                    <TableColumn fx:id="colActions" text="Actions" prefWidth="160"/>
+                </columns>
+            </TableView>
+
+            <!-- Footer compteur -->
+            <HBox alignment="CENTER_LEFT" spacing="16">
+                <Label fx:id="countLabel" text="0 utilisateurs"
+                       style="-fx-text-fill: #555577; -fx-font-size: 12;"/>
+            </HBox>
+        </VBox>
+    </center>
+
+</BorderPane>
+

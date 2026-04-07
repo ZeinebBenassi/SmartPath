@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="tn.esprit.controllers.StagesController"
+            prefWidth="1200" prefHeight="700"
+            style="-fx-background-color: #f4f6fb;">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="16" style="-fx-padding: 16 24; -fx-background-color: white; -fx-border-color: #e2e8f4; -fx-border-width: 0 0 1 0;">
+            <Button text="← Retour" onAction="#goBack" style="-fx-background-color: transparent; -fx-text-fill: #5a6a8a; -fx-font-size: 13;"/>
+            <Label text="Stages &amp; Offres" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <TextField fx:id="searchField" promptText="Rechercher..." onAction="#handleSearch" visible="false" managed="false"/>
+            <ComboBox fx:id="typeFilter" onAction="#handleFilter" visible="false" managed="false"/>
+        </HBox>
+    </top>
+
+    <center>
+        <StackPane style="-fx-padding: 24;">
+            <VBox alignment="CENTER" spacing="10" style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #e2e8f4; -fx-border-radius: 14; -fx-padding: 40;">
+                <Label text="À faire" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #2563eb;"/>
+                <Label text="Écran Stages en préparation" style="-fx-font-size: 14; -fx-text-fill: #5a6a8a;"/>
+            </VBox>
+
+            <ListView fx:id="offresList" visible="false" managed="false"/>
+            <Label fx:id="offreTitre" visible="false" managed="false"/>
+            <Label fx:id="offreEntreprise" visible="false" managed="false"/>
+            <Label fx:id="offreDuree" visible="false" managed="false"/>
+            <Label fx:id="offreType" visible="false" managed="false"/>
+            <Label fx:id="offreDescription" visible="false" managed="false"/>
+            <Label fx:id="offreCompetences" visible="false" managed="false"/>
+            <Button fx:id="btnPostuler" onAction="#postuler" visible="false" managed="false"/>
+        </StackPane>
+    </center>
+
+</BorderPane>
+

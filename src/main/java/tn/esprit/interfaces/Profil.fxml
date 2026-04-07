@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="tn.esprit.controllers.ProfilController"
+            prefWidth="1000" prefHeight="700"
+            style="-fx-background-color: #f4f6fb;">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="16" style="-fx-padding: 16 24; -fx-background-color: white; -fx-border-color: #e2e8f4; -fx-border-width: 0 0 1 0;">
+            <Button text="← Retour" onAction="#goBack" style="-fx-background-color: transparent; -fx-text-fill: #5a6a8a; -fx-font-size: 13;"/>
+            <Label text="Mon Profil" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <StackPane style="-fx-padding: 24;">
+            <VBox alignment="CENTER" spacing="10" style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #e2e8f4; -fx-border-radius: 14; -fx-padding: 40;">
+                <Label text="À faire" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #2563eb;"/>
+                <Label text="Écran Profil en préparation" style="-fx-font-size: 14; -fx-text-fill: #5a6a8a;"/>
+            </VBox>
+
+            <Label fx:id="avatarLabel" visible="false" managed="false"/>
+            <Label fx:id="nomCompletLabel" visible="false" managed="false"/>
+            <Label fx:id="roleLabel" visible="false" managed="false"/>
+            <Label fx:id="emailLabel" visible="false" managed="false"/>
+            <Label fx:id="telephoneLabel" visible="false" managed="false"/>
+            <Label fx:id="adresseLabel" visible="false" managed="false"/>
+            <Label fx:id="cinLabel" visible="false" managed="false"/>
+            <Label fx:id="dateNaissanceLabel" visible="false" managed="false"/>
+            <Label fx:id="membreDepuisLabel" visible="false" managed="false"/>
+            <TextField fx:id="nomField" visible="false" managed="false"/>
+            <TextField fx:id="prenomField" visible="false" managed="false"/>
+            <TextField fx:id="telephoneField" visible="false" managed="false"/>
+            <TextField fx:id="adresseField" visible="false" managed="false"/>
+            <PasswordField fx:id="oldPwdField" visible="false" managed="false"/>
+            <PasswordField fx:id="newPwdField" visible="false" managed="false"/>
+            <PasswordField fx:id="confirmPwdField" visible="false" managed="false"/>
+            <Label fx:id="statusLabel" visible="false" managed="false"/>
+        </StackPane>
+    </center>
+
+</BorderPane>
+

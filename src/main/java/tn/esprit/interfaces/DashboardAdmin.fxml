@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="tn.esprit.controllers.DashboardAdminController"
+            prefWidth="1200" prefHeight="700"
+            style="-fx-background-color: #f4f6fb;">
+
+    <left>
+        <VBox prefWidth="240" style="-fx-background-color: white; -fx-border-color: #e2e8f4; -fx-border-width: 0 1 0 0;">
+            <VBox alignment="CENTER_LEFT" style="-fx-padding: 18 16 14 16; -fx-border-color: #e2e8f4; -fx-border-width: 0 0 1 0;" spacing="2">
+                <Label text="SmartPath" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                <Label text="Administration" style="-fx-font-size: 11; -fx-text-fill: #8898b8;"/>
+            </VBox>
+
+            <VBox spacing="4" style="-fx-padding: 14 10 0 10;">
+                <Button fx:id="btnDashboard" text="  Dashboard" onAction="#showDashboard" maxWidth="Infinity" style="-fx-background-color: #eff6ff; -fx-text-fill: #2563eb; -fx-font-size: 13; -fx-padding: 10 16; -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;"/>
+                <Button fx:id="btnUsers" text="  Utilisateurs" onAction="#showUsers" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: #5a6a8a; -fx-font-size: 13; -fx-padding: 10 16; -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;"/>
+                <Button fx:id="btnFilieres" text="  Filières" onAction="#showFilieres" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: #5a6a8a; -fx-font-size: 13; -fx-padding: 10 16; -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;"/>
+                <Button fx:id="btnOffres" text="  Offres de stage" onAction="#showOffres" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: #5a6a8a; -fx-font-size: 13; -fx-padding: 10 16; -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;"/>
+                <Button fx:id="btnStats" text="  Statistiques" onAction="#showStats" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: #5a6a8a; -fx-font-size: 13; -fx-padding: 10 16; -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;"/>
+                <Button text="  Quiz personnalité" onAction="#showQuizAdmin" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: #5a6a8a; -fx-font-size: 13; -fx-padding: 10 16; -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;"/>
+                <Separator/>
+                <Button fx:id="btnVueEtudiant" text="  👁 Vue Étudiant" onAction="#switchToVueEtudiant" maxWidth="Infinity" style="-fx-background-color: #eff6ff; -fx-text-fill: #2563eb; -fx-font-size: 12; -fx-padding: 9 16; -fx-background-radius: 8; -fx-alignment: CENTER_LEFT; -fx-border-color: #bfdbfe; -fx-border-radius: 8;"/>
+            </VBox>
+
+            <Pane VBox.vgrow="ALWAYS"/>
+
+            <VBox style="-fx-padding: 12; -fx-border-color: #e2e8f4; -fx-border-width: 1 0 0 0;">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="A" style="-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-min-width: 36; -fx-min-height: 36; -fx-background-radius: 18; -fx-alignment: CENTER;"/>
+                    <VBox spacing="2">
+                        <Label fx:id="adminNameLabel" text="Admin" style="-fx-text-fill: #1a2340; -fx-font-size: 13; -fx-font-weight: bold;"/>
+                        <Label text="Administrateur" style="-fx-text-fill: #8898b8; -fx-font-size: 11;"/>
+                    </VBox>
+                </HBox>
+                <Button text="Déconnexion" onAction="#handleLogout" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: #ef4444; -fx-font-size: 12; -fx-padding: 8 0 4 0;"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <center>
+        <VBox style="-fx-background-color: #f4f6fb;">
+            <HBox alignment="CENTER_LEFT" style="-fx-padding: 18 28; -fx-border-color: #e2e8f4; -fx-border-width: 0 0 1 0; -fx-background-color: white;">
+                <Label fx:id="pageTitle" text="Dashboard" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+                <Label fx:id="dateLabel" text="" style="-fx-text-fill: #8898b8; -fx-font-size: 12;"/>
+            </HBox>
+
+            <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS" style="-fx-padding: 24 28;">
+                <VBox fx:id="dashboardView" alignment="CENTER" spacing="10" style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #e2e8f4; -fx-border-radius: 14; -fx-padding: 40;">
+                    <Label text="À faire" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #2563eb;"/>
+                    <Label text="Dashboard Admin en préparation" style="-fx-font-size: 14; -fx-text-fill: #5a6a8a;"/>
+
+                    <VBox visible="false" managed="false">
+                        <Label fx:id="totalUsers" text="0"/>
+                        <Label fx:id="totalEtudiants" text="0"/>
+                        <Label fx:id="totalProfs" text="0"/>
+                        <Label fx:id="totalOffres" text="0"/>
+                        <TableView fx:id="usersTable">
+                            <columns>
+                                <TableColumn fx:id="colNom"/>
+                                <TableColumn fx:id="colPrenom"/>
+                                <TableColumn fx:id="colEmail"/>
+                                <TableColumn fx:id="colType"/>
+                                <TableColumn fx:id="colStatus"/>
+                                <TableColumn fx:id="colActions"/>
+                            </columns>
+                        </TableView>
+                    </VBox>
+                </VBox>
+            </StackPane>
+        </VBox>
+    </center>
+
+</BorderPane>
+

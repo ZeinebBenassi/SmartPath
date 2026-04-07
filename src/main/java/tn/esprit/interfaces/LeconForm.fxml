@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- Dialog popup pour ajouter/modifier une leçon -->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.esprit.controllers.LeconFormController"
+      spacing="16" style="-fx-background-color: #1a1a2e; -fx-padding: 28;"
+      prefWidth="560">
+
+    <Label fx:id="formTitle" text="Nouvelle leçon"
+           style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: white;"/>
+
+    <VBox spacing="6">
+        <Label text="Titre *" style="-fx-text-fill: #ccccdd; -fx-font-size: 12; -fx-font-weight: bold;"/>
+        <TextField fx:id="titreField" promptText="Titre de la leçon"
+                   style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-prompt-text-fill: #555577; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 12; -fx-font-size: 13;"/>
+    </VBox>
+
+    <HBox spacing="16">
+        <VBox spacing="6" HBox.hgrow="ALWAYS">
+            <Label text="Matière *" style="-fx-text-fill: #ccccdd; -fx-font-size: 12; -fx-font-weight: bold;"/>
+            <ComboBox fx:id="matiereCombo" maxWidth="Infinity"
+                      style="-fx-background-color: #16213e; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8;"/>
+        </VBox>
+        <VBox spacing="6" prefWidth="120">
+            <Label text="Durée (min)" style="-fx-text-fill: #ccccdd; -fx-font-size: 12; -fx-font-weight: bold;"/>
+            <TextField fx:id="dureeField" promptText="ex: 60"
+                       style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-prompt-text-fill: #555577; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 12; -fx-font-size: 13;"/>
+        </VBox>
+    </HBox>
+
+    <VBox spacing="6">
+        <Label text="Description" style="-fx-text-fill: #ccccdd; -fx-font-size: 12; -fx-font-weight: bold;"/>
+        <TextArea fx:id="descriptionField" prefRowCount="2" promptText="Courte description..."
+                  style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-prompt-text-fill: #555577; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 12; -fx-font-size: 13;"/>
+    </VBox>
+
+    <VBox spacing="6">
+        <Label text="Contenu" style="-fx-text-fill: #ccccdd; -fx-font-size: 12; -fx-font-weight: bold;"/>
+        <TextArea fx:id="contenuField" prefRowCount="5" promptText="Contenu de la leçon..."
+                  style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-prompt-text-fill: #555577; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 12; -fx-font-size: 13;"/>
+    </VBox>
+
+    <HBox spacing="12" alignment="CENTER_LEFT">
+        <VBox spacing="6" HBox.hgrow="ALWAYS">
+            <Label text="Fichier joint" style="-fx-text-fill: #ccccdd; -fx-font-size: 12; -fx-font-weight: bold;"/>
+            <TextField fx:id="fichierField" promptText="Chemin du fichier..."
+                       style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-prompt-text-fill: #555577; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 12; -fx-font-size: 13;"/>
+        </VBox>
+        <VBox spacing="6" alignment="BOTTOM_CENTER">
+            <Label text=" " style="-fx-font-size: 12;"/>
+            <Button text="Parcourir" onAction="#parcourir"
+                    style="-fx-background-color: #16213e; -fx-text-fill: #aaaacc; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 16; -fx-cursor: hand;"/>
+        </VBox>
+    </HBox>
+
+    <Label fx:id="messageLabel" text="" style="-fx-font-size: 12;"/>
+
+    <HBox spacing="12" alignment="CENTER_RIGHT">
+        <Button text="Annuler" onAction="#cancel"
+                style="-fx-background-color: transparent; -fx-text-fill: #aaaacc; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
+        <Button text="Enregistrer" onAction="#save"
+                style="-fx-background-color: #e94560; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 28; -fx-background-radius: 8; -fx-cursor: hand;"/>
+    </HBox>
+
+</VBox>
+
