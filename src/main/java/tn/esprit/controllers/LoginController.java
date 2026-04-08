@@ -36,22 +36,25 @@ public class LoginController {
                 String fxml;
                 switch (user.getType()) {
                     case "admin":
-                        DashboardAdminController.setCurrentUser(user);
-                        fxml = "/views/DashboardAdmin.fxml";
+                        tn.esprit.controllers.DashboardAdminController.setCurrentUser(user);
+                        tn.esprit.controllers.DashboardEtudiantController.setSourceDashboardType(null);
+                        fxml = "/tn/esprit/interfaces/DashboardAdmin.fxml";
                         break;
                     case "prof":
-                        DashboardProfController.setCurrentUser(user);
-                        fxml = "/views/DashboardProf.fxml";
+                        tn.esprit.controllers.DashboardProfController.setCurrentUser(user);
+                        tn.esprit.controllers.DashboardEtudiantController.setSourceDashboardType(null);
+                        fxml = "/tn/esprit/interfaces/DashboardProf.fxml";
                         break;
                     default:
-                        DashboardEtudiantController.setCurrentUser(user);
-                        fxml = "/views/DashboardEtudiant.fxml";
+                        tn.esprit.controllers.DashboardEtudiantController.setCurrentUser(user);
+                        tn.esprit.controllers.DashboardEtudiantController.setSourceDashboardType(null);
+                        fxml = "/tn/esprit/interfaces/DashboardEtudiant.fxml";
                         break;
                 }
                 Parent root = FXMLLoader.load(getClass().getResource(fxml));
                 emailField.getScene().setRoot(root);
             } catch (Exception e) {
-                // Dashboard pas encore créé — message de succès suffit
+                // Dashboard pas encore créé - message de succès suffit
                 System.out.println("Dashboard à créer pour : " + user.getType());
             }
         } else {
@@ -61,18 +64,22 @@ public class LoginController {
 
     @FXML
     public void goToRegister() {
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource("/views/Register.fxml"));
-            emailField.getScene().setRoot(root);
-        } catch (Exception e) { e.printStackTrace(); }
+        navigateTo("/tn/esprit/interfaces/Register.fxml");
     }
 
     @FXML
     public void goToForgotPassword() {
+        navigateTo("/tn/esprit/interfaces/ForgotPassword.fxml");
+    }
+
+    private void navigateTo(String fxml) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/views/ForgotPassword.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource(fxml));
             emailField.getScene().setRoot(root);
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            showError("Navigation impossible: " + fxml);
+            e.printStackTrace();
+        }
     }
 
     private void showError(String msg) {
@@ -80,5 +87,4 @@ public class LoginController {
         errorLabel.setText(msg);
     }
 }
-
 

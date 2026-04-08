@@ -2,42 +2,85 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="tn.esprit.controllers.CoursController"
-            prefWidth="1200" prefHeight="700"
-            style="-fx-background-color: #f4f6fb;">
+<!--
+    Cours.fxml - Page enfant (chargée dans le contentArea du dashboard)
+    Le bouton "Retour" a été supprimé : le dashboard reste affiché à gauche.
+-->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.esprit.controllers.CoursController"
+      spacing="16"
+      style="-fx-background-color: #f4f6fb; -fx-padding: 0;">
 
-    <top>
-        <HBox alignment="CENTER_LEFT" spacing="16" style="-fx-padding: 16 24; -fx-background-color: white; -fx-border-color: #e2e8f4; -fx-border-width: 0 0 1 0;">
-            <Button text="← Retour" onAction="#goBack" style="-fx-background-color: transparent; -fx-text-fill: #5a6a8a; -fx-font-size: 13;"/>
-            <Label text="Cours &amp; Leçons" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
-            <Pane HBox.hgrow="ALWAYS"/>
-            <TextField fx:id="searchField" visible="false" managed="false"/>
-            <ComboBox fx:id="matiereFilter" visible="false" managed="false"/>
-            <Button fx:id="btnAdd" onAction="#addLecon" visible="false" managed="false"/>
-        </HBox>
-    </top>
+    <!-- Barre d'outils -->
+    <HBox alignment="CENTER_LEFT" spacing="12"
+       style="-fx-padding: 0 0 4 0;">
+     <VBox spacing="2">
+         <Label text="Cours &amp; Leçons"
+             style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+         <Label text="Aucune leçon disponible pour le moment"
+             style="-fx-font-size: 12; -fx-text-fill: #5a6a8a;"/>
+     </VBox>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="searchField" promptText="Rechercher une leçon..." prefWidth="240"
+                   style="-fx-background-color: white; -fx-border-color: #dce5f6; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 14;"/>
+        <ComboBox fx:id="matiereFilter" promptText="Matière" prefWidth="160"
+                  style="-fx-background-color: white; -fx-border-color: #dce5f6; -fx-border-radius: 8; -fx-background-radius: 8;"/>
+        <Button fx:id="btnAdd" text="+ Nouvelle leçon" onAction="#addLecon"
+                style="-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-size: 12; -fx-font-weight: bold; -fx-padding: 8 14; -fx-background-radius: 8; -fx-cursor: hand;"/>
+    </HBox>
 
-    <center>
-        <StackPane style="-fx-padding: 24;">
-            <VBox alignment="CENTER" spacing="10" style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #e2e8f4; -fx-border-radius: 14; -fx-padding: 40;">
-                <Label text="À faire" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #2563eb;"/>
-                <Label text="Écran Cours en préparation" style="-fx-font-size: 14; -fx-text-fill: #5a6a8a;"/>
+    <!-- Contenu principal -->
+    <HBox spacing="18" VBox.vgrow="ALWAYS">
+        <!-- Liste des leçons -->
+         <VBox prefWidth="320" spacing="10"
+            style="-fx-background-color: white; -fx-background-radius: 16; -fx-border-color: #e2e8f4; -fx-border-radius: 16; -fx-padding: 16;">
+            <Label text="Liste des leçons"
+                   style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                 <Label text="La liste est vide pour l’instant"
+                   style="-fx-font-size: 12; -fx-text-fill: #5a6a8a;"/>
+             <ListView fx:id="leconsList" VBox.vgrow="ALWAYS"
+                 style="-fx-background-insets: 0; -fx-background-radius: 10;"/>
+        </VBox>
+
+        <!-- Détail leçon -->
+        <VBox spacing="14" HBox.hgrow="ALWAYS"
+            style="-fx-background-color: white; -fx-background-radius: 16; -fx-border-color: #e2e8f4; -fx-border-radius: 16; -fx-padding: 18;">
+            <VBox spacing="8"
+                style="-fx-background-color: linear-gradient(to bottom right, #f8fbff, #ffffff); -fx-background-radius: 12; -fx-padding: 14; -fx-border-color: #e3ecfa; -fx-border-radius: 12;">
+                                <Label fx:id="leconTitre" text="Aucune leçon sélectionnée"
+                       style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                <HBox spacing="12">
+                    <Label fx:id="leconMatiere" text="" style="-fx-text-fill: #2563eb; -fx-font-size: 12; -fx-font-weight: bold;"/>
+                    <Label fx:id="leconDuree"   text="" style="-fx-text-fill: #5a6a8a; -fx-font-size: 12;"/>
+                    <Label fx:id="leconProf"    text="" style="-fx-text-fill: #5a6a8a; -fx-font-size: 12;"/>
+                </HBox>
             </VBox>
 
-            <ListView fx:id="leconsList" visible="false" managed="false"/>
-            <Label fx:id="leconTitre" visible="false" managed="false"/>
-            <Label fx:id="leconMatiere" visible="false" managed="false"/>
-            <Label fx:id="leconDuree" visible="false" managed="false"/>
-            <Label fx:id="leconProf" visible="false" managed="false"/>
-            <Label fx:id="leconDescription" visible="false" managed="false"/>
-            <Label fx:id="leconContenu" visible="false" managed="false"/>
-            <Label fx:id="leconFichier" visible="false" managed="false"/>
-            <Button fx:id="btnEdit" onAction="#editLecon" visible="false" managed="false"/>
-            <Button fx:id="btnDelete" onAction="#deleteLecon" visible="false" managed="false"/>
-            <Button fx:id="btnTelecharger" onAction="#telechargerFichier" visible="false" managed="false"/>
-        </StackPane>
-    </center>
+            <VBox spacing="6">
+                <Label text="Description" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                <Label fx:id="leconDescription" wrapText="true"
+                       style="-fx-font-size: 12; -fx-text-fill: #5a6a8a;"/>
+            </VBox>
 
-</BorderPane>
+            <VBox spacing="6" VBox.vgrow="ALWAYS">
+                <Label text="Contenu" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                <Label fx:id="leconContenu" wrapText="true"
+                       style="-fx-font-size: 12; -fx-text-fill: #334155; -fx-background-color: #f8fbff; -fx-background-radius: 12; -fx-border-color: #e3ecfa; -fx-border-radius: 12; -fx-padding: 12;"
+                       VBox.vgrow="ALWAYS"/>
+            </VBox>
 
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Fichier:" style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                <Label fx:id="leconFichier" text="" style="-fx-font-size: 12; -fx-text-fill: #2563eb;"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btnTelecharger" text="Télécharger" onAction="#telechargerFichier"
+                        style="-fx-background-color: #e8efff; -fx-text-fill: #1e40af; -fx-font-size: 12; -fx-padding: 8 12; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                <Button fx:id="btnEdit" text="Modifier" onAction="#editLecon"
+                        style="-fx-background-color: #fff7ed; -fx-text-fill: #c2410c; -fx-font-size: 12; -fx-padding: 8 12; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                <Button fx:id="btnDelete" text="Supprimer" onAction="#deleteLecon"
+                        style="-fx-background-color: #fee2e2; -fx-text-fill: #b91c1c; -fx-font-size: 12; -fx-padding: 8 12; -fx-background-radius: 8; -fx-cursor: hand;"/>
+            </HBox>
+        </VBox>
+    </HBox>
+
+</VBox>

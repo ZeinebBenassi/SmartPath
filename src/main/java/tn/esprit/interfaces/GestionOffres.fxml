@@ -1,93 +1,45 @@
-<?xml version="1.0" encoding="UTF-8"?>
+p<?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="tn.esprit.controllers.GestionOffresController"
-            prefWidth="1100" prefHeight="700"
-            style="-fx-background-color: #0f0f1a;">
+<!--
+    GestionOffres.fxml - Page enfant (chargée dans contentArea Admin)
+-->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.esprit.controllers.GestionOffresController"
+      spacing="16"
+      style="-fx-background-color: #f4f6fb; -fx-padding: 0;">
 
-    <top>
-        <HBox alignment="CENTER_LEFT" spacing="16"
-              style="-fx-padding: 16 24; -fx-background-color: #1a1a2e; -fx-border-color: #2d2d5e; -fx-border-width: 0 0 1 0;">
-            <Button text="← Retour" onAction="#goBack"
-                    style="-fx-background-color: transparent; -fx-text-fill: #aaaacc; -fx-font-size: 13; -fx-cursor: hand;"/>
-            <Label text="Gestion des offres de stage" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: white;"/>
-            <Pane HBox.hgrow="ALWAYS"/>
-            <Button text="+ Nouvelle offre" onAction="#addOffre"
-                    style="-fx-background-color: #e94560; -fx-text-fill: white; -fx-font-size: 12; -fx-padding: 8 18; -fx-background-radius: 8; -fx-cursor: hand;"/>
-        </HBox>
-    </top>
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Label text="Offres de stage"
+               style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="searchField" promptText="Rechercher..."
+                   style="-fx-background-color: white; -fx-border-color: #dce5f6; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 8 14;"
+                   prefWidth="220"/>
+    </HBox>
 
-    <center>
-        <HBox style="-fx-background-color: #0f0f1a;">
+    <HBox spacing="16" VBox.vgrow="ALWAYS">
+        <!-- Liste des offres -->
+        <VBox prefWidth="360" spacing="10"
+              style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #e2e8f4; -fx-border-radius: 14; -fx-padding: 14;">
+            <Label text="Liste des offres"
+                   style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+            <ListView fx:id="offresList" VBox.vgrow="ALWAYS"/>
+        </VBox>
 
-            <!-- Liste offres -->
-            <VBox prefWidth="380" style="-fx-border-color: #2d2d5e; -fx-border-width: 0 1 0 0; -fx-padding: 16;" spacing="10">
-                <Label text="Offres publiées" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: white;"/>
-                <ListView fx:id="offresList" VBox.vgrow="ALWAYS"
-                          style="-fx-background-color: transparent; -fx-border-color: transparent;"/>
-            </VBox>
+        <!-- Détail de l'offre -->
+        <VBox spacing="14" HBox.hgrow="ALWAYS"
+              style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #e2e8f4; -fx-border-radius: 14; -fx-padding: 18;">
+            <Label fx:id="offreTitre" text="Sélectionnez une offre"
+                   style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+            <HBox spacing="12">
+                <Label fx:id="offreEntreprise" text="" style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #2563eb;"/>
+                <Label fx:id="offreDuree"      text="" style="-fx-font-size: 12; -fx-text-fill: #5a6a8a;"/>
+            </HBox>
+            <Label fx:id="offreDescription" wrapText="true"
+                   style="-fx-font-size: 12; -fx-text-fill: #475569; -fx-background-color: #f8fbff; -fx-background-radius: 12; -fx-border-color: #e3ecfa; -fx-border-radius: 12; -fx-padding: 12;" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </HBox>
 
-            <!-- Formulaire offre -->
-            <ScrollPane fitToWidth="true" HBox.hgrow="ALWAYS"
-                        style="-fx-background-color: transparent; -fx-border-color: transparent;">
-                <VBox style="-fx-padding: 28;" spacing="16">
-
-                    <Label text="Détail de l'offre" style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: white;"/>
-
-                    <VBox spacing="6">
-                        <Label text="Titre du poste *" style="-fx-text-fill: #ccccdd; -fx-font-size: 12; -fx-font-weight: bold;"/>
-                        <TextField fx:id="titreField"
-                                   style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 12; -fx-font-size: 13;"/>
-                    </VBox>
-
-                    <HBox spacing="16">
-                        <VBox spacing="6" HBox.hgrow="ALWAYS">
-                            <Label text="Entreprise *" style="-fx-text-fill: #ccccdd; -fx-font-size: 12; -fx-font-weight: bold;"/>
-                            <TextField fx:id="entrepriseField"
-                                       style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 12; -fx-font-size: 13;"/>
-                        </VBox>
-                        <VBox spacing="6" HBox.hgrow="ALWAYS">
-                            <Label text="Lieu" style="-fx-text-fill: #ccccdd; -fx-font-size: 12; -fx-font-weight: bold;"/>
-                            <TextField fx:id="lieuField"
-                                       style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 12; -fx-font-size: 13;"/>
-                        </VBox>
-                    </HBox>
-
-                    <VBox spacing="6">
-                        <Label text="Type *" style="-fx-text-fill: #ccccdd; -fx-font-size: 12; -fx-font-weight: bold;"/>
-                        <ComboBox fx:id="typeField" maxWidth="Infinity"
-                                  style="-fx-background-color: #16213e; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8;"/>
-                    </VBox>
-
-                    <VBox spacing="6" VBox.vgrow="ALWAYS">
-                        <Label text="Description *" style="-fx-text-fill: #ccccdd; -fx-font-size: 12; -fx-font-weight: bold;"/>
-                        <TextArea fx:id="descriptionField" prefRowCount="6"
-                                  style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 12; -fx-font-size: 13;"/>
-                    </VBox>
-
-                    <!-- Candidatures -->
-                    <VBox spacing="8" style="-fx-background-color: #1a1a2e; -fx-background-radius: 10; -fx-border-color: #2d2d5e; -fx-border-radius: 10; -fx-border-width: 0.5; -fx-padding: 16;">
-                        <Label text="Candidatures reçues" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: white;"/>
-                        <ListView fx:id="candidaturesList" prefHeight="120"
-                                  style="-fx-background-color: transparent; -fx-border-color: transparent;"/>
-                    </VBox>
-
-                    <Label fx:id="messageLabel" text="" style="-fx-font-size: 12;"/>
-
-                    <HBox spacing="12" alignment="CENTER_RIGHT">
-                        <Button text="Supprimer" onAction="#deleteOffre"
-                                style="-fx-background-color: #2d0a15; -fx-text-fill: #e94560; -fx-border-color: #5d1a2e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
-                        <Button text="Annuler" onAction="#clearForm"
-                                style="-fx-background-color: transparent; -fx-text-fill: #aaaacc; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
-                        <Button text="Enregistrer" onAction="#saveOffre"
-                                style="-fx-background-color: #e94560; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 28; -fx-background-radius: 8; -fx-cursor: hand;"/>
-                    </HBox>
-                </VBox>
-            </ScrollPane>
-        </HBox>
-    </center>
-
-</BorderPane>
-
+</VBox>

@@ -2,98 +2,31 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="tn.esprit.controllers.GestionFilieresController"
-            prefWidth="1100" prefHeight="700"
-            style="-fx-background-color: #0f0f1a;">
+<!--
+    GestionFilieres.fxml - Page enfant (chargée dans contentArea Admin)
+-->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.esprit.controllers.GestionFilieresController"
+      spacing="16"
+      style="-fx-background-color: #f4f6fb; -fx-padding: 0;">
 
-    <top>
-        <HBox alignment="CENTER_LEFT" spacing="16"
-              style="-fx-padding: 16 24; -fx-background-color: #1a1a2e; -fx-border-color: #2d2d5e; -fx-border-width: 0 0 1 0;">
-            <Button text="← Retour" onAction="#goBack"
-                    style="-fx-background-color: transparent; -fx-text-fill: #aaaacc; -fx-font-size: 13; -fx-cursor: hand;"/>
-            <Label text="Gestion des filières" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: white;"/>
-            <Pane HBox.hgrow="ALWAYS"/>
-            <Button text="+ Nouvelle filière" onAction="#addFiliere"
-                    style="-fx-background-color: #e94560; -fx-text-fill: white; -fx-font-size: 12; -fx-padding: 8 18; -fx-background-radius: 8; -fx-cursor: hand;"/>
-        </HBox>
-    </top>
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Label text="Gestion des filières"
+               style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Button text="+ Nouvelle filière"
+                onAction="#addFiliere"
+                style="-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-size: 12; -fx-font-weight: bold; -fx-padding: 8 14; -fx-background-radius: 8; -fx-cursor: hand;"/>
+    </HBox>
 
-    <center>
-        <HBox style="-fx-background-color: #0f0f1a;">
+    <TableView fx:id="filieresTable" VBox.vgrow="ALWAYS"
+               style="-fx-background-color: white; -fx-border-color: #e2e8f4; -fx-border-radius: 12; -fx-background-radius: 12; -fx-background-insets: 0;">
+        <columns>
+            <TableColumn fx:id="colId"          text="ID"          prefWidth="60"/>
+            <TableColumn fx:id="colNom"         text="Nom"         prefWidth="200"/>
+            <TableColumn fx:id="colDescription" text="Description" prefWidth="350"/>
+            <TableColumn fx:id="colActions"     text="Actions"     prefWidth="160"/>
+        </columns>
+    </TableView>
 
-            <!-- Liste filières -->
-            <VBox prefWidth="380" style="-fx-border-color: #2d2d5e; -fx-border-width: 0 1 0 0; -fx-padding: 16;" spacing="10">
-                <Label text="Filières" style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: white;"/>
-                <ListView fx:id="filieresList" VBox.vgrow="ALWAYS"
-                          style="-fx-background-color: transparent; -fx-border-color: transparent;"/>
-            </VBox>
-
-            <!-- Formulaire détail / édition filière -->
-            <ScrollPane fitToWidth="true" HBox.hgrow="ALWAYS"
-                        style="-fx-background-color: transparent; -fx-border-color: transparent;">
-                <VBox style="-fx-padding: 28;" spacing="18">
-
-                    <Label text="Détail de la filière" style="-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: white;"/>
-
-                    <HBox spacing="16">
-                        <VBox spacing="6" HBox.hgrow="ALWAYS">
-                            <Label text="Nom *" style="-fx-text-fill: #ccccdd; -fx-font-size: 12; -fx-font-weight: bold;"/>
-                            <TextField fx:id="nomField"
-                                       style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 12; -fx-font-size: 13;"/>
-                        </VBox>
-                        <VBox spacing="6" HBox.hgrow="ALWAYS">
-                            <Label text="Catégorie" style="-fx-text-fill: #ccccdd; -fx-font-size: 12; -fx-font-weight: bold;"/>
-                            <TextField fx:id="categorieField"
-                                       style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 12; -fx-font-size: 13;"/>
-                        </VBox>
-                    </HBox>
-
-                    <HBox spacing="16">
-                        <VBox spacing="6" HBox.hgrow="ALWAYS">
-                            <Label text="Niveau" style="-fx-text-fill: #ccccdd; -fx-font-size: 12; -fx-font-weight: bold;"/>
-                            <TextField fx:id="niveauField"
-                                       style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 12; -fx-font-size: 13;"/>
-                        </VBox>
-                        <VBox spacing="6" HBox.hgrow="ALWAYS">
-                            <Label text="Icône (emoji)" style="-fx-text-fill: #ccccdd; -fx-font-size: 12; -fx-font-weight: bold;"/>
-                            <TextField fx:id="iconField" promptText="ex: 💻"
-                                       style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 12; -fx-font-size: 13;"/>
-                        </VBox>
-                    </HBox>
-
-                    <VBox spacing="6">
-                        <Label text="Description" style="-fx-text-fill: #ccccdd; -fx-font-size: 12; -fx-font-weight: bold;"/>
-                        <TextArea fx:id="descriptionField" prefRowCount="3"
-                                  style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 12; -fx-font-size: 13;"/>
-                    </VBox>
-
-                    <VBox spacing="6">
-                        <Label text="Débouchés" style="-fx-text-fill: #ccccdd; -fx-font-size: 12; -fx-font-weight: bold;"/>
-                        <TextArea fx:id="debouchesField" prefRowCount="3"
-                                  style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 12; -fx-font-size: 13;"/>
-                    </VBox>
-
-                    <VBox spacing="6">
-                        <Label text="Compétences développées" style="-fx-text-fill: #ccccdd; -fx-font-size: 12; -fx-font-weight: bold;"/>
-                        <TextArea fx:id="competencesField" prefRowCount="3"
-                                  style="-fx-background-color: #16213e; -fx-text-fill: white; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 12; -fx-font-size: 13;"/>
-                    </VBox>
-
-                    <Label fx:id="messageLabel" text="" style="-fx-font-size: 12;"/>
-
-                    <HBox spacing="12" alignment="CENTER_RIGHT">
-                        <Button text="Supprimer" onAction="#deleteFiliere"
-                                style="-fx-background-color: #2d0a15; -fx-text-fill: #e94560; -fx-border-color: #5d1a2e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
-                        <Button text="Annuler" onAction="#clearForm"
-                                style="-fx-background-color: transparent; -fx-text-fill: #aaaacc; -fx-border-color: #2d2d5e; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 10 20; -fx-cursor: hand;"/>
-                        <Button text="Enregistrer" onAction="#saveFiliere"
-                                style="-fx-background-color: #e94560; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 10 28; -fx-background-radius: 8; -fx-cursor: hand;"/>
-                    </HBox>
-                </VBox>
-            </ScrollPane>
-        </HBox>
-    </center>
-
-</BorderPane>
-
+</VBox>

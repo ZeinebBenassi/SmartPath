@@ -44,7 +44,7 @@ public class ForgotPasswordController {
         }
 
         // En production : envoyer par email. Ici on affiche dans la console.
-        System.out.println("🔑 Code de réinitialisation : " + token);
+        System.out.println("Code de réinitialisation : " + token);
         showMessage("Code envoyé ! (visible dans la console IntelliJ)", "green");
 
         // Afficher l'étape 2
@@ -76,7 +76,7 @@ public class ForgotPasswordController {
 
         boolean success = userService.resetPassword(currentEmail, token, newPwd);
         if (success) {
-            showMessage("✅ Mot de passe réinitialisé avec succès !", "green");
+            showMessage("✓ Mot de passe réinitialisé avec succès !", "green");
             resetBtn.setDisable(true);
         } else {
             showMessage("Code invalide ou expiré.", "red");
@@ -86,7 +86,7 @@ public class ForgotPasswordController {
     @FXML
     public void goToLogin() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/views/Login.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/tn/esprit/interfaces/Login.fxml"));
             emailField.getScene().setRoot(root);
         } catch (Exception e) { e.printStackTrace(); }
     }

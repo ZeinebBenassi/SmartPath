@@ -46,23 +46,18 @@ public class QuizAdminController {
 
     @FXML
     public void initialize() {
-        // Peupler les combos profil
-        for (ComboBox<String> cb : java.util.Arrays.asList(profil1Combo, profil2Combo, profil3Combo, profil4Combo)) {
+        for (ComboBox<String> cb : new ComboBox[]{profil1Combo, profil2Combo, profil3Combo, profil4Combo}) {
             if (cb != null) {
                 cb.setItems(FXCollections.observableArrayList(PROFILS));
             }
         }
-        // Catégories
         if (categorieCombo != null) {
             categorieCombo.setItems(FXCollections.observableArrayList(PROFILS));
         }
 
-        // Liste des questions
         if (questionsList != null) {
-            questionsList.setItems(FXCollections.observableArrayList(SAMPLE_QUESTIONS));
-            questionsList.getSelectionModel().selectedItemProperty().addListener((obs, old, val) -> {
-                if (val != null) loadQuestion(val);
-            });
+            questionsList.getItems().clear();
+            questionsList.setPlaceholder(new Label("Aucune question disponible pour le moment."));
         }
 
         updateCounters();
@@ -140,14 +135,14 @@ public class QuizAdminController {
 
     @FXML public void previewQuiz() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/views/Quiz.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/tn/esprit/interfaces/Quiz.fxml"));
             questionsList.getScene().setRoot(root);
         } catch (Exception e) { e.printStackTrace(); }
     }
 
     @FXML public void goBack() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/views/DashboardAdmin.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/tn/esprit/interfaces/DashboardAdmin.fxml"));
             if (questionsList != null) questionsList.getScene().setRoot(root);
         } catch (Exception e) { e.printStackTrace(); }
     }

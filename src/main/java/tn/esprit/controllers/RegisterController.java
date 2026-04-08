@@ -5,8 +5,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import models.Etudiant;
-import models.Prof;
 import services.UserService;
+
+import java.util.Date;
 
 public class RegisterController {
 
@@ -17,16 +18,11 @@ public class RegisterController {
     @FXML private TextField telephoneField;
     @FXML private PasswordField passwordField;
     @FXML private PasswordField confirmPasswordField;
-    @FXML private ComboBox<String> roleCombo;
+    @FXML private TextField adresseField;
+    @FXML private DatePicker dateNaissancePicker;
     @FXML private Label messageLabel;
 
     private UserService userService = new UserService();
-
-    @FXML
-    public void initialize() {
-        roleCombo.getItems().addAll("Étudiant", "Professeur");
-        roleCombo.setValue("Étudiant");
-    }
 
     @FXML
     public void handleRegister() {
@@ -37,7 +33,7 @@ public class RegisterController {
         String tel     = telephoneField.getText().trim();
         String pwd     = passwordField.getText().trim();
         String confirm = confirmPasswordField.getText().trim();
-        String role    = roleCombo.getValue();
+        String adresse = adresseField.getText().trim();
 
         if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || pwd.isEmpty()) {
             showMessage("Veuillez remplir tous les champs obligatoires.", "red");
@@ -47,37 +43,56 @@ public class RegisterController {
             showMessage("Les mots de passe ne correspondent pas.", "red");
             return;
         }
+        
+        System.out.println("Vérification des données pour: " + email);
         if (userService.emailExists(email)) {
             showMessage("Cet email est déjà utilisé.", "red");
             return;
         }
 
-        boolean success;
-        if (role.equals("Professeur")) {
-            Prof prof = new Prof();
-            prof.setNom(nom); prof.setPrenom(prenom);
-            prof.setEmail(email); prof.setPassword(pwd);
-            prof.setCin(cin); prof.setTelephone(tel);
-            success = userService.registerProf(prof);
-        } else {
-            Etudiant etudiant = new Etudiant();
-            etudiant.setNom(nom); etudiant.setPrenom(prenom);
-            etudiant.setEmail(email); etudiant.setPassword(pwd);
-            etudiant.setCin(cin); etudiant.setTelephone(tel);
-            success = userService.registerEtudiant(etudiant);
+        Etudiant etudiant = new Etudiant();
+        etudiant.setNom(nom);
+        etudiant.setPrenom(prenom);
+        etudiant.setEmail(email);
+        etudiant.setPassword(pwd);
+        etudiant.setCin(cin);
+        etudiant.setTelephone(tel);
+        etudiant.setAdresse(adresse);
+        
+        // Date de naissance
+        if (dateNaissancePicker.getValue() != null) {
+            Date dateNaissance = java.sql.Date.valueOf(dateNaissancePicker.getValue());
+            etudiant.setDateNaissance(dateNaissance);
+            System.out.println("  Date de naissance: " + dateNaissance);
         }
+        
+        etudiant.setNiveau("L1"); // Niveau par défaut
+        etudiant.setStatus("actif"); // Status par défaut
+        
+        System.out.println("Appel registerEtudiant()...");
+        boolean success = userService.registerEtudiant(etudiant);
 
         if (success) {
-            showMessage("✅ Compte créé avec succès !", "green");
+            showMessage("Compte créé avec succès!", "green");
+            // Effacer les champs après succès
+            nomField.clear();
+            prenomField.clear();
+            emailField.clear();
+            cinField.clear();
+            telephoneField.clear();
+            passwordField.clear();
+            confirmPasswordField.clear();
+            adresseField.clear();
+            dateNaissancePicker.setValue(null);
         } else {
-            showMessage("❌ Erreur lors de l'inscription.", "red");
+            showMessage("Erreur lors de l'inscription. Consultez la console pour les détails.", "red");
         }
     }
 
     @FXML
     public void goToLogin() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/views/Login.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/tn/esprit/interfaces/Login.fxml"));
             nomField.getScene().setRoot(root);
         } catch (Exception e) { e.printStackTrace(); }
     }

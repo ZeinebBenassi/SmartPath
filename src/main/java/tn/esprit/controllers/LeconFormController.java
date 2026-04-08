@@ -12,10 +12,10 @@ public class LeconFormController {
     @FXML private TextField titreField;
     @FXML private ComboBox<String> matiereCombo;
     @FXML private TextField dureeField;
-    @FXML private TextArea descriptionArea;
-    @FXML private TextArea contenuArea;
+    @FXML private TextArea descriptionField;
+    @FXML private TextArea contenuField;
     @FXML private TextField fichierField;
-    @FXML private Label errorLabel;
+    @FXML private Label messageLabel;
 
     @FXML
     public void initialize() {
@@ -49,17 +49,21 @@ public class LeconFormController {
             fichierField.setText("lecon_" + System.currentTimeMillis() + ".pdf");
     }
 
+    @FXML public void parcourir() {
+        choisirFichier();
+    }
+
     @FXML public void goBack() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/views/DashboardProf.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/tn/esprit/interfaces/DashboardProf.fxml"));
             if (titreField != null) titreField.getScene().setRoot(root);
         } catch (Exception e) { e.printStackTrace(); }
     }
 
     private void showError(String msg) {
-        if (errorLabel != null) {
-            errorLabel.setStyle("-fx-text-fill: #e94560; -fx-font-size: 12;");
-            errorLabel.setText(msg);
+        if (messageLabel != null) {
+            messageLabel.setStyle("-fx-text-fill: #e94560; -fx-font-size: 12;");
+            messageLabel.setText(msg);
         }
     }
 }

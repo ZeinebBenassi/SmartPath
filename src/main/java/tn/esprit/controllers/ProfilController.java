@@ -5,6 +5,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import models.User;
+import services.UserService;
+
+import java.text.SimpleDateFormat;
 
 public class ProfilController {
 
@@ -28,6 +31,7 @@ public class ProfilController {
     @FXML private Label statusLabel;
 
     private static User currentUser;
+    private UserService userService = new UserService();
 
     public static void setCurrentUser(User u) { currentUser = u; }
 
@@ -58,7 +62,7 @@ public class ProfilController {
         if (dateNaissanceLabel != null) dateNaissanceLabel.setText(
             currentUser.getDateNaissance() != null ? currentUser.getDateNaissance().toString() : "Non renseignée");
         if (membreDepuisLabel  != null) membreDepuisLabel.setText(
-            currentUser.getCreatedAt() != null ? currentUser.getCreatedAt().toLocalDate().toString() : "—");
+            currentUser.getCreatedAt() != null ? new SimpleDateFormat("yyyy-MM-dd").format(currentUser.getCreatedAt()) : "—");
 
         // Préremplir les champs
         if (nomField     != null) nomField.setText(currentUser.getNom());
@@ -114,9 +118,9 @@ public class ProfilController {
     @FXML public void goBack() {
         if (currentUser == null) return;
         String dest = switch (currentUser.getType()) {
-            case "admin" -> "/views/DashboardAdmin.fxml";
-            case "prof"  -> "/views/DashboardProf.fxml";
-            default      -> "/views/DashboardEtudiant.fxml";
+            case "admin" -> "/tn/esprit/interfaces/DashboardAdmin.fxml";
+            case "prof"  -> "/tn/esprit/interfaces/DashboardProf.fxml";
+            default      -> "/tn/esprit/interfaces/DashboardEtudiant.fxml";
         };
         try {
             Parent root = FXMLLoader.load(getClass().getResource(dest));
@@ -126,7 +130,7 @@ public class ProfilController {
     }
 
     @FXML public void uploadPhoto() {
-        new Alert(Alert.AlertType.INFORMATION, "Fonctionnalité upload photo à implémenter.", ButtonType.OK).showAndWait();
+        new Alert(Alert.AlertType.INFORMATION, "Fonctionnalité d'upload photo à implémenter.", ButtonType.OK).showAndWait();
     }
 }
 

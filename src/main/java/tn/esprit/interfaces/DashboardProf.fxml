@@ -5,72 +5,141 @@
 <BorderPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="tn.esprit.controllers.DashboardProfController"
             prefWidth="1200" prefHeight="700"
-            style="-fx-background-color: #f4f6fb;">
+            stylesheets="@smartpath.css"
+            styleClass="app-bg">
 
+    <!-- ═══════ SIDEBAR ═══════ -->
     <left>
-        <VBox prefWidth="240" style="-fx-background-color: white; -fx-border-color: #e2e8f4; -fx-border-width: 0 1 0 0;">
-            <VBox alignment="CENTER_LEFT" style="-fx-padding: 18 16 14 16; -fx-border-color: #e2e8f4; -fx-border-width: 0 0 1 0;" spacing="2">
-                <Label text="SmartPath" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
-                <Label text="Espace Professeur" style="-fx-font-size: 11; -fx-text-fill: #8898b8;"/>
+        <VBox prefWidth="248" styleClass="sidebar-modern">
+
+            <!-- Logo -->
+            <VBox alignment="CENTER_LEFT" spacing="3" styleClass="sidebar-logo-zone">
+                <Label text="SmartPath" styleClass="sidebar-logo-title"/>
+                <Label text="Espace Professeur" styleClass="sidebar-logo-subtitle"/>
             </VBox>
 
-            <VBox spacing="4" style="-fx-padding: 14 10 0 10;">
-                <Button fx:id="btnDashboard" text="  Tableau de bord" onAction="#showDashboard" maxWidth="Infinity" style="-fx-background-color: #eff6ff; -fx-text-fill: #2563eb; -fx-font-size: 13; -fx-padding: 10 16; -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;"/>
-                <Button fx:id="btnMatieres" text="  Mes matières" onAction="#showMatieres" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: #5a6a8a; -fx-font-size: 13; -fx-padding: 10 16; -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;"/>
-                <Button fx:id="btnLecons" text="  Mes leçons" onAction="#showLecons" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: #5a6a8a; -fx-font-size: 13; -fx-padding: 10 16; -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;"/>
-                <Button fx:id="btnTests" text="  Tests / Évaluations" onAction="#showTests" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: #5a6a8a; -fx-font-size: 13; -fx-padding: 10 16; -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;"/>
-                <Button fx:id="btnEtudiants" text="  Mes étudiants" onAction="#showEtudiants" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: #5a6a8a; -fx-font-size: 13; -fx-padding: 10 16; -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;"/>
-                <Button fx:id="btnProfil" text="  Mon profil" onAction="#showProfil" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: #5a6a8a; -fx-font-size: 13; -fx-padding: 10 16; -fx-background-radius: 8; -fx-alignment: CENTER_LEFT;"/>
-                <Separator/>
-                <Button fx:id="btnVueEtudiant" text="  👁 Vue Étudiant" onAction="#switchToVueEtudiant" maxWidth="Infinity" style="-fx-background-color: #eff6ff; -fx-text-fill: #2563eb; -fx-font-size: 12; -fx-padding: 9 16; -fx-background-radius: 8; -fx-alignment: CENTER_LEFT; -fx-border-color: #bfdbfe; -fx-border-radius: 8;"/>
+            <!-- Navigation -->
+            <VBox spacing="2" style="-fx-padding: 16 10 0 10;">
+                <Label text="MENU" styleClass="sidebar-section-label"/>
+                <Button fx:id="btnDashboard" text="🏠  Tableau de bord"    onAction="#showDashboard"  maxWidth="Infinity" styleClass="nav-btn-active"/>
+                <Button fx:id="btnMatieres"  text="📖  Mes matières"        onAction="#showMatieres"   maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnLecons"    text="📝  Mes leçons"          onAction="#showLecons"     maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnTests"     text="📋  Tests / Évaluations" onAction="#showTests"      maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnProfil"    text="👤  Mon profil"          onAction="#showProfil"     maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnEtudiants" text="🎓  Mes étudiants"       onAction="#showEtudiants"  maxWidth="Infinity" styleClass="nav-btn"/>
             </VBox>
 
             <Pane VBox.vgrow="ALWAYS"/>
-            <VBox style="-fx-padding: 12; -fx-border-color: #e2e8f4; -fx-border-width: 1 0 0 0;">
-                <HBox spacing="10" alignment="CENTER_LEFT">
-                    <Label text="P" style="-fx-background-color: #f59e0b; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 14; -fx-min-width: 36; -fx-min-height: 36; -fx-background-radius: 18; -fx-alignment: CENTER;"/>
-                    <VBox spacing="2">
-                        <Label fx:id="profNameLabel" text="Professeur" style="-fx-text-fill: #1a2340; -fx-font-size: 13; -fx-font-weight: bold;"/>
-                        <Label fx:id="profSpecLabel" text="" style="-fx-text-fill: #8898b8; -fx-font-size: 11;"/>
+
+            <!-- Vue étudiant -->
+            <VBox style="-fx-padding: 0 10 12 10;">
+                <Button fx:id="btnVueEtudiant" text="👁  Vue Étudiant"
+                        onAction="#switchToVueEtudiant" maxWidth="Infinity" styleClass="chip-btn"/>
+            </VBox>
+
+            <!-- Footer -->
+            <VBox styleClass="sidebar-footer">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="P" styleClass="avatar-prof"/>
+                    <VBox spacing="1">
+                        <Label fx:id="profNameLabel" text="Professeur" styleClass="user-name"/>
+                        <Label fx:id="profSpecLabel" text=""            styleClass="user-role"/>
                     </VBox>
                 </HBox>
-                <Button text="Déconnexion" onAction="#handleLogout" maxWidth="Infinity" style="-fx-background-color: transparent; -fx-text-fill: #ef4444; -fx-font-size: 12; -fx-padding: 8 0 4 0;"/>
+                <Button text="Se déconnecter" onAction="#handleLogout"
+                        maxWidth="Infinity" styleClass="btn-logout"/>
             </VBox>
         </VBox>
     </left>
 
+    <!-- ═══════ CENTRE ═══════ -->
     <center>
-        <VBox style="-fx-background-color: #f4f6fb;">
-            <HBox alignment="CENTER_LEFT" style="-fx-padding: 18 28; -fx-border-color: #e2e8f4; -fx-border-width: 0 0 1 0; -fx-background-color: white;">
-                <Label fx:id="pageTitle" text="Tableau de bord" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+        <VBox styleClass="app-content">
+
+            <!-- Topbar -->
+            <HBox alignment="CENTER_LEFT" styleClass="topbar-modern">
+                <Label fx:id="pageTitle" text="Tableau de bord" styleClass="topbar-title"/>
                 <Pane HBox.hgrow="ALWAYS"/>
-                <Button text="+ Nouvelle leçon" onAction="#addLecon" style="-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-size: 12; -fx-padding: 8 18; -fx-background-radius: 8;"/>
+                <Button text="+ Nouvelle leçon" onAction="#addLecon" styleClass="btn-primary"/>
             </HBox>
 
-            <VBox alignment="CENTER" VBox.vgrow="ALWAYS" spacing="10" style="-fx-padding: 24 28;">
-                <VBox alignment="CENTER" spacing="10" style="-fx-background-color: white; -fx-background-radius: 14; -fx-border-color: #e2e8f4; -fx-border-radius: 14; -fx-padding: 40;">
-                    <Label text="À faire" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #2563eb;"/>
-                    <Label text="Dashboard Professeur en préparation" style="-fx-font-size: 14; -fx-text-fill: #5a6a8a;"/>
-                </VBox>
+            <!-- Zone de contenu -->
+            <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS" style="-fx-padding: 24 28;">
+                <VBox fx:id="dashboardView" spacing="22">
 
-                <VBox visible="false" managed="false">
-                    <Label fx:id="nbMatieres" text="0"/>
-                    <Label fx:id="nbLecons" text="0"/>
-                    <Label fx:id="nbTests" text="0"/>
-                    <Label fx:id="nbEtudiants" text="0"/>
-                    <TableView fx:id="leconsTable">
-                        <columns>
-                            <TableColumn fx:id="colTitre"/>
-                            <TableColumn fx:id="colMatiere"/>
-                            <TableColumn fx:id="colDuree"/>
-                            <TableColumn fx:id="colDate"/>
-                            <TableColumn fx:id="colActionsLecon"/>
-                        </columns>
-                    </TableView>
+                    <!-- Titre -->
+                    <VBox spacing="3">
+                        <Label text="Tableau de bord"
+                               style="-fx-font-size: 17; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                        <Label text="Bienvenue dans votre espace enseignant"
+                               style="-fx-font-size: 12; -fx-text-fill: #8898b8;"/>
+                    </VBox>
+
+                    <!-- Cartes stats -->
+                    <HBox spacing="16">
+                        <VBox HBox.hgrow="ALWAYS" spacing="12" styleClass="stat-card">
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="📖" style="-fx-font-size: 20;"/>
+                                <Label text="Matières" styleClass="stat-label"/>
+                            </HBox>
+                            <Label fx:id="nbMatieres" text="0" styleClass="stat-number"/>
+                            <Label text="Enseignées" styleClass="muted-label"/>
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS" spacing="12" styleClass="stat-card">
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="📝" style="-fx-font-size: 20;"/>
+                                <Label text="Leçons" styleClass="stat-label"/>
+                            </HBox>
+                            <Label fx:id="nbLecons" text="0" styleClass="stat-number-green"/>
+                            <Label text="Publiées" styleClass="muted-label"/>
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS" spacing="12" styleClass="stat-card">
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="📋" style="-fx-font-size: 20;"/>
+                                <Label text="Tests" styleClass="stat-label"/>
+                            </HBox>
+                            <Label fx:id="nbTests" text="0" styleClass="stat-number-purple"/>
+                            <Label text="Créés" styleClass="muted-label"/>
+                        </VBox>
+                        <VBox HBox.hgrow="ALWAYS" spacing="12" styleClass="stat-card">
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="🎓" style="-fx-font-size: 20;"/>
+                                <Label text="Étudiants" styleClass="stat-label"/>
+                            </HBox>
+                            <Label fx:id="nbEtudiants" text="0" styleClass="stat-number-amber"/>
+                            <Label text="Suivis" styleClass="muted-label"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Actions rapides -->
+                    <VBox spacing="14" styleClass="section-card">
+                        <VBox spacing="3">
+                            <Label text="Actions rapides" styleClass="card-title"/>
+                            <Label text="Accédez rapidement à vos outils d'enseignement"
+                                   styleClass="card-subtitle"/>
+                        </VBox>
+                        <HBox spacing="12">
+                            <Button text="📝  Nouvelle leçon"   onAction="#addLecon"      styleClass="chip-btn"/>
+                            <Button text="📖  Mes matières"     onAction="#showMatieres"  styleClass="chip-btn-success"/>
+                            <Button text="🎓  Mes étudiants"    onAction="#showEtudiants" styleClass="chip-btn-warn"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Champs cachés -->
+                    <VBox visible="false" managed="false">
+                        <TableView fx:id="leconsTable">
+                            <columns>
+                                <TableColumn fx:id="colTitre"/>
+                                <TableColumn fx:id="colMatiere"/>
+                                <TableColumn fx:id="colDuree"/>
+                                <TableColumn fx:id="colDate"/>
+                                <TableColumn fx:id="colActionsLecon"/>
+                            </columns>
+                        </TableView>
+                    </VBox>
                 </VBox>
-            </VBox>
+            </StackPane>
         </VBox>
     </center>
 
 </BorderPane>
-

@@ -58,13 +58,13 @@ public class ReleveController {
 
     @FXML public void goBack() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("/views/DashboardEtudiant.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("/tn/esprit/interfaces/DashboardEtudiant.fxml"));
             if (notesTable != null) notesTable.getScene().setRoot(root);
             else if (moyenneGenerale != null) moyenneGenerale.getScene().setRoot(root);
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    // ── Inner class pour les lignes du tableau ──────────────────────
+    // Inner class pour les lignes du tableau
     public static class NoteRow {
         private final String matiere;
         private final String note;

@@ -1,7 +1,6 @@
 package models;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 public class User {
     private int id;
@@ -12,11 +11,16 @@ public class User {
     private String cin;
     private String telephone;
     private String adresse;
-    private LocalDate dateNaissance;
+    private Date dateNaissance;
     private String photo;
     private String roles;
-    private LocalDateTime createdAt;
+    private Date createdAt;
     private String type;
+
+    public User() {
+        this.createdAt = new Date();
+        this.type = "etudiant";
+    }
 
     public int getId() {
         return id;
@@ -90,11 +94,11 @@ public class User {
         this.adresse = adresse;
     }
 
-    public LocalDate getDateNaissance() {
+    public Date getDateNaissance() {
         return dateNaissance;
     }
 
-    public void setDateNaissance(LocalDate dateNaissance) {
+    public void setDateNaissance(Date dateNaissance) {
         this.dateNaissance = dateNaissance;
     }
 
@@ -114,11 +118,11 @@ public class User {
         this.roles = roles;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Date getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
     }
 
