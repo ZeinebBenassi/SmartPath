@@ -22,7 +22,9 @@ public class QuizController {
     @FXML private VBox questionView;
     @FXML private VBox resultView;
 
+    @SuppressWarnings("unused")
     private int currentIndex = 0;
+    @SuppressWarnings("unused")
     private int[] scores;
 
     @FXML

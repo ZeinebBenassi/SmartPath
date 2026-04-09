@@ -24,8 +24,8 @@
                 <Button fx:id="btnDashboard" text="🏠  Tableau de bord"    onAction="#showDashboard"  maxWidth="Infinity" styleClass="nav-btn-active"/>
                 <Button fx:id="btnMatieres"  text="📖  Mes matières"        onAction="#showMatieres"   maxWidth="Infinity" styleClass="nav-btn"/>
                 <Button fx:id="btnLecons"    text="📝  Mes leçons"          onAction="#showLecons"     maxWidth="Infinity" styleClass="nav-btn"/>
-                <Button fx:id="btnTests"     text="📋  Tests / Évaluations" onAction="#showTests"      maxWidth="Infinity" styleClass="nav-btn"/>
-                <Button fx:id="btnProfil"    text="👤  Mon profil"          onAction="#showProfil"     maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnTests"     text="Tests / Evaluations" onAction="#showTests"      maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnProfil"    text="Mon profil"          onAction="#showProfil"     maxWidth="Infinity" styleClass="nav-btn"/>
                 <Button fx:id="btnEtudiants" text="🎓  Mes étudiants"       onAction="#showEtudiants"  maxWidth="Infinity" styleClass="nav-btn"/>
             </VBox>
 
@@ -95,7 +95,7 @@
                         </VBox>
                         <VBox HBox.hgrow="ALWAYS" spacing="12" styleClass="stat-card">
                             <HBox alignment="CENTER_LEFT" spacing="10">
-                                <Label text="📋" style="-fx-font-size: 20;"/>
+                                <Label text="" style="-fx-font-size: 20;"/>
                                 <Label text="Tests" styleClass="stat-label"/>
                             </HBox>
                             <Label fx:id="nbTests" text="0" styleClass="stat-number-purple"/>

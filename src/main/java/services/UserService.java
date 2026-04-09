@@ -1,8 +1,9 @@
 package services;
 
-import models.Etudiant;
-import models.Prof;
-import models.User;
+import tn.esprit.entity.Admin;
+import tn.esprit.entity.Etudiant;
+import tn.esprit.entity.Prof;
+import tn.esprit.entity.User;
 import tn.esprit.utils.MyDatabase;
 
 import java.sql.Connection;
@@ -35,7 +36,8 @@ public class UserService {
                 "   WHEN EXISTS (SELECT 1 FROM etudiant e WHERE e.id = u.id) THEN 'etudiant'" +
                 "   WHEN EXISTS (SELECT 1 FROM prof p WHERE p.id = u.id) THEN 'prof'" +
                 "   ELSE 'admin'" +
-                " END AS user_type" +
+                " END AS user_type," +
+                " COALESCE(u.status, 'actif') AS status" +
                 " FROM `user` u WHERE u.email=?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -99,7 +101,8 @@ public class UserService {
                 "   WHEN EXISTS (SELECT 1 FROM etudiant e WHERE e.id = u.id) THEN 'etudiant'" +
                 "   WHEN EXISTS (SELECT 1 FROM prof p WHERE p.id = u.id) THEN 'prof'" +
                 "   ELSE 'admin'" +
-                " END AS user_type" +
+                " END AS user_type," +
+                " COALESCE(u.status, 'actif') AS status" +
                 " FROM `user` u ORDER BY u.id DESC";
 
         try (PreparedStatement ps = connection.prepareStatement(sql);
@@ -298,6 +301,64 @@ public class UserService {
         }
     }
 
+    public boolean registerAdmin(Admin a) {
+        String insertUser = "INSERT INTO `user` (nom, prenom, email, password, CIN, telephone, adresse, date_naissance, photo, roles, type, created_at, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try {
+            if (connection == null) {
+                System.err.println("Erreur registerAdmin: Connexion à la base de données est NULL");
+                return false;
+            }
+            
+            System.out.println("Début inscription admin: " + a.getEmail());
+            connection.setAutoCommit(false);
+
+            try (PreparedStatement ps = connection.prepareStatement(insertUser, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, a.getNom());
+                ps.setString(2, a.getPrenom());
+                ps.setString(3, a.getEmail());
+                ps.setString(4, a.getPassword());
+                ps.setString(5, a.getCin());
+                ps.setString(6, a.getTelephone());
+                ps.setString(7, a.getAdresse());
+                ps.setTimestamp(8, null);
+                ps.setString(9, null);
+                ps.setString(10, "[\"ROLE_ADMIN\"]");
+                ps.setString(11, "admin");  // ← type
+                ps.setTimestamp(12, new Timestamp(System.currentTimeMillis()));
+                ps.setString(13, a.getStatus() != null ? a.getStatus() : "actif");
+                int rows = ps.executeUpdate();
+                System.out.println("  ✓ Admin inséré (" + rows + " lignes)");
+
+                try (ResultSet keys = ps.getGeneratedKeys()) {
+                    if (!keys.next()) {
+                        connection.rollback();
+                        connection.setAutoCommit(true);
+                        System.err.println("✗ Erreur: ID généré non récupéré");
+                        return false;
+                    }
+                    int userId = keys.getInt(1);
+                    System.out.println("  ✓ ID généré: " + userId);
+                }
+            }
+
+            connection.commit();
+            connection.setAutoCommit(true);
+            System.out.println("✅ Inscription réussie pour: " + a.getEmail());
+            return true;
+        } catch (Exception ex) {
+            try {
+                connection.rollback();
+                connection.setAutoCommit(true);
+            } catch (Exception ignored) {
+            }
+            System.err.println("Erreur registerAdmin: " + ex.getMessage());
+            System.err.println("  Détail: " + ex.getClass().getSimpleName());
+            ex.printStackTrace();
+            return false;
+        }
+    }
+
     public String generateResetToken(String email) {
         if (!emailExists(email)) {
             return null;
@@ -337,7 +398,8 @@ public class UserService {
                 "   WHEN EXISTS (SELECT 1 FROM etudiant e WHERE e.id = u.id) THEN 'etudiant'" +
                 "   WHEN EXISTS (SELECT 1 FROM prof p WHERE p.id = u.id) THEN 'prof'" +
                 "   ELSE 'admin'" +
-                " END AS user_type" +
+                " END AS user_type," +
+                " COALESCE(u.status, 'actif') AS status" +
                 " FROM `user` u WHERE u.id=?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -357,7 +419,7 @@ public class UserService {
      * Crée un nouvel utilisateur simple (admin).
      */
     public int create(User user) {
-        String sql = "INSERT INTO `user` (nom, prenom, email, password, CIN, telephone, adresse, date_naissance, photo, roles, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO `user` (nom, prenom, email, password, CIN, telephone, adresse, date_naissance, photo, roles, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, user.getNom());
@@ -370,7 +432,8 @@ public class UserService {
             ps.setDate(8, user.getDateNaissance() != null ? new java.sql.Date(user.getDateNaissance().getTime()) : null);
             ps.setString(9, user.getPhoto());
             ps.setString(10, user.getRoles() != null ? user.getRoles() : "[\"ROLE_ADMIN\"]");
-            ps.setTimestamp(11, new Timestamp(System.currentTimeMillis()));
+            ps.setString(11, "actif"); // Statut par défaut
+            ps.setTimestamp(12, new Timestamp(System.currentTimeMillis()));
             
             int affectedRows = ps.executeUpdate();
             if (affectedRows > 0) {
@@ -423,7 +486,8 @@ public class UserService {
                 "   WHEN EXISTS (SELECT 1 FROM etudiant e WHERE e.id = u.id) THEN 'etudiant'" +
                 "   WHEN EXISTS (SELECT 1 FROM prof p WHERE p.id = u.id) THEN 'prof'" +
                 "   ELSE 'admin'" +
-                " END AS user_type" +
+                " END AS user_type," +
+                " COALESCE(u.status, 'actif') AS status" +
                 " FROM `user` u WHERE nom LIKE ? OR prenom LIKE ? OR email LIKE ? ORDER BY u.id DESC";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
@@ -453,7 +517,8 @@ public class UserService {
                 "   WHEN EXISTS (SELECT 1 FROM etudiant e WHERE e.id = u.id) THEN 'etudiant'" +
                 "   WHEN EXISTS (SELECT 1 FROM prof p WHERE p.id = u.id) THEN 'prof'" +
                 "   ELSE 'admin'" +
-                " END AS user_type" +
+                " END AS user_type," +
+                " COALESCE(u.status, 'actif') AS status" +
                 " FROM `user` u WHERE " +
                 " CASE" +
                 "   WHEN 'etudiant' = ? THEN EXISTS (SELECT 1 FROM etudiant e WHERE e.id = u.id)" +
@@ -491,6 +556,33 @@ public class UserService {
         return 0;
     }
 
+    /**
+     * Met à jour le statut d'un utilisateur (actif ou ban)
+     */
+    public boolean updateStatus(int userId, String status) {
+        // D'abord, essayer d'ajouter la colonne si elle n'existe pas
+        try {
+            String alterTableSql = "ALTER TABLE `user` ADD COLUMN `status` VARCHAR(20) DEFAULT 'actif'";
+            try (PreparedStatement altPs = connection.prepareStatement(alterTableSql)) {
+                altPs.executeUpdate();
+                System.out.println("✓ Colonne 'status' créée");
+            }
+        } catch (Exception ignored) {
+            // Colonne existe déjà, pas d'erreur
+        }
+
+        String sql = "UPDATE `user` SET status = ? WHERE id = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, userId);
+            int rowsAffected = ps.executeUpdate();
+            return rowsAffected > 0;
+        } catch (Exception e) {
+            System.out.println("Erreur updateStatus: " + e.getMessage());
+            return false;
+        }
+    }
+
     private User mapUser(ResultSet rs) throws Exception {
         User u = new User();
         u.setId(rs.getInt("id"));
@@ -504,6 +596,13 @@ public class UserService {
         u.setDateNaissance(rs.getDate("date_naissance"));
         u.setPhoto(rs.getString("photo"));
         u.setRoles(rs.getString("roles"));
+        // Récupérer le statut avec gestion du cas NULL
+        try {
+            String status = rs.getString("status");
+            u.setStatus(status != null ? status : "actif");
+        } catch (Exception e) {
+            u.setStatus("actif"); // Valeur par défaut si la colonne n'existe pas
+        }
         Timestamp created = rs.getTimestamp("created_at");
         u.setCreatedAt(created == null ? new Date() : new Date(created.getTime()));
 

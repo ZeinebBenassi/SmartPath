@@ -5,7 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 import javafx.scene.control.*;
-import models.User;
+import tn.esprit.entity.User;
 
 public class StagesController {
 
@@ -20,7 +20,9 @@ public class StagesController {
     @FXML private Label offreCompetences;
     @FXML private Button btnPostuler;
 
+    @SuppressWarnings("unused")
     private static User currentUser;
+
     public static void setCurrentUser(User u) { currentUser = u; }
 
     @FXML
@@ -36,20 +38,6 @@ public class StagesController {
         }
 
         clearOffreDetails();
-    }
-
-    private void displayOffre(String titre) {
-        String[] parts = titre.split(" - ");
-        if (offreTitre      != null) offreTitre.setText(parts[0]);
-        if (offreEntreprise != null) offreEntreprise.setText(parts.length > 1 ? parts[1] : "");
-        if (offreDuree      != null) offreDuree.setText("6 mois");
-        if (offreType       != null) offreType.setText("Stage PFE");
-        if (offreDescription!= null) offreDescription.setText(
-            "Nous recherchons un(e) stagiaire motivé(e) pour rejoindre notre équipe. " +
-            "Vous participerez au développement de nouvelles fonctionnalités et à l'amélioration " +
-            "de nos systèmes existants dans un environnement agile et dynamique.");
-        if (offreCompetences!= null) offreCompetences.setText("Java, Spring Boot, SQL, Git, Agile");
-        if (btnPostuler     != null) btnPostuler.setVisible(true);
     }
 
     private void clearOffreDetails() {

@@ -31,22 +31,13 @@ public class QuizAdminController {
 
     private static final String[] PROFILS = {"Technologique", "Créatif", "Management", "Humain"};
 
-    private static final String[] SAMPLE_QUESTIONS = {
-        "1. Quel type d'activités vous attire le plus ?",
-        "2. Vous préférez travailler :",
-        "3. Dans un projet, vous prenez le rôle de :",
-        "4. Quelle matière préférez-vous ?",
-        "5. Votre environnement de travail idéal ?",
-        "6. Qu'est-ce qui vous motive le plus ?",
-        "7. Votre rapport aux nouvelles technologies ?",
-        "8. Comment gérez-vous un problème complexe ?",
-        "9. Votre style de communication préféré ?",
-        "10. Votre objectif professionnel principal ?"
-    };
+
 
     @FXML
     public void initialize() {
-        for (ComboBox<String> cb : new ComboBox[]{profil1Combo, profil2Combo, profil3Combo, profil4Combo}) {
+        @SuppressWarnings("unchecked")
+        ComboBox<String>[] combos = new ComboBox[]{profil1Combo, profil2Combo, profil3Combo, profil4Combo};
+        for (ComboBox<String> cb : combos) {
             if (cb != null) {
                 cb.setItems(FXCollections.observableArrayList(PROFILS));
             }
@@ -63,25 +54,6 @@ public class QuizAdminController {
         updateCounters();
     }
 
-    private void loadQuestion(String selected) {
-        int idx = questionsList.getSelectionModel().getSelectedIndex();
-        if (editorTitle != null) editorTitle.setText("Modifier : Question " + (idx + 1));
-        if (ordreField  != null) ordreField.setText(String.valueOf(idx + 1));
-
-        // Simulation chargement données
-        if (questionTextArea != null)
-            questionTextArea.setText(selected.substring(selected.indexOf(". ") + 2));
-        if (categorieCombo   != null) categorieCombo.getSelectionModel().select(idx % 4);
-        if (rep1Field  != null) rep1Field.setText("Analyser des données et résoudre des problèmes logiques");
-        if (rep2Field  != null) rep2Field.setText("Créer des designs et interfaces visuelles");
-        if (rep3Field  != null) rep3Field.setText("Gérer des équipes et des projets");
-        if (rep4Field  != null) rep4Field.setText("Comprendre et aider les gens");
-        if (profil1Combo != null) profil1Combo.getSelectionModel().select(0);
-        if (profil2Combo != null) profil2Combo.getSelectionModel().select(1);
-        if (profil3Combo != null) profil3Combo.getSelectionModel().select(2);
-        if (profil4Combo != null) profil4Combo.getSelectionModel().select(3);
-        if (saveStatus != null) saveStatus.setText("");
-    }
 
     @FXML public void addQuestion() {
         int newIdx = questionsList != null ? questionsList.getItems().size() + 1 : 1;

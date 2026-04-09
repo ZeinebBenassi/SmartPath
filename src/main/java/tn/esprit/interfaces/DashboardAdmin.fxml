@@ -21,19 +21,19 @@
             <!-- Navigation principale -->
             <VBox spacing="2" style="-fx-padding: 16 10 0 10;">
                 <Label text="MENU" styleClass="sidebar-section-label"/>
-                <Button fx:id="btnDashboard" text="🏠  Dashboard"        onAction="#showDashboard"   maxWidth="Infinity" styleClass="nav-btn-active"/>
-                <Button fx:id="btnUsers"     text="👥  Utilisateurs"      onAction="#showUsers"       maxWidth="Infinity" styleClass="nav-btn"/>
-                <Button fx:id="btnFilieres"  text="📚  Filières"          onAction="#showFilieres"    maxWidth="Infinity" styleClass="nav-btn"/>
-                <Button fx:id="btnOffres"    text="💼  Offres de stage"   onAction="#showOffres"      maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnDashboard" text="Dashboard"        onAction="#showDashboard"   maxWidth="Infinity" styleClass="nav-btn-active"/>
+                <Button fx:id="btnUsers"     text="Utilisateurs"      onAction="#showUsers"       maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnFilieres"  text="Filieres"          onAction="#showFilieres"    maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnOffres"    text="Offres de stage"   onAction="#showOffres"      maxWidth="Infinity" styleClass="nav-btn"/>
                 <Button                      text="🧠  Quiz personnalité" onAction="#showQuizAdmin"   maxWidth="Infinity" styleClass="nav-btn"/>
-                <Button fx:id="btnProfil"    text="👤  Mon profil"        onAction="#showProfil"      maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnProfil"    text="Mon profil"        onAction="#showProfil"      maxWidth="Infinity" styleClass="nav-btn"/>
             </VBox>
 
             <Pane VBox.vgrow="ALWAYS"/>
 
             <!-- Bouton vue étudiant -->
             <VBox style="-fx-padding: 0 10 12 10;">
-                <Button fx:id="btnVueEtudiant" text="👁  Vue Étudiant"
+                <Button fx:id="btnVueEtudiant" text="Vue Etudiant"
                         onAction="#switchToVueEtudiant" maxWidth="Infinity" styleClass="chip-btn"/>
             </VBox>
 
@@ -79,7 +79,7 @@
                     <HBox spacing="16">
                         <VBox HBox.hgrow="ALWAYS" spacing="12" styleClass="stat-card">
                             <HBox alignment="CENTER_LEFT" spacing="10">
-                                <Label text="👥" style="-fx-font-size: 20;"/>
+                                <Label text="" style="-fx-font-size: 20;"/>
                                 <Label text="Utilisateurs" styleClass="stat-label"/>
                             </HBox>
                             <Label fx:id="totalUsers" text="—" styleClass="stat-number"/>
@@ -87,7 +87,7 @@
                         </VBox>
                         <VBox HBox.hgrow="ALWAYS" spacing="12" styleClass="stat-card">
                             <HBox alignment="CENTER_LEFT" spacing="10">
-                                <Label text="🎓" style="-fx-font-size: 20;"/>
+                                <Label text="" style="-fx-font-size: 20;"/>
                                 <Label text="Étudiants" styleClass="stat-label"/>
                             </HBox>
                             <Label fx:id="totalEtudiants" text="—" styleClass="stat-number-green"/>
@@ -119,7 +119,7 @@
                                    styleClass="card-subtitle"/>
                         </VBox>
                         <HBox spacing="12">
-                            <Button text="➕  Ajouter un utilisateur" onAction="#showUsers"     styleClass="chip-btn"/>
+                            <Button text="Ajouter un utilisateur" onAction="#showUsers"     styleClass="chip-btn"/>
                             <Button text="📚  Gérer les filières"     onAction="#showFilieres"  styleClass="chip-btn-success"/>
                             <Button text="💼  Voir les offres"        onAction="#showOffres"    styleClass="chip-btn-warn"/>
                         </HBox>

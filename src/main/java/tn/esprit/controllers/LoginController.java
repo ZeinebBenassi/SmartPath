@@ -4,7 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import models.User;
+import tn.esprit.entity.User;
 import services.UserService;
 
 public class LoginController {
@@ -28,6 +28,14 @@ public class LoginController {
         User user = userService.login(email, password);
 
         if (user != null) {
+            // Vérifier si l'utilisateur est banni
+            if ("ban".equalsIgnoreCase(user.getStatus())) {
+                showError("Accès refusé - Compte banni\n\nVotre compte a été désactivé par un administrateur.\nVeuillez contacter le support.");
+                errorLabel.setStyle("-fx-text-fill: #e94560; -fx-font-size: 12;");
+                errorLabel.setText("❌ Accès refusé: Votre compte est banni");
+                return;
+            }
+
             errorLabel.setStyle("-fx-text-fill: #00c896; -fx-font-size: 12;");
             errorLabel.setText("Bienvenue " + user.getNom() + " ! (" + user.getType() + ")");
 

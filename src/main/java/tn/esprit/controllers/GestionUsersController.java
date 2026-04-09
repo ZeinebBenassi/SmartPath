@@ -7,9 +7,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import models.User;
+import tn.esprit.entity.User;
 import services.UserService;
 
 import java.text.SimpleDateFormat;
@@ -61,10 +63,17 @@ public class GestionUsersController {
                     super.updateItem(item, empty);
                     if (empty || getTableView().getItems().isEmpty()) {
                         setText(null);
+                        setStyle("");
                     } else {
                         User user = getTableView().getItems().get(getIndex());
-                        String type = user.getType();
-                        setText(type != null ? type.substring(0, 1).toUpperCase() + type.substring(1) : "N/A");
+                        String status = user.getStatus();
+                        if ("ban".equalsIgnoreCase(status)) {
+                            setText("Banni");
+                        } else {
+                            setText("Actif");
+                        }
+                        // Statut = texte simple (pas de bouton/badge)
+                        setStyle("");
                     }
                 }
             });
@@ -112,14 +121,13 @@ public class GestionUsersController {
      * Ajoute le tri aux colonnes cliquables.
      */
     private void setupColumnSorting() {
-        if (colId != null) colId.setSortable(true);
         if (colNom != null) colNom.setSortable(true);
         if (colPrenom != null) colPrenom.setSortable(true);
         if (colEmail != null) colEmail.setSortable(true);
         if (colRole != null) colRole.setSortable(true);
 
         if (usersTable != null) {
-            usersTable.getSortOrder().add(colId != null ? colId : colNom);
+            usersTable.getSortOrder().add(colNom);
         }
     }
 
@@ -129,26 +137,123 @@ public class GestionUsersController {
     private void setupActionButtons() {
         if (colActions != null) {
             colActions.setCellFactory(col -> new TableCell<User, Void>() {
-                private final Button btnEdit = new Button("✎ Modifier");
-                private final Button btnDel = new Button("✕ Supprimer");
-                private final HBox hBox = new HBox(6, btnEdit, btnDel);
+                private final Button btnEdit = createIconButton();
+                private final Button btnDel = createIconButton();
+                private final Button btnBan = createIconButton();
+                private final HBox hBox = new HBox(4, btnEdit, btnBan, btnDel);
+
+                private Button createIconButton() {
+                    Button btn = new Button();
+                    btn.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-cursor: hand; -fx-padding: 5;");
+                    btn.setPrefWidth(32);
+                    btn.setPrefHeight(32);
+                    btn.setMinWidth(32);
+                    btn.setMinHeight(32);
+                    btn.setMaxWidth(32);
+                    btn.setMaxHeight(32);
+                    return btn;
+                }
 
                 {
-                    btnEdit.setStyle("-fx-background-color: #4a90e2; -fx-text-fill: white; -fx-font-size: 11; -fx-background-radius: 6; -fx-cursor: hand; -fx-padding: 4 8;");
-                    btnDel.setStyle("-fx-background-color: #e94560; -fx-text-fill: white; -fx-font-size: 11; -fx-background-radius: 6; -fx-cursor: hand; -fx-padding: 4 8;");
+                    // Setup Edit button with modifier.png
+                    try {
+                        Image editImg = new Image(getClass().getResourceAsStream("/images/modifier.png"));
+                        ImageView editView = new ImageView(editImg);
+                        editView.setFitHeight(16);
+                        editView.setFitWidth(16);
+                        btnEdit.setGraphic(editView);
+                        btnEdit.setTooltip(new Tooltip("Modifier"));
+                    } catch (Exception e) {
+                        btnEdit.setText("M");
+                    }
+
+                    // Setup Delete button
+                    btnDel.setText("X");
+                    btnDel.setTooltip(new Tooltip("Supprimer"));
 
                     btnEdit.setOnAction(e -> handleEdit(getTableRow().getItem()));
+                    btnBan.setOnAction(e -> handleToggleBan(getTableRow().getItem()));
                     btnDel.setOnAction(e -> handleDelete(getTableRow().getItem()));
 
-                    hBox.setStyle("-fx-alignment: CENTER;");
+                    hBox.setStyle("-fx-alignment: CENTER; -fx-spacing: 4;");
                 }
 
                 @Override
                 protected void updateItem(Void item, boolean empty) {
                     super.updateItem(item, empty);
-                    setGraphic(empty ? null : hBox);
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        User user = getTableRow().getItem();
+                        if (user != null) {
+                            // Mettre a jour le bouton Ban/Debann dynamiquement
+                            String status = user.getStatus();
+                            if ("ban".equalsIgnoreCase(status)) {
+                                try {
+                                    Image unbanImg = new Image(getClass().getResourceAsStream("/images/block.png"));
+                                    ImageView unbanView = new ImageView(unbanImg);
+                                    unbanView.setFitHeight(16);
+                                    unbanView.setFitWidth(16);
+                                    btnBan.setGraphic(unbanView);
+                                } catch (Exception e) {
+                                    btnBan.setText("U");
+                                }
+                                btnBan.setTooltip(new Tooltip("Reactiver ce compte"));
+                            } else {
+                                try {
+                                    Image banImg = new Image(getClass().getResourceAsStream("/images/block.png"));
+                                    ImageView banView = new ImageView(banImg);
+                                    banView.setFitHeight(16);
+                                    banView.setFitWidth(16);
+                                    btnBan.setGraphic(banView);
+                                } catch (Exception e) {
+                                    btnBan.setText("B");
+                                }
+                                btnBan.setTooltip(new Tooltip("Bannir ce compte"));
+                            }
+                        }
+                        setGraphic(hBox);
+                    }
                 }
             });
+        }
+    }
+
+    /**
+     * Gère le ban/débannissement d'un utilisateur.
+     */
+    private void handleToggleBan(User user) {
+        if (user == null) return;
+
+        String newStatus = "ban".equalsIgnoreCase(user.getStatus()) ? "actif" : "ban";
+        boolean isBanning = newStatus.equals("ban");
+        
+        Alert confirm = new Alert(Alert.AlertType.WARNING);
+        confirm.setTitle(isBanning ? "Bannir l'Utilisateur ?" : "Reactivation du Compte");
+        confirm.setHeaderText(isBanning ? "Cette action bannira le compte" : "Cette action reactivera le compte");
+        confirm.setContentText((isBanning ? 
+            "Etes-vous sur de vouloir bannir cet utilisateur ?\n\n" +
+            user.getNom() + " " + user.getPrenom() + "\n" +
+            user.getEmail() : 
+            "Etes-vous sur de vouloir reactivier cet utilisateur ?\n\n" +
+            user.getNom() + " " + user.getPrenom() + "\n" +
+            user.getEmail()));
+
+        Optional<ButtonType> result = confirm.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            try {
+                if (userService.updateStatus(user.getId(), newStatus)) {
+                    showSuccess(isBanning ? "Compte Banni" : "Compte Reactivé", 
+                        (isBanning ? "L'utilisateur " + user.getNom() + " a ete banni." :
+                        "L'utilisateur " + user.getNom() + " a ete reactivé."));
+                    loadUsers();
+                    usersTable.refresh();
+                } else {
+                    showError("Erreur", "Impossible de mettre a jour le statut");
+                }
+            } catch (Exception e) {
+                showError("Erreur", "Erreur lors de la mise a jour: " + e.getMessage());
+            }
         }
     }
 
@@ -243,16 +348,19 @@ public class GestionUsersController {
     private void handleDelete(User user) {
         if (user == null) return;
 
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
-        confirm.setTitle("Confirmation");
+        Alert confirm = new Alert(Alert.AlertType.WARNING);
+        confirm.setTitle("Confirmation de Suppression");
         confirm.setHeaderText("Supprimer l'utilisateur ?");
-        confirm.setContentText("Êtes-vous sûr de vouloir supprimer " + user.getNom() + " " + user.getPrenom() + " (" + user.getEmail() + ") ?");
+        confirm.setContentText("Etes-vous sur de vouloir supprimer de maniere permanente :\n\n" +
+                               user.getNom() + " " + user.getPrenom() + "\n" +
+                               user.getEmail());
+        confirm.getDialogPane().setStyle("-fx-padding: 20;");
 
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                 userService.delete(user.getId());
-                showInfo("Succès", "Utilisateur supprimé avec succès");
+                showSuccess("Succes", "Utilisateur supprime avec succes !");
                 loadUsers();
             } catch (Exception e) {
                 showError("Erreur", "Impossible de supprimer l'utilisateur : " + e.getMessage());
@@ -264,44 +372,42 @@ public class GestionUsersController {
      * Affiche la boîte de dialogue pour créer/modifier un utilisateur.
      */
     private void showUserDialog(User userToEdit) {
-        // Créer la boîte de dialogue
         Dialog<User> dialog = new Dialog<>();
-        dialog.setTitle(userToEdit == null ? "Ajouter un utilisateur" : "Modifier l'utilisateur");
-        dialog.setHeaderText(userToEdit == null ? "Créer un nouvel utilisateur" : "Modifier les informations");
+        boolean isNew = (userToEdit == null);
+        dialog.setTitle(isNew ? "Ajouter un utilisateur" : "Modifier l'utilisateur");
+        dialog.setHeaderText(isNew ? "Créer un nouveau compte utilisateur" : "Modifier les informations de l'utilisateur");
 
-        // Créer les contrôles
         GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setStyle("-fx-padding: 10;");
+        grid.setHgap(15);
+        grid.setVgap(12);
+        grid.setStyle("-fx-padding: 20;");
 
-        TextField tfNom = new TextField();
-        tfNom.setPromptText("Nom");
-        tfNom.setPrefWidth(300);
-
-        TextField tfPrenom = new TextField();
-        tfPrenom.setPromptText("Prénom");
-
-        TextField tfEmail = new TextField();
-        tfEmail.setPromptText("Email");
-
+        // Champs avec meilleur style
+        TextField tfNom = createStyledTextField("Nom complet");
+        TextField tfPrenom = createStyledTextField("Prénom");
+        TextField tfEmail = createStyledTextField("Adresse email");
         PasswordField pfPassword = new PasswordField();
-        pfPassword.setPromptText("Mot de passe (min 6 caractères)");
-
-        TextField tfCIN = new TextField();
-        tfCIN.setPromptText("CIN");
-
-        TextField tfTelephone = new TextField();
-        tfTelephone.setPromptText("Téléphone");
-
-        TextField tfAdresse = new TextField();
-        tfAdresse.setPromptText("Adresse");
+        pfPassword.setStyle("-fx-font-size: 12; -fx-padding: 10; -fx-border-color: #e2e8f4; -fx-border-radius: 6;");
+        pfPassword.setPromptText("Mot de passe");
+        
+        TextField tfCIN = createStyledTextField("Numéro CIN");
+        TextField tfTelephone = createStyledTextField("Téléphone");
+        TextField tfAdresse = createStyledTextField("Adresse");
 
         ComboBox<String> cbType = new ComboBox<>();
         cbType.setItems(FXCollections.observableArrayList("admin", "prof", "etudiant"));
-        cbType.setPromptText("Type");
+        cbType.setStyle("-fx-font-size: 12; -fx-padding: 10; -fx-border-color: #e2e8f4; -fx-border-radius: 6;");
 
-        // Si modification, pré-remplir les champs
+        // Labels stylisés
+        Label lblNom = createStyledLabel("Nom:");
+        Label lblPrenom = createStyledLabel("Prénom:");
+        Label lblEmail = createStyledLabel("Email:");
+        Label lblPassword = createStyledLabel("Mot de passe:");
+        Label lblCIN = createStyledLabel("CIN:");
+        Label lblTelephone = createStyledLabel("Téléphone:");
+        Label lblAdresse = createStyledLabel("Adresse:");
+        Label lblType = createStyledLabel("Type:");
+
         if (userToEdit != null) {
             tfNom.setText(userToEdit.getNom());
             tfPrenom.setText(userToEdit.getPrenom());
@@ -310,28 +416,24 @@ public class GestionUsersController {
             tfTelephone.setText(userToEdit.getTelephone() != null ? userToEdit.getTelephone() : "");
             tfAdresse.setText(userToEdit.getAdresse() != null ? userToEdit.getAdresse() : "");
             cbType.setValue(userToEdit.getType() != null ? userToEdit.getType() : "admin");
-            pfPassword.setPromptText("Laisser vide pour ne pas changer");
+            pfPassword.setPromptText("Laisser vide pour conserver le mot de passe");
+        } else {
+            cbType.getSelectionModel().selectFirst();
         }
 
-        grid.add(new Label("Nom:"), 0, 0);
-        grid.add(tfNom, 1, 0);
-        grid.add(new Label("Prénom:"), 0, 1);
-        grid.add(tfPrenom, 1, 1);
-        grid.add(new Label("Email:"), 0, 2);
-        grid.add(tfEmail, 1, 2);
-        grid.add(new Label("Mot de passe:"), 0, 3);
-        grid.add(pfPassword, 1, 3);
-        grid.add(new Label("CIN:"), 0, 4);
-        grid.add(tfCIN, 1, 4);
-        grid.add(new Label("Téléphone:"), 0, 5);
-        grid.add(tfTelephone, 1, 5);
-        grid.add(new Label("Adresse:"), 0, 6);
-        grid.add(tfAdresse, 1, 6);
-        grid.add(new Label("Type:"), 0, 7);
-        grid.add(cbType, 1, 7);
+        int row = 0;
+        grid.add(lblNom, 0, row); grid.add(tfNom, 1, row++);
+        grid.add(lblPrenom, 0, row); grid.add(tfPrenom, 1, row++);
+        grid.add(lblEmail, 0, row); grid.add(tfEmail, 1, row++);
+        grid.add(lblPassword, 0, row); grid.add(pfPassword, 1, row++);
+        grid.add(lblCIN, 0, row); grid.add(tfCIN, 1, row++);
+        grid.add(lblTelephone, 0, row); grid.add(tfTelephone, 1, row++);
+        grid.add(lblAdresse, 0, row); grid.add(tfAdresse, 1, row++);
+        grid.add(lblType, 0, row); grid.add(cbType, 1, row);
 
         dialog.getDialogPane().setContent(grid);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        dialog.getDialogPane().setStyle("-fx-padding: 10;");
 
         dialog.setResultConverter(buttonType -> {
             if (buttonType == ButtonType.OK) {
@@ -343,8 +445,6 @@ public class GestionUsersController {
                 user.setTelephone(tfTelephone.getText());
                 user.setAdresse(tfAdresse.getText());
                 user.setType(cbType.getValue() != null ? cbType.getValue() : "admin");
-
-                // Mot de passe
                 String password = pfPassword.getText();
                 if (!password.isEmpty()) {
                     user.setPassword(password);
@@ -380,14 +480,14 @@ public class GestionUsersController {
                     }
                     int newId = userService.create(user);
                     if (newId > 0) {
-                        showInfo("Succès", "Utilisateur créé avec ID: " + newId);
+                        showSuccess("Succès", "Utilisateur créé avec succès !\n\n" + user.getNom() + " " + user.getPrenom() + "\nNouvel ID: " + newId);
                     } else {
                         showError("Erreur", "Impossible de créer l'utilisateur");
                     }
                 } else {
                     // Modification
                     if (userService.update(user)) {
-                        showInfo("Succès", "Utilisateur modifié avec succès");
+                        showSuccess("Succès", "Utilisateur modifié avec succès !\n\n" + user.getNom() + " " + user.getPrenom());
                     } else {
                         showError("Erreur", "Impossible de modifier l'utilisateur");
                     }
@@ -400,13 +500,35 @@ public class GestionUsersController {
     }
 
     /**
-     * Affiche un message d'information.
+     * Crée un TextField stylisé
      */
-    private void showInfo(String title, String content) {
+    private TextField createStyledTextField(String promptText) {
+        TextField tf = new TextField();
+        tf.setPromptText(promptText);
+        tf.setStyle("-fx-font-size: 12; -fx-padding: 10; -fx-border-color: #e2e8f4; -fx-border-radius: 6;");
+        tf.setPrefWidth(300);
+        return tf;
+    }
+
+    /**
+     * Crée un Label stylisé
+     */
+    private Label createStyledLabel(String text) {
+        Label label = new Label(text);
+        label.setStyle("-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #1a2340;");
+        return label;
+    }
+
+
+    /**
+     * Affiche un message de succès.
+     */
+    private void showSuccess(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
+        alert.getDialogPane().setStyle("-fx-font-size: 12;");
         alert.showAndWait();
     }
 
@@ -416,8 +538,9 @@ public class GestionUsersController {
     private void showError(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
-        alert.setHeaderText(null);
+        alert.setHeaderText(title);
         alert.setContentText(content);
+        alert.getDialogPane().setStyle("-fx-font-size: 12;");
         alert.showAndWait();
     }
 

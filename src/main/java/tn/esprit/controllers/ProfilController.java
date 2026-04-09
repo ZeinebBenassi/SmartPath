@@ -4,8 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import models.User;
-import services.UserService;
+import tn.esprit.entity.User;
 
 import java.text.SimpleDateFormat;
 
@@ -31,7 +30,7 @@ public class ProfilController {
     @FXML private Label statusLabel;
 
     private static User currentUser;
-    private UserService userService = new UserService();
+
 
     public static void setCurrentUser(User u) { currentUser = u; }
 
@@ -44,12 +43,20 @@ public class ProfilController {
         if (avatarLabel    != null) avatarLabel.setText(initiale);
         if (nomCompletLabel!= null) nomCompletLabel.setText(currentUser.getPrenom() + " " + currentUser.getNom());
 
-        String roleDisplay = switch (currentUser.getType()) {
-            case "admin"    -> "Administrateur";
-            case "prof"     -> "Professeur";
-            case "etudiant" -> "Étudiant";
-            default         -> currentUser.getType();
-        };
+        String roleDisplay;
+        switch (currentUser.getType()) {
+            case "admin":
+                roleDisplay = "Administrateur";
+                break;
+            case "prof":
+                roleDisplay = "Professeur";
+                break;
+            case "etudiant":
+                roleDisplay = "Étudiant";
+                break;
+            default:
+                roleDisplay = currentUser.getType();
+        }
         if (roleLabel != null) roleLabel.setText(roleDisplay);
 
         if (emailLabel     != null) emailLabel.setText(currentUser.getEmail());
@@ -75,53 +82,105 @@ public class ProfilController {
 
     @FXML public void saveProfile() {
         if (currentUser == null) return;
-        // Mise à jour locale (DB à brancher via UserService.update)
-        if (nomField    != null && !nomField.getText().isEmpty())
-            currentUser.setNom(nomField.getText());
-        if (prenomField != null && !prenomField.getText().isEmpty())
-            currentUser.setPrenom(prenomField.getText());
-        if (telephoneField != null) currentUser.setTelephone(telephoneField.getText());
-        if (adresseField   != null) currentUser.setAdresse(adresseField.getText());
+        
+        // Validation des champs
+        String nom = nomField != null ? nomField.getText().trim() : "";
+        String prenom = prenomField != null ? prenomField.getText().trim() : "";
+        String telephone = telephoneField != null ? telephoneField.getText().trim() : "";
+        String adresse = adresseField != null ? adresseField.getText().trim() : "";
+        
+        if (nom.isEmpty()) {
+            showStatus("❌ Le nom est obligatoire.", false);
+            return;
+        }
+        if (prenom.isEmpty()) {
+            showStatus("❌ Le prénom est obligatoire.", false);
+            return;
+        }
+        if (telephone.length() > 20) {
+            showStatus("❌ Le téléphone ne doit pas dépasser 20 caractères.", false);
+            return;
+        }
+        if (telephone.length() > 0 && !telephone.matches("^[0-9\\s\\-\\+\\(\\)]+$")) {
+            showStatus("❌ Le téléphone contient des caractères invalides.", false);
+            return;
+        }
+        if (adresse.length() > 200) {
+            showStatus("❌ L'adresse ne doit pas dépasser 200 caractères.", false);
+            return;
+        }
+        
+        // Mise à jour locale
+        currentUser.setNom(nom);
+        currentUser.setPrenom(prenom);
+        if (!telephone.isEmpty()) currentUser.setTelephone(telephone);
+        if (!adresse.isEmpty()) currentUser.setAdresse(adresse);
 
         if (statusLabel != null) {
             statusLabel.setStyle("-fx-text-fill: #00c896; -fx-font-size: 12;");
-            statusLabel.setText("✓ Profil mis à jour avec succès.");
+            statusLabel.setText("✅ Profil mis à jour avec succès.");
         }
-        // Rafraîchir l'affichage
         initialize();
     }
 
     @FXML public void changePassword() {
         if (oldPwdField == null || newPwdField == null || confirmPwdField == null) return;
-        if (newPwdField.getText().isEmpty()) {
-            showStatus("Veuillez saisir un nouveau mot de passe.", false);
+        
+        String oldPwd = oldPwdField.getText().trim();
+        String newPwd = newPwdField.getText().trim();
+        String confirmPwd = confirmPwdField.getText().trim();
+        
+        if (oldPwd.isEmpty()) {
+            showStatus("Saisissez votre mot de passe actuel.", false);
             return;
         }
-        if (!newPwdField.getText().equals(confirmPwdField.getText())) {
-            showStatus("Les mots de passe ne correspondent pas.", false);
+        if (newPwd.isEmpty()) {
+            showStatus("Saisissez un nouveau mot de passe.", false);
             return;
         }
-        if (newPwdField.getText().length() < 6) {
-            showStatus("Le mot de passe doit contenir au moins 6 caractères.", false);
+        if (confirmPwd.isEmpty()) {
+            showStatus("Confirmez le nouveau mot de passe.", false);
             return;
         }
-        showStatus("✓ Mot de passe modifié avec succès.", true);
-        oldPwdField.clear(); newPwdField.clear(); confirmPwdField.clear();
+        if (newPwd.length() < 6) {
+            showStatus("Le mot de passe doit contenir au moins 6 caracteres.", false);
+            return;
+        }
+        if (!newPwd.equals(confirmPwd)) {
+            showStatus("Les nouveaux mots de passe ne correspondent pas.", false);
+            return;
+        }
+        if (oldPwd.equals(newPwd)) {
+            showStatus("Le nouveau mot de passe doit etre different de l'ancien.", false);
+            return;
+        }
+        
+        showStatus("Mot de passe modifie avec succes.", true);
+        oldPwdField.clear(); 
+        newPwdField.clear(); 
+        confirmPwdField.clear();
     }
 
     private void showStatus(String msg, boolean success) {
         if (statusLabel == null) return;
-        statusLabel.setStyle("-fx-text-fill: " + (success ? "#00c896" : "#e94560") + "; -fx-font-size: 12;");
+        String color = success ? "#00c896" : "#e94560";
+        statusLabel.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 12; -fx-font-weight: bold;");
         statusLabel.setText(msg);
     }
 
     @FXML public void goBack() {
         if (currentUser == null) return;
-        String dest = switch (currentUser.getType()) {
-            case "admin" -> "/tn/esprit/interfaces/DashboardAdmin.fxml";
-            case "prof"  -> "/tn/esprit/interfaces/DashboardProf.fxml";
-            default      -> "/tn/esprit/interfaces/DashboardEtudiant.fxml";
-        };
+        String dest;
+        switch (currentUser.getType()) {
+            case "admin":
+                dest = "/tn/esprit/interfaces/DashboardAdmin.fxml";
+                break;
+            case "prof":
+                dest = "/tn/esprit/interfaces/DashboardProf.fxml";
+                break;
+            default:
+                dest = "/tn/esprit/interfaces/DashboardEtudiant.fxml";
+        }
         try {
             Parent root = FXMLLoader.load(getClass().getResource(dest));
             if (nomField != null) nomField.getScene().setRoot(root);

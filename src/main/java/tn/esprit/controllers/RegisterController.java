@@ -4,10 +4,12 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import models.Etudiant;
+import tn.esprit.entity.Etudiant;
 import services.UserService;
 
+import java.time.LocalDate;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 public class RegisterController {
 
@@ -21,11 +23,33 @@ public class RegisterController {
     @FXML private TextField adresseField;
     @FXML private DatePicker dateNaissancePicker;
     @FXML private Label messageLabel;
+    
+    // Labels d'erreur
+    @FXML private Label nomError;
+    @FXML private Label prenomError;
+    @FXML private Label emailError;
+    @FXML private Label cinError;
+    @FXML private Label phoneError;
+    @FXML private Label adresseError;
+    @FXML private Label dateError;
+    @FXML private Label passwordError;
+    @FXML private Label confirmError;
 
     private UserService userService = new UserService();
+    
+    // Regex pour validation
+    private static final Pattern EMAIL_PATTERN = Pattern.compile(
+        "^[A-Za-z0-9+_.-]+@(.+)$");
+    private static final Pattern PHONE_PATTERN = Pattern.compile(
+        "^(?:\\+216|0)[0-9]{8}$");
+    private static final Pattern CIN_PATTERN = Pattern.compile(
+        "^[0-9]{8}$");
 
     @FXML
     public void handleRegister() {
+        // Effacer tous les messages d'erreur
+        clearErrors();
+        
         String nom     = nomField.getText().trim();
         String prenom  = prenomField.getText().trim();
         String email   = emailField.getText().trim();
@@ -35,18 +59,97 @@ public class RegisterController {
         String confirm = confirmPasswordField.getText().trim();
         String adresse = adresseField.getText().trim();
 
-        if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || pwd.isEmpty()) {
-            showMessage("Veuillez remplir tous les champs obligatoires.", "red");
+        boolean hasErrors = false;
+
+        // Validation Nom
+        if (nom.isEmpty()) {
+            setError(nomError, "Le nom est obligatoire");
+            hasErrors = true;
+        } else if (!nom.matches("[a-zA-ZA-Za-zÀ-ÿ\\s'-]+")) {
+            setError(nomError, "Le nom ne doit contenir que des lettres");
+            hasErrors = true;
+        }
+
+        // Validation Prenom
+        if (prenom.isEmpty()) {
+            setError(prenomError, "Le prenom est obligatoire");
+            hasErrors = true;
+        } else if (!prenom.matches("[a-zA-ZA-Za-zÀ-ÿ\\s'-]+")) {
+            setError(prenomError, "Le prenom ne doit contenir que des lettres");
+            hasErrors = true;
+        }
+
+        // Validation Email
+        if (email.isEmpty()) {
+            setError(emailError, "L'email est obligatoire");
+            hasErrors = true;
+        } else if (!EMAIL_PATTERN.matcher(email).matches()) {
+            setError(emailError, "Format email invalide");
+            hasErrors = true;
+        }
+
+        // Validation CIN (optionnel)
+        if (!cin.isEmpty() && !CIN_PATTERN.matcher(cin).matches()) {
+            setError(cinError, "Le CIN doit contenir 8 chiffres");
+            hasErrors = true;
+        }
+
+        // Validation Telephone (optionnel)
+        if (!tel.isEmpty() && !PHONE_PATTERN.matcher(tel).matches()) {
+            setError(phoneError, "Format: +216XXXXXXXX ou 0XXXXXXXX");
+            hasErrors = true;
+        }
+
+        // Validation Adresse (optionnel)
+        if (!adresse.isEmpty() && adresse.length() < 5) {
+            setError(adresseError, "L'adresse doit faire minimum 5 caracteres");
+            hasErrors = true;
+        }
+
+        // Validation Date de naissance
+        if (dateNaissancePicker.getValue() == null) {
+            setError(dateError, "La date de naissance est obligatoire");
+            hasErrors = true;
+        } else if (dateNaissancePicker.getValue().isAfter(LocalDate.now())) {
+            setError(dateError, "La date ne doit pas etre future");
+            hasErrors = true;
+        } else {
+            LocalDate birthDate = dateNaissancePicker.getValue();
+            LocalDate today = LocalDate.now();
+            int age = today.getYear() - birthDate.getYear();
+            if (age < 13) {
+                setError(dateError, "Vous devez avoir au moins 13 ans");
+                hasErrors = true;
+            }
+        }
+
+        // Validation Mot de passe
+        if (pwd.isEmpty()) {
+            setError(passwordError, "Le mot de passe est obligatoire");
+            hasErrors = true;
+        } else if (pwd.length() < 6) {
+            setError(passwordError, "Minimum 6 caracteres");
+            hasErrors = true;
+        }
+
+        // Validation Confirmation mot de passe
+        if (confirm.isEmpty()) {
+            setError(confirmError, "Confirmation obligatoire");
+            hasErrors = true;
+        } else if (!pwd.equals(confirm)) {
+            setError(confirmError, "Les mots de passe ne correspondent pas");
+            hasErrors = true;
+        }
+
+        if (hasErrors) {
+            setMessageLabel("Veuillez corriger les erreurs ci-dessus.", "red");
             return;
         }
-        if (!pwd.equals(confirm)) {
-            showMessage("Les mots de passe ne correspondent pas.", "red");
-            return;
-        }
-        
-        System.out.println("Vérification des données pour: " + email);
+
+        // Vérifier si l'email existe déjà
         if (userService.emailExists(email)) {
-            showMessage("Cet email est déjà utilisé.", "red");
+            setError(emailError, "Cet email est déjà utilisé");
+            setMessageLabel("Cet email est déjà utilisé.", "red");
             return;
         }
 
@@ -66,14 +169,14 @@ public class RegisterController {
             System.out.println("  Date de naissance: " + dateNaissance);
         }
         
-        etudiant.setNiveau("L1"); // Niveau par défaut
-        etudiant.setStatus("actif"); // Status par défaut
+        etudiant.setNiveau("L1");
+        etudiant.setStatus("actif");
         
         System.out.println("Appel registerEtudiant()...");
         boolean success = userService.registerEtudiant(etudiant);
 
         if (success) {
-            showMessage("Compte créé avec succès!", "green");
+            setMessageLabel("Compte créé avec succès!", "green");
             // Effacer les champs après succès
             nomField.clear();
             prenomField.clear();
@@ -85,7 +188,33 @@ public class RegisterController {
             adresseField.clear();
             dateNaissancePicker.setValue(null);
         } else {
-            showMessage("Erreur lors de l'inscription. Consultez la console pour les détails.", "red");
+            setMessageLabel("Erreur lors de l'inscription. Consultez la console.", "red");
+        }
+    }
+
+    private void clearErrors() {
+        nomError.setText("");
+        prenomError.setText("");
+        emailError.setText("");
+        cinError.setText("");
+        phoneError.setText("");
+        adresseError.setText("");
+        dateError.setText("");
+        passwordError.setText("");
+        confirmError.setText("");
+        messageLabel.setText("");
+    }
+
+    private void setError(Label errorLabel, String message) {
+        errorLabel.setText(message);
+    }
+
+    private void setMessageLabel(String msg, String color) {
+        messageLabel.setText(msg);
+        if ("red".equals(color)) {
+            messageLabel.setStyle("-fx-text-fill: #e94560; -fx-font-weight: bold;");
+        } else if ("green".equals(color)) {
+            messageLabel.setStyle("-fx-text-fill: #00c896; -fx-font-weight: bold;");
         }
     }
 
@@ -95,11 +224,6 @@ public class RegisterController {
             Parent root = FXMLLoader.load(getClass().getResource("/tn/esprit/interfaces/Login.fxml"));
             nomField.getScene().setRoot(root);
         } catch (Exception e) { e.printStackTrace(); }
-    }
-
-    private void showMessage(String msg, String color) {
-        messageLabel.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 12;");
-        messageLabel.setText(msg);
     }
 }
 

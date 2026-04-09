@@ -62,34 +62,34 @@
                                            style="-fx-font-size: 12; -fx-text-fill: #1a2340;"/>
                                 </HBox>
                                 <HBox spacing="10" alignment="CENTER_LEFT">
-                                    <Label text="📞" style="-fx-font-size: 13; -fx-text-fill: #8898b8;"/>
-                                    <Label fx:id="telephoneLabel" text="Téléphone"
+                                    <Label text="" style="-fx-font-size: 13; -fx-text-fill: #8898b8;"/>
+                                    <Label fx:id="telephoneLabel" text="Telephone"
                                            style="-fx-font-size: 12; -fx-text-fill: #1a2340;"/>
                                 </HBox>
                                 <HBox spacing="10" alignment="CENTER_LEFT">
-                                    <Label text="📍" style="-fx-font-size: 13; -fx-text-fill: #8898b8;"/>
+                                    <Label text="" style="-fx-font-size: 13; -fx-text-fill: #8898b8;"/>
                                     <Label fx:id="adresseLabel" text="Adresse"
                                            style="-fx-font-size: 12; -fx-text-fill: #1a2340;"/>
                                 </HBox>
                                 <HBox spacing="10" alignment="CENTER_LEFT">
-                                    <Label text="🪪" style="-fx-font-size: 13; -fx-text-fill: #8898b8;"/>
+                                    <Label text="" style="-fx-font-size: 13; -fx-text-fill: #8898b8;"/>
                                     <Label fx:id="cinLabel" text="CIN"
                                            style="-fx-font-size: 12; -fx-text-fill: #1a2340;"/>
                                 </HBox>
                                 <HBox spacing="10" alignment="CENTER_LEFT">
-                                    <Label text="🎂" style="-fx-font-size: 13; -fx-text-fill: #8898b8;"/>
+                                    <Label text="" style="-fx-font-size: 13; -fx-text-fill: #8898b8;"/>
                                     <Label fx:id="dateNaissanceLabel" text="Date de naissance"
                                            style="-fx-font-size: 12; -fx-text-fill: #1a2340;"/>
                                 </HBox>
                                 <HBox spacing="10" alignment="CENTER_LEFT">
-                                    <Label text="📅" style="-fx-font-size: 13; -fx-text-fill: #8898b8;"/>
+                                    <Label text="" style="-fx-font-size: 13; -fx-text-fill: #8898b8;"/>
                                     <Label fx:id="membreDepuisLabel" text="Membre depuis"
                                            style="-fx-font-size: 12; -fx-text-fill: #1a2340;"/>
                                 </HBox>
 
                                 <Separator style="-fx-padding: 4 0;"/>
 
-                                <Button text="📷  Changer la photo" onAction="#uploadPhoto"
+                                <Button text="Changer la photo" onAction="#uploadPhoto"
                                         maxWidth="Infinity"
                                         style="-fx-background-color: #f4f6fb; -fx-text-fill: #2563eb;
                                                -fx-font-size: 12; -fx-font-weight: bold;

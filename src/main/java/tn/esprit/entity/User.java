@@ -3,7 +3,7 @@ package tn.esprit.entity;
 import java.util.Date;
 
 
-public abstract class User {
+public class User {
 
     private int    id;
     private String nom;
@@ -17,6 +17,8 @@ public abstract class User {
     private String photo;
     private String roles;
     private Date   createdAt;
+    private String status; // "actif" ou "ban"
+    private String type;   // "admin", "prof", "etudiant"
 
     public User() {
         this.createdAt = new Date();
@@ -60,6 +62,8 @@ public abstract class User {
     public void   setPassword(String password)         { this.password = password; }
     public String getCIN()                             { return CIN; }
     public void   setCIN(String CIN)                   { this.CIN = CIN; }
+    public String getCin()                             { return CIN; }  // Alias lowercase
+    public void   setCin(String cin)                   { this.CIN = cin; }  // Alias lowercase
     public String getTelephone()                       { return telephone; }
     public void   setTelephone(String telephone)       { this.telephone = telephone; }
     public String getAdresse()                         { return adresse; }
@@ -72,6 +76,10 @@ public abstract class User {
     public void   setRoles(String roles)               { this.roles = roles; }
     public Date   getCreatedAt()                       { return createdAt; }
     public void   setCreatedAt(Date createdAt)         { this.createdAt = createdAt; }
+    public String getStatus()                          { return status != null ? status : "actif"; }
+    public void   setStatus(String status)             { this.status = status; }
+    public String getType()                            { return type; }
+    public void   setType(String type)                 { this.type = type; }
 
     @Override
     public String toString() {

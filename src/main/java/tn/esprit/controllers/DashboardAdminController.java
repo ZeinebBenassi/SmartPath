@@ -11,7 +11,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import models.User;
+import tn.esprit.entity.User;
 import services.UserService;
 
 import java.time.LocalDate;

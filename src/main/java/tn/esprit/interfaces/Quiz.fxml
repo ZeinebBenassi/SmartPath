@@ -23,9 +23,9 @@
                 <Label text="Quiz d'orientation" style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
                 <Label wrapText="true" text="Le module de quiz sera connecté à des données réelles plus tard. Pour le moment, l'interface reste propre et sans contenu de démonstration." style="-fx-font-size: 13; -fx-text-fill: #5a6a8a; -fx-text-alignment: center;"/>
                 <HBox spacing="12">
-                    <Label text="🧠" style="-fx-font-size: 28;"/>
-                    <Label text="🎯" style="-fx-font-size: 28;"/>
-                    <Label text="🚀" style="-fx-font-size: 28;"/>
+                    <Label text="" style="-fx-font-size: 28;"/>
+                    <Label text="" style="-fx-font-size: 28;"/>
+                    <Label text="" style="-fx-font-size: 28;"/>
                 </HBox>
                 <Button text="Quiz non disponible" onAction="#startQuiz"
                         style="-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-size: 13; -fx-font-weight: bold; -fx-padding: 10 18; -fx-background-radius: 8;"/>
