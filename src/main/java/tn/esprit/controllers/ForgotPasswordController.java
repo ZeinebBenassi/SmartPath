@@ -45,7 +45,7 @@ public class ForgotPasswordController {
 
         // En production : envoyer par email. Ici on affiche dans la console.
         System.out.println("Code de réinitialisation : " + token);
-        showMessage("Code envoyé ! (visible dans la console IntelliJ)", "green");
+        showMessage("Code envoyé !", "green");
 
         // Afficher l'étape 2
         step2Box.setVisible(true);

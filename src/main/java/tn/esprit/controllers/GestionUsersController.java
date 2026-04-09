@@ -11,6 +11,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import tn.esprit.entity.User;
 import services.UserService;
 
@@ -67,10 +68,11 @@ public class GestionUsersController {
                     } else {
                         User user = getTableView().getItems().get(getIndex());
                         String status = user.getStatus();
+                        if (status == null || status.trim().isEmpty()) status = "actif";
                         if ("ban".equalsIgnoreCase(status)) {
-                            setText("Banni");
+                            setText("ban");
                         } else {
-                            setText("Actif");
+                            setText("actif");
                         }
                         // Statut = texte simple (pas de bouton/badge)
                         setStyle("");
@@ -220,39 +222,57 @@ public class GestionUsersController {
     }
 
     /**
-     * Gère le ban/débannissement d'un utilisateur.
+     * Gère le ban/débannissement d'un utilisateur avec meilleure présentation.
      */
     private void handleToggleBan(User user) {
         if (user == null) return;
 
         String newStatus = "ban".equalsIgnoreCase(user.getStatus()) ? "actif" : "ban";
         boolean isBanning = newStatus.equals("ban");
-        
-        Alert confirm = new Alert(Alert.AlertType.WARNING);
-        confirm.setTitle(isBanning ? "Bannir l'Utilisateur ?" : "Reactivation du Compte");
-        confirm.setHeaderText(isBanning ? "Cette action bannira le compte" : "Cette action reactivera le compte");
-        confirm.setContentText((isBanning ? 
-            "Etes-vous sur de vouloir bannir cet utilisateur ?\n\n" +
-            user.getNom() + " " + user.getPrenom() + "\n" +
-            user.getEmail() : 
-            "Etes-vous sur de vouloir reactivier cet utilisateur ?\n\n" +
-            user.getNom() + " " + user.getPrenom() + "\n" +
-            user.getEmail()));
+
+        Dialog<ButtonType> confirm = new Dialog<>();
+        confirm.setTitle(isBanning ? "Bannir" : "Réactiver");
+        confirm.setHeaderText(null);
+
+        VBox content = new VBox();
+        content.setSpacing(15);
+        content.setStyle("-fx-padding: 25; -fx-background-color: white;");
+
+        String titleBg = isBanning ? "#f59e0b" : "#10b981";
+        Label userDetailsLabel = new Label(user.getNom() + " " + user.getPrenom() + "\n" + user.getEmail());
+        String bgColor = isBanning ? "#fef3c7" : "#ecfdf5";
+        userDetailsLabel.setStyle("-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #1a2340; -fx-padding: 12; -fx-background-color: " + bgColor + "; -fx-background-radius: 8;");
+        content.getChildren().add(userDetailsLabel);
+
+        confirm.getDialogPane().setContent(content);
+        confirm.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        confirm.getDialogPane().setStyle("-fx-padding: 15; -fx-background-color: #f4f6fb;");
+
+        Button actionBtn = (Button) confirm.getDialogPane().lookupButton(ButtonType.OK);
+        Button cancelBtn = (Button) confirm.getDialogPane().lookupButton(ButtonType.CANCEL);
+        if (actionBtn != null) {
+            actionBtn.setText(isBanning ? "Bannir" : "Réactiver");
+            actionBtn.setStyle("-fx-font-size: 12; -fx-font-weight: bold; -fx-padding: 12 32; -fx-background-color: " + titleBg + "; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;");
+        }
+        if (cancelBtn != null) {
+            cancelBtn.setText("Annuler");
+            cancelBtn.setStyle("-fx-font-size: 12; -fx-padding: 12 32; -fx-background-color: #e2e8f4; -fx-text-fill: #1a2340; -fx-background-radius: 8; -fx-cursor: hand;");
+        }
 
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                 if (userService.updateStatus(user.getId(), newStatus)) {
-                    showSuccess(isBanning ? "Compte Banni" : "Compte Reactivé", 
-                        (isBanning ? "L'utilisateur " + user.getNom() + " a ete banni." :
-                        "L'utilisateur " + user.getNom() + " a ete reactivé."));
+                    showSuccess(isBanning ? "Compte Banni" : "Compte Réactivé", 
+                        (isBanning ? "L'utilisateur " + user.getNom() + " a été banni." :
+                        "L'utilisateur " + user.getNom() + " a été réactivé."));
                     loadUsers();
                     usersTable.refresh();
                 } else {
-                    showError("Erreur", "Impossible de mettre a jour le statut");
+                    showError("Erreur", "Impossible de mettre à jour le statut");
                 }
             } catch (Exception e) {
-                showError("Erreur", "Erreur lors de la mise a jour: " + e.getMessage());
+                showError("Erreur", "Erreur lors de la mise à jour: " + e.getMessage());
             }
         }
     }
@@ -343,27 +363,46 @@ public class GestionUsersController {
     }
 
     /**
-     * Gère la suppression d'un utilisateur.
+     * Gère la suppression d'un utilisateur avec une meilleure présentation.
      */
     private void handleDelete(User user) {
         if (user == null) return;
 
-        Alert confirm = new Alert(Alert.AlertType.WARNING);
-        confirm.setTitle("Confirmation de Suppression");
-        confirm.setHeaderText("Supprimer l'utilisateur ?");
-        confirm.setContentText("Etes-vous sur de vouloir supprimer de maniere permanente :\n\n" +
-                               user.getNom() + " " + user.getPrenom() + "\n" +
-                               user.getEmail());
-        confirm.getDialogPane().setStyle("-fx-padding: 20;");
+        Dialog<ButtonType> confirm = new Dialog<>();
+        confirm.setTitle("Supprimer");
+        confirm.setHeaderText(null);
+
+        VBox content = new VBox();
+        content.setSpacing(15);
+        content.setStyle("-fx-padding: 25; -fx-background-color: white;");
+
+        Label userDetailsLabel = new Label(user.getNom() + " " + user.getPrenom() + "\n" + user.getEmail());
+        userDetailsLabel.setStyle("-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #1a2340; -fx-padding: 12; -fx-background-color: #fee2e2; -fx-background-radius: 8;");
+        content.getChildren().add(userDetailsLabel);
+
+        confirm.getDialogPane().setContent(content);
+        confirm.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+        confirm.getDialogPane().setStyle("-fx-padding: 15; -fx-background-color: #f4f6fb;");
+
+        Button deleteBtn = (Button) confirm.getDialogPane().lookupButton(ButtonType.OK);
+        Button cancelBtn = (Button) confirm.getDialogPane().lookupButton(ButtonType.CANCEL);
+        if (deleteBtn != null) {
+            deleteBtn.setText("Supprimer");
+            deleteBtn.setStyle("-fx-font-size: 12; -fx-font-weight: bold; -fx-padding: 12 32; -fx-background-color: #dc2626; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;");
+        }
+        if (cancelBtn != null) {
+            cancelBtn.setText("Annuler");
+            cancelBtn.setStyle("-fx-font-size: 12; -fx-padding: 12 32; -fx-background-color: #e2e8f4; -fx-text-fill: #1a2340; -fx-background-radius: 8; -fx-cursor: hand;");
+        }
 
         Optional<ButtonType> result = confirm.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             try {
                 userService.delete(user.getId());
-                showSuccess("Succes", "Utilisateur supprime avec succes !");
+                showSuccess("Suppression réussie", "L'utilisateur a été supprimé avec succès !");
                 loadUsers();
             } catch (Exception e) {
-                showError("Erreur", "Impossible de supprimer l'utilisateur : " + e.getMessage());
+                showError("Erreur de suppression", "Impossible de supprimer l'utilisateur : " + e.getMessage());
             }
         }
     }
@@ -374,20 +413,24 @@ public class GestionUsersController {
     private void showUserDialog(User userToEdit) {
         Dialog<User> dialog = new Dialog<>();
         boolean isNew = (userToEdit == null);
-        dialog.setTitle(isNew ? "Ajouter un utilisateur" : "Modifier l'utilisateur");
-        dialog.setHeaderText(isNew ? "Créer un nouveau compte utilisateur" : "Modifier les informations de l'utilisateur");
+        dialog.setTitle(isNew ? "Ajouter" : "Modifier");
+        dialog.setHeaderText(null);
+
+        // Conteneur principal
+        VBox mainContainer = new VBox();
+        mainContainer.setSpacing(20);
+        mainContainer.setStyle("-fx-padding: 25; -fx-background-color: white;");
 
         GridPane grid = new GridPane();
         grid.setHgap(15);
-        grid.setVgap(12);
-        grid.setStyle("-fx-padding: 20;");
+        grid.setVgap(14);
+        grid.setStyle("-fx-padding: 0;");
 
-        // Champs avec meilleur style
         TextField tfNom = createStyledTextField("Nom complet");
         TextField tfPrenom = createStyledTextField("Prénom");
         TextField tfEmail = createStyledTextField("Adresse email");
         PasswordField pfPassword = new PasswordField();
-        pfPassword.setStyle("-fx-font-size: 12; -fx-padding: 10; -fx-border-color: #e2e8f4; -fx-border-radius: 6;");
+        pfPassword.setStyle("-fx-font-size: 12; -fx-padding: 12; -fx-border-color: #bfdbfe; -fx-border-radius: 8; -fx-border-width: 1; -fx-background-insets: 0;");
         pfPassword.setPromptText("Mot de passe");
         
         TextField tfCIN = createStyledTextField("Numéro CIN");
@@ -396,7 +439,8 @@ public class GestionUsersController {
 
         ComboBox<String> cbType = new ComboBox<>();
         cbType.setItems(FXCollections.observableArrayList("admin", "prof", "etudiant"));
-        cbType.setStyle("-fx-font-size: 12; -fx-padding: 10; -fx-border-color: #e2e8f4; -fx-border-radius: 6;");
+        cbType.setStyle("-fx-font-size: 12; -fx-padding: 10; -fx-border-color: #bfdbfe; -fx-border-radius: 8; -fx-border-width: 1;");
+        cbType.setPrefWidth(300);
 
         // Labels stylisés
         Label lblNom = createStyledLabel("Nom:");
@@ -431,9 +475,22 @@ public class GestionUsersController {
         grid.add(lblAdresse, 0, row); grid.add(tfAdresse, 1, row++);
         grid.add(lblType, 0, row); grid.add(cbType, 1, row);
 
-        dialog.getDialogPane().setContent(grid);
+        mainContainer.getChildren().add(grid);
+        dialog.getDialogPane().setContent(mainContainer);
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-        dialog.getDialogPane().setStyle("-fx-padding: 10;");
+        dialog.getDialogPane().setStyle("-fx-padding: 15; -fx-background-color: #f4f6fb;");
+        
+        // Stylise les boutons du dialogue
+        Button okBtn = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
+        Button cancelBtn = (Button) dialog.getDialogPane().lookupButton(ButtonType.CANCEL);
+        if (okBtn != null) {
+            okBtn.setText(isNew ? "Créer" : "Modifier");
+            okBtn.setStyle("-fx-font-size: 12; -fx-font-weight: bold; -fx-padding: 12 32; -fx-background-color: #2563eb; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;");
+        }
+        if (cancelBtn != null) {
+            cancelBtn.setText("Annuler");
+            cancelBtn.setStyle("-fx-font-size: 12; -fx-padding: 12 32; -fx-background-color: #e2e8f4; -fx-text-fill: #1a2340; -fx-background-radius: 8; -fx-cursor: hand;");
+        }
 
         dialog.setResultConverter(buttonType -> {
             if (buttonType == ButtonType.OK) {
@@ -480,7 +537,7 @@ public class GestionUsersController {
                     }
                     int newId = userService.create(user);
                     if (newId > 0) {
-                        showSuccess("Succès", "Utilisateur créé avec succès !\n\n" + user.getNom() + " " + user.getPrenom() + "\nNouvel ID: " + newId);
+                        showSuccess("Succès", "Utilisateur créé avec succès !\n\n" + user.getNom() + " " + user.getPrenom() + "\n" + user.getEmail());
                     } else {
                         showError("Erreur", "Impossible de créer l'utilisateur");
                     }
@@ -500,12 +557,12 @@ public class GestionUsersController {
     }
 
     /**
-     * Crée un TextField stylisé
+     * Crée un TextField stylisé (bordure bleue clair)
      */
     private TextField createStyledTextField(String promptText) {
         TextField tf = new TextField();
         tf.setPromptText(promptText);
-        tf.setStyle("-fx-font-size: 12; -fx-padding: 10; -fx-border-color: #e2e8f4; -fx-border-radius: 6;");
+        tf.setStyle("-fx-font-size: 12; -fx-padding: 12; -fx-border-color: #bfdbfe; -fx-border-radius: 8; -fx-border-width: 1; -fx-background-insets: 0;");
         tf.setPrefWidth(300);
         return tf;
     }
@@ -521,26 +578,31 @@ public class GestionUsersController {
 
 
     /**
-     * Affiche un message de succès.
+     * Affiche un message de succès (stylé en vert).
      */
     private void showSuccess(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
         alert.setContentText(content);
-        alert.getDialogPane().setStyle("-fx-font-size: 12;");
+        alert.getDialogPane().setStyle("-fx-font-size: 12; -fx-padding: 20;");
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle("-fx-padding: 20;");
+        // Applique une couleur de succès au header implicite
         alert.showAndWait();
     }
 
     /**
-     * Affiche un message d'erreur.
+     * Affiche un message d'erreur (stylé en rouge).
      */
     private void showError(String title, String content) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(title);
         alert.setContentText(content);
-        alert.getDialogPane().setStyle("-fx-font-size: 12;");
+        alert.getDialogPane().setStyle("-fx-font-size: 12; -fx-padding: 20;");
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle("-fx-padding: 20;");
         alert.showAndWait();
     }
 

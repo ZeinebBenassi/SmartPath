@@ -14,7 +14,7 @@ public class AdminCLI {
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
         "^[A-Za-z0-9+_.-]+@(.+)$");
     private static final Pattern PHONE_PATTERN = Pattern.compile(
-        "^(?:\\+216|0)[0-9]{8}$");
+        "^(?:[0-9]{8}|\\+216[0-9]{8}|0[0-9]{8})$");
     
     private UserService userService;
 
@@ -84,7 +84,7 @@ public class AdminCLI {
         String inputTel = scanner.nextLine().trim();
         if (!inputTel.isEmpty()) {
             while (!PHONE_PATTERN.matcher(inputTel).matches()) {
-                System.out.println("Format: +216XXXXXXXX ou 0XXXXXXXX");
+                System.out.println("Format: XXXXXXXX, +216XXXXXXXX ou 0XXXXXXXX");
                 System.out.print("Telephone (optionnel): ");
                 inputTel = scanner.nextLine().trim();
                 if (inputTel.isEmpty()) break;

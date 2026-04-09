@@ -9,6 +9,7 @@ import tn.esprit.utils.MyDatabase;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -419,41 +420,102 @@ public class UserService {
      * Crée un nouvel utilisateur simple (admin).
      */
     public int create(User user) {
-        String sql = "INSERT INTO `user` (nom, prenom, email, password, CIN, telephone, adresse, date_naissance, photo, roles, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertUser = "INSERT INTO `user` (nom, prenom, email, password, CIN, telephone, adresse, date_naissance, photo, roles, type, created_at, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String insertEtudiant = "INSERT INTO etudiant (id, niveau, status, suspended_until, filiere_id) VALUES (?, ?, ?, ?, ?)";
+        String insertProf = "INSERT INTO prof (id, specialite) VALUES (?, ?)";
 
-        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, user.getNom());
-            ps.setString(2, user.getPrenom());
-            ps.setString(3, user.getEmail());
-            ps.setString(4, user.getPassword());
-            ps.setString(5, user.getCin());
-            ps.setString(6, user.getTelephone());
-            ps.setString(7, user.getAdresse());
-            ps.setDate(8, user.getDateNaissance() != null ? new java.sql.Date(user.getDateNaissance().getTime()) : null);
-            ps.setString(9, user.getPhoto());
-            ps.setString(10, user.getRoles() != null ? user.getRoles() : "[\"ROLE_ADMIN\"]");
-            ps.setString(11, "actif"); // Statut par défaut
-            ps.setTimestamp(12, new Timestamp(System.currentTimeMillis()));
-            
-            int affectedRows = ps.executeUpdate();
-            if (affectedRows > 0) {
-                try (ResultSet keys = ps.getGeneratedKeys()) {
-                    if (keys.next()) {
-                        return keys.getInt(1);
-                    }
+        try {
+            if (connection == null) {
+                throw new IllegalStateException("Connexion à la base de données est NULL");
+            }
+
+            String type = (user.getType() != null && !user.getType().trim().isEmpty())
+                    ? user.getType().trim().toLowerCase()
+                    : "admin";
+
+            String roles;
+            if (user.getRoles() != null && !user.getRoles().trim().isEmpty()) {
+                roles = user.getRoles();
+            } else {
+                switch (type) {
+                    case "etudiant":
+                        roles = "[\"ROLE_ETUDIANT\"]";
+                        break;
+                    case "prof":
+                        roles = "[\"ROLE_PROF\"]";
+                        break;
+                    default:
+                        roles = "[\"ROLE_ADMIN\"]";
                 }
             }
+
+            String status = (user.getStatus() != null && !user.getStatus().trim().isEmpty()) ? user.getStatus().trim() : "actif";
+
+            connection.setAutoCommit(false);
+            int userId;
+
+            try (PreparedStatement ps = connection.prepareStatement(insertUser, Statement.RETURN_GENERATED_KEYS)) {
+                ps.setString(1, user.getNom());
+                ps.setString(2, user.getPrenom());
+                ps.setString(3, user.getEmail());
+                ps.setString(4, user.getPassword());
+                ps.setString(5, user.getCin());
+                ps.setString(6, user.getTelephone());
+                ps.setString(7, user.getAdresse());
+                ps.setDate(8, user.getDateNaissance() != null ? new java.sql.Date(user.getDateNaissance().getTime()) : null);
+                ps.setString(9, user.getPhoto());
+                ps.setString(10, roles);
+                ps.setString(11, type);
+                ps.setTimestamp(12, new Timestamp(System.currentTimeMillis()));
+                ps.setString(13, status);
+
+                int affectedRows = ps.executeUpdate();
+                if (affectedRows <= 0) {
+                    throw new SQLException("Aucune ligne insérée dans la table user");
+                }
+                try (ResultSet keys = ps.getGeneratedKeys()) {
+                    if (!keys.next()) {
+                        throw new SQLException("Impossible de récupérer l'ID généré");
+                    }
+                    userId = keys.getInt(1);
+                }
+            }
+
+            if ("etudiant".equals(type)) {
+                try (PreparedStatement ps = connection.prepareStatement(insertEtudiant)) {
+                    ps.setInt(1, userId);
+                    ps.setString(2, "L1");
+                    ps.setString(3, status);
+                    ps.setTimestamp(4, null);
+                    ps.setNull(5, Types.INTEGER);
+                    ps.executeUpdate();
+                }
+            } else if ("prof".equals(type)) {
+                try (PreparedStatement ps = connection.prepareStatement(insertProf)) {
+                    ps.setInt(1, userId);
+                    ps.setString(2, "");
+                    ps.executeUpdate();
+                }
+            }
+
+            connection.commit();
+            connection.setAutoCommit(true);
+            return userId;
         } catch (Exception e) {
-            System.out.println("Erreur create: " + e.getMessage());
+            try {
+                connection.rollback();
+                connection.setAutoCommit(true);
+            } catch (Exception ignored) {
+            }
+            throw new RuntimeException("Erreur create: " + e.getMessage(), e);
         }
-        return -1;
     }
 
     /**
      * Met à jour un utilisateur existant.
      */
     public boolean update(User user) {
-        String sql = "UPDATE `user` SET nom=?, prenom=?, email=?, password=?, CIN=?, telephone=?, adresse=?, date_naissance=?, photo=?, roles=? WHERE id=?";
+        String sql = "UPDATE `user` SET nom=?, prenom=?, email=?, password=?, CIN=?, telephone=?, adresse=?, date_naissance=?, photo=?, roles=?, type=? WHERE id=?";
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, user.getNom());
@@ -466,7 +528,8 @@ public class UserService {
             ps.setDate(8, user.getDateNaissance() != null ? new java.sql.Date(user.getDateNaissance().getTime()) : null);
             ps.setString(9, user.getPhoto());
             ps.setString(10, user.getRoles());
-            ps.setInt(11, user.getId());
+            ps.setString(11, user.getType());
+            ps.setInt(12, user.getId());
             
             int affectedRows = ps.executeUpdate();
             return affectedRows > 0;

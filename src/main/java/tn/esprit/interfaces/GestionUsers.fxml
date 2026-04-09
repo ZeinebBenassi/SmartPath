@@ -16,7 +16,7 @@
     </padding>
 
     <!-- Barre de controle -->
-    <HBox alignment="CENTER_LEFT" spacing="12" styleClass="section-card">
+    <HBox alignment="CENTER_LEFT" spacing="12" styleClass="section-card-accent">
         
         <!-- Barre de recherche -->
         <TextField fx:id="searchField" promptText="Rechercher..." prefWidth="250"/>
@@ -39,13 +39,13 @@
     </HBox>
 
     <!-- Table principale -->
-    <TableView fx:id="usersTable" VBox.vgrow="ALWAYS">
+    <TableView fx:id="usersTable" VBox.vgrow="ALWAYS" styleClass="table-accent">
         <columns>
             <TableColumn fx:id="colNom"      text="Nom"         prefWidth="120" sortable="true"/>
             <TableColumn fx:id="colPrenom"   text="Prenom"      prefWidth="120" sortable="true"/>
             <TableColumn fx:id="colEmail"    text="Email"       prefWidth="200" sortable="true"/>
             <TableColumn fx:id="colRole"     text="Role"        prefWidth="100" sortable="true"/>
-            <TableColumn fx:id="colStatus"   text="Statut"      prefWidth="80" sortable="true"/>
+            <TableColumn fx:id="colStatus"   text="Statut"      minWidth="80" prefWidth="90" sortable="true"/>
             <TableColumn fx:id="colDate"     text="Inscription" prefWidth="120" sortable="true"/>
             <TableColumn fx:id="colActions"  text="Actions"     prefWidth="140" sortable="false"/>
         </columns>

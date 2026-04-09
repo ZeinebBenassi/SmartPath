@@ -41,7 +41,7 @@ public class RegisterController {
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
         "^[A-Za-z0-9+_.-]+@(.+)$");
     private static final Pattern PHONE_PATTERN = Pattern.compile(
-        "^(?:\\+216|0)[0-9]{8}$");
+        "^(?:[0-9]{8}|\\+216[0-9]{8}|0[0-9]{8})$");
     private static final Pattern CIN_PATTERN = Pattern.compile(
         "^[0-9]{8}$");
 
@@ -96,7 +96,7 @@ public class RegisterController {
 
         // Validation Telephone (optionnel)
         if (!tel.isEmpty() && !PHONE_PATTERN.matcher(tel).matches()) {
-            setError(phoneError, "Format: +216XXXXXXXX ou 0XXXXXXXX");
+            setError(phoneError, "Format: XXXXXXXX, +216XXXXXXXX ou 0XXXXXXXX");
             hasErrors = true;
         }
 

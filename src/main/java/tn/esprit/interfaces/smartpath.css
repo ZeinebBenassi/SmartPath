@@ -176,6 +176,16 @@
     -fx-padding: 22;
 }
 
+/* Variante: cadre complet avec bordure accent (bleu) */
+.section-card-accent {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-color: #2563eb;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+    -fx-padding: 22;
+}
+
 .stat-card {
     -fx-background-color: white;
     -fx-background-radius: 14;
@@ -211,6 +221,64 @@
 .section-subtitle {
     -fx-font-size: 13px;
     -fx-text-fill: #5a6a8a;
+}
+
+/* ═══════════════════════════════════════════════════════
+   TABLES (accent bleu) — appliqué uniquement si styleClass="table-accent"
+═══════════════════════════════════════════════════════ */
+.table-view.table-accent {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-border-color: #bfdbfe;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+}
+
+.table-view.table-accent .column-header-background {
+    -fx-background-color: #eff6ff;
+    -fx-background-insets: 0;
+}
+
+.table-view.table-accent .column-header,
+.table-view.table-accent .filler {
+    -fx-size: 40;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #bfdbfe transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-view.table-accent .column-header .label {
+    -fx-text-fill: #1e3a8a;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+.table-view.table-accent .table-cell {
+    -fx-padding: 10 10 10 10;
+    -fx-text-fill: #1a2340;
+    -fx-border-color: transparent transparent #e8eef8 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-view.table-accent .table-row-cell:odd {
+    -fx-background-color: #fafcff;
+}
+
+.table-view.table-accent .table-row-cell:even {
+    -fx-background-color: white;
+}
+
+.table-view.table-accent .table-row-cell:hover {
+    -fx-background-color: #f0f5ff;
+}
+
+.table-view.table-accent .table-row-cell:selected,
+.table-view.table-accent:focused .table-row-cell:selected {
+    -fx-background-color: #dbeafe;
+}
+
+.table-view.table-accent .table-row-cell:selected .table-cell {
+    -fx-text-fill: #1a2340;
 }
 
 /* ─── Statistiques ───────────────────────────────────── */
