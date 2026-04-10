@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+    QuestionContent.fxml — Version SANS sidebar pour chargement dans contentArea du DashboardAdmin
+    Controller : QuestionController (même controller, même logique)
+-->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.esprit.controllers.QuestionController"
+      spacing="0"
+      style="-fx-background-color: #F4F7FB;">
+
+    <!-- BARRE DE CONTRÔLES -->
+    <HBox alignment="CENTER_LEFT" spacing="14"
+          style="-fx-background-color: white; -fx-padding: 14 20;
+                 -fx-border-color: transparent transparent #E2E8F0 transparent;
+                 -fx-border-width: 0 0 1 0;">
+
+        <HBox alignment="CENTER_LEFT" spacing="0" prefWidth="220"
+              style="-fx-background-color: #F8FAFC; -fx-background-radius: 20;
+                     -fx-border-color: #E2E8F0; -fx-border-radius: 20;
+                     -fx-border-width: 1; -fx-padding: 6 12;">
+            <Label text="🔍 " style="-fx-text-fill: #CBD5E1; -fx-font-size: 13px;"/>
+            <TextField fx:id="txtSearch" promptText="Rechercher une question..." prefWidth="180"
+                       style="-fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 13px;"/>
+        </HBox>
+
+        <ComboBox fx:id="cbSort" promptText="Trier par..." prefWidth="160" onAction="#handleSort"
+                  style="-fx-background-color: white; -fx-border-color: #E2E8F0;
+                         -fx-border-radius: 8; -fx-background-radius: 8;
+                         -fx-padding: 5 10; -fx-font-size: 12px;"/>
+
+        <Pane HBox.hgrow="ALWAYS"/>
+
+        <Label fx:id="lblStats" text=""
+               style="-fx-font-size: 12px; -fx-text-fill: #6366F1; -fx-font-weight: bold;"/>
+
+        <Label fx:id="lblCount" text="0 questions"
+               style="-fx-font-size: 12px; -fx-text-fill: #64748B;"/>
+
+        <Button text="➕  Ajouter" onAction="#handleAdd"
+                style="-fx-background-color: #6366F1; -fx-text-fill: white;
+                       -fx-font-weight: bold; -fx-font-size: 13px;
+                       -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;
+                       -fx-effect: dropshadow(gaussian,rgba(99,102,241,0.35),8,0,0,3);"/>
+    </HBox>
+
+    <!-- LISTE DES QUESTIONS -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-background: #F4F7FB; -fx-border-width: 0;">
+        <VBox fx:id="vboxQuestions" spacing="10" style="-fx-padding: 18;">
+
+            <VBox fx:id="vboxEmpty" alignment="CENTER" spacing="12"
+                  style="-fx-padding: 60 0;" visible="false" managed="false">
+                <Label text="❓" style="-fx-font-size: 48px;"/>
+                <Label text="Aucune question trouvée"
+                       style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #94A3B8;"/>
+                <Label text="Cliquez sur « Nouvelle Question » pour commencer"
+                       style="-fx-font-size: 12px; -fx-text-fill: #CBD5E1;"/>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+</VBox>

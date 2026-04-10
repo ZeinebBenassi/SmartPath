@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+    GestionUsers.fxml
+    Page ENFANT — chargée dans le contentArea du DashboardAdmin.
+    Pas de BorderPane racine ici, juste le contenu.
+    Pas de bouton "Retour" (le dashboard reste affiché).
+-->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.esprit.controllers.GestionUsersController"
+      spacing="16"
+      style="-fx-background-color: #f4f6fb; -fx-padding: 0;">
+
+    <!-- Barre d'outils de la page -->
+    <HBox alignment="CENTER_LEFT" spacing="12"
+       style="-fx-padding: 0 0 4 0;">
+     <VBox spacing="2">
+         <Label text="Gestion des utilisateurs"
+             style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+         <Label text="Filtrer, rechercher et gérer les comptes avec une table plus lisible"
+             style="-fx-font-size: 12; -fx-text-fill: #5a6a8a;"/>
+     </VBox>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <TextField fx:id="searchField" promptText="Rechercher..."
+                   styleClass="search-field"
+                   prefWidth="220" onKeyReleased="#handleSearch"/>
+        <ComboBox fx:id="roleFilter" promptText="Tous les rôles"
+                  style="-fx-background-color: white; -fx-border-color: #dce5f6; -fx-border-radius: 8; -fx-background-radius: 8;"
+                  prefWidth="160" onAction="#handleFilter"/>
+    </HBox>
+
+    <!-- Table principale -->
+    <TableView fx:id="usersTable" VBox.vgrow="ALWAYS"
+         style="-fx-background-color: white; -fx-border-color: #e2e8f4; -fx-border-radius: 14; -fx-background-radius: 14; -fx-background-insets: 0;">
+        <columns>
+            <TableColumn fx:id="colId"      text="ID"         prefWidth="55"/>
+            <TableColumn fx:id="colNom"     text="Nom"        prefWidth="130"/>
+            <TableColumn fx:id="colPrenom"  text="Prénom"     prefWidth="130"/>
+            <TableColumn fx:id="colEmail"   text="Email"      prefWidth="220"/>
+            <TableColumn fx:id="colRole"    text="Rôle"       prefWidth="110"/>
+            <TableColumn fx:id="colStatus"  text="Statut"     prefWidth="100"/>
+            <TableColumn fx:id="colDate"    text="Inscription" prefWidth="130"/>
+            <TableColumn fx:id="colActions" text="Actions"    prefWidth="160"/>
+        </columns>
+    </TableView>
+
+    <!-- Pied de page -->
+    <HBox alignment="CENTER_LEFT">
+        <Label fx:id="countLabel" text="0 utilisateurs"
+               style="-fx-text-fill: #8898b8; -fx-font-size: 12;"/>
+    </HBox>
+
+</VBox>

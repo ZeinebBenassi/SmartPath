@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+    Quiz.fxml — redirige vers QuizPlayer.fxml (quiz réel avec BDD)
+-->
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="tn.esprit.controllers.QuizController"
+            prefWidth="900" prefHeight="650"
+            style="-fx-background-color: #f4f6fb;">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="16"
+              style="-fx-padding: 16 24; -fx-background-color: white;
+                     -fx-border-color: #e2e8f4; -fx-border-width: 0 0 1 0;">
+            <Button text="← Retour" onAction="#goBack"
+                    style="-fx-background-color: transparent; -fx-text-fill: #5a6a8a; -fx-font-size: 13;"/>
+            <Label text="Quiz d'orientation personnalité"
+                   style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Label fx:id="progressLabel" text=""
+                   style="-fx-text-fill: #5a6a8a; -fx-font-size: 13;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <StackPane style="-fx-padding: 24;">
+            <!-- Vue intro affichée par défaut — le controller redirige vers QuizPlayer -->
+            <VBox fx:id="introView" alignment="CENTER" spacing="20" maxWidth="700"
+                  style="-fx-background-color: white; -fx-background-radius: 14;
+                         -fx-border-color: #e2e8f4; -fx-border-radius: 14; -fx-padding: 40;">
+                <Label text="🧠" style="-fx-font-size: 56;"/>
+                <Label text="Quiz de Personnalité SmartPath"
+                       style="-fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                <Label wrapText="true" maxWidth="500" textAlignment="CENTER"
+                       text="Découvrez votre profil professionnel en répondant à quelques questions. Le quiz analyse vos traits de personnalité et vous recommande les filières adaptées."
+                       style="-fx-font-size: 13; -fx-text-fill: #5a6a8a; -fx-text-alignment: center;"/>
+                <HBox spacing="16" alignment="CENTER">
+                    <VBox alignment="CENTER" spacing="4"
+                          style="-fx-background-color: #eff6ff; -fx-background-radius: 10; -fx-padding: 12 20;">
+                        <Label text="⏱ 10 min" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #2563eb;"/>
+                        <Label text="Durée estimée" style="-fx-font-size: 10; -fx-text-fill: #5a6a8a;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" spacing="4"
+                          style="-fx-background-color: #f0fdf4; -fx-background-radius: 10; -fx-padding: 12 20;">
+                        <Label text="📋 15 questions" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #059669;"/>
+                        <Label text="Questions max" style="-fx-font-size: 10; -fx-text-fill: #5a6a8a;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" spacing="4"
+                          style="-fx-background-color: #fdf4ff; -fx-background-radius: 10; -fx-padding: 12 20;">
+                        <Label text="🎯 Profil unique" style="-fx-font-size: 13; -fx-font-weight: bold; -fx-text-fill: #7c3aed;"/>
+                        <Label text="Résultat personnalisé" style="-fx-font-size: 10; -fx-text-fill: #5a6a8a;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Champs cachés pour compatibilité contrôleur -->
+            <VBox fx:id="questionView" visible="false" managed="false" spacing="14">
+                <Label fx:id="questionNum"  text=""/>
+                <ProgressBar fx:id="progressBar" prefWidth="220" progress="0"/>
+                <Label fx:id="questionText" wrapText="true" text=""/>
+                <VBox fx:id="answersBox" spacing="10"/>
+                <HBox spacing="10">
+                    <Button fx:id="btnPrev" text="← Précédent" onAction="#prevQuestion"/>
+                    <Button fx:id="btnNext" text="Suivant →"   onAction="#nextQuestion"/>
+                </HBox>
+            </VBox>
+            <VBox fx:id="resultView" visible="false" managed="false" alignment="CENTER" spacing="14">
+                <Label text="Résultat"/>
+                <Label fx:id="profileTypeLabel" text="Profil"/>
+                <ListView fx:id="recommendationsList" prefHeight="180" prefWidth="500"/>
+                <Button text="Recommencer"   onAction="#restartQuiz"/>
+                <Button text="Voir mon profil" onAction="#voirProfil"/>
+            </VBox>
+        </StackPane>
+    </center>
+
+</BorderPane>

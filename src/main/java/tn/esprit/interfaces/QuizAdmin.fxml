@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+    QuizAdmin.fxml — redirige vers QuestionView.fxml (CRUD complet des questions)
+-->
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="tn.esprit.controllers.QuizAdminController"
+            prefWidth="1200" prefHeight="700"
+            style="-fx-background-color: #f4f6fb;">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="16"
+              style="-fx-padding: 16 24; -fx-background-color: white;
+                     -fx-border-color: #e2e8f4; -fx-border-width: 0 0 1 0;">
+            <Button text="← Retour Dashboard" onAction="#goBack"
+                    style="-fx-background-color: transparent; -fx-text-fill: #5a6a8a; -fx-font-size: 13;"/>
+            <Label text="Quiz Admin — Gestion des Questions"
+                   style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+            <Pane HBox.hgrow="ALWAYS"/>
+            <Button text="+ Nouvelle question" onAction="#addQuestion"
+                    style="-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-size: 12;
+                           -fx-padding: 8 18; -fx-background-radius: 8;"/>
+        </HBox>
+    </top>
+
+    <center>
+        <StackPane style="-fx-padding: 24;">
+            <VBox alignment="CENTER" spacing="16"
+                  style="-fx-background-color: white; -fx-background-radius: 14;
+                         -fx-border-color: #e2e8f4; -fx-border-radius: 14; -fx-padding: 40;">
+                <Label text="🧠" style="-fx-font-size: 48;"/>
+                <Label text="Gestion des Questions Quiz"
+                       style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #2563eb;"/>
+                <Label text="Chargement de la vue de gestion..."
+                       style="-fx-font-size: 14; -fx-text-fill: #5a6a8a;"/>
+            </VBox>
+
+            <!-- Champs cachés pour compatibilité avec le contrôleur -->
+            <ListView fx:id="questionsList" visible="false" managed="false"/>
+            <Label fx:id="countLabel"   visible="false" managed="false"/>
+            <Label fx:id="totalQLabel"  visible="false" managed="false"/>
+            <Label fx:id="totalRepLabel"visible="false" managed="false"/>
+            <Label fx:id="editorTitle"  visible="false" managed="false"/>
+            <Label fx:id="saveStatus"   visible="false" managed="false"/>
+            <TextArea fx:id="questionTextArea" visible="false" managed="false"/>
+            <ComboBox fx:id="categorieCombo"   visible="false" managed="false"/>
+            <TextField fx:id="ordreField"      visible="false" managed="false"/>
+            <TextField fx:id="rep1Field"       visible="false" managed="false"/>
+            <TextField fx:id="rep2Field"       visible="false" managed="false"/>
+            <TextField fx:id="rep3Field"       visible="false" managed="false"/>
+            <TextField fx:id="rep4Field"       visible="false" managed="false"/>
+            <ComboBox fx:id="profil1Combo"     visible="false" managed="false"/>
+            <ComboBox fx:id="profil2Combo"     visible="false" managed="false"/>
+            <ComboBox fx:id="profil3Combo"     visible="false" managed="false"/>
+            <ComboBox fx:id="profil4Combo"     visible="false" managed="false"/>
+        </StackPane>
+    </center>
+
+</BorderPane>

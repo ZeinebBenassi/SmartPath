@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="tn.esprit.controllers.QuizPlayerController"
+            prefWidth="900" prefHeight="680"
+            style="-fx-background-color: #F4F7FB;">
+
+    <!-- HEADER -->
+    <top>
+        <VBox style="-fx-background-color: #FFFFFF; -fx-padding: 20 30;
+                     -fx-border-color: transparent transparent #E2E8F0 transparent; -fx-border-width: 0 0 1 0;"
+              spacing="10">
+            <HBox alignment="CENTER_LEFT">
+                <Label text="🎯  Quiz de Personnalité SmartPath"
+                       style="-fx-font-size: 17px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                <HBox HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblProgress" text="1 / 12"
+                       style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #6366F1;"/>
+            </HBox>
+
+            <ProgressBar fx:id="progressBar" progress="0.0" maxWidth="Infinity" prefHeight="8"
+                         style="-fx-accent: #6366F1; -fx-background-color: #EEF2FF; -fx-background-radius: 10;"/>
+
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label fx:id="lblQuestionNumber" text="Question 1 / 12"
+                       style="-fx-font-size: 13px; -fx-text-fill: #94A3B8;"/>
+                <HBox HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblCategory" text="📂 analytique"
+                       style="-fx-background-color: #EEF2FF; -fx-text-fill: #6366F1; -fx-background-radius: 20;
+                              -fx-padding: 3 10; -fx-font-size: 11px; -fx-font-weight: bold;"/>
+            </HBox>
+        </VBox>
+    </top>
+
+    <!-- CONTENU -->
+    <center>
+        <ScrollPane fitToWidth="true"
+                    style="-fx-background-color: #F4F7FB; -fx-background: #F4F7FB; -fx-border-width: 0;">
+            <VBox style="-fx-padding: 30 60;" spacing="0">
+                <VBox style="-fx-background-color: #FFFFFF; -fx-background-radius: 16;
+                             -fx-border-color: #E2E8F0; -fx-border-radius: 16; -fx-border-width: 1;
+                             -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.07),12,0,0,3); -fx-padding: 32 36;"
+                      spacing="22">
+
+                    <Label fx:id="lblQuestionText" text="..."
+                           style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1E293B; -fx-wrap-text: true;"
+                           wrapText="true" maxWidth="Infinity"/>
+
+                    <Separator style="-fx-background-color: #F1F5F9;"/>
+
+                    <VBox fx:id="vboxAnswers" spacing="10"/>
+
+                    <HBox spacing="12" alignment="CENTER_RIGHT" style="-fx-padding: 10 0 0 0;">
+                        <Button fx:id="btnPrev" text="←  Précédent" onAction="#handlePrev" disable="true"
+                                style="-fx-background-color: #F1F5F9; -fx-text-fill: #64748B; -fx-background-radius: 12;
+                                       -fx-padding: 10 22; -fx-cursor: hand; -fx-font-size: 13px; -fx-font-weight: bold;
+                                       -fx-border-color: #E2E8F0; -fx-border-radius: 12; -fx-border-width: 1;"/>
+                        <HBox HBox.hgrow="ALWAYS"/>
+                        <Button fx:id="btnNext" text="Suivant  →" onAction="#handleNext" disable="true"
+                                style="-fx-background-color: #6366F1; -fx-text-fill: white; -fx-background-radius: 12;
+                                       -fx-padding: 10 26; -fx-cursor: hand; -fx-font-size: 13px; -fx-font-weight: bold;
+                                       -fx-effect: dropshadow(gaussian,rgba(99,102,241,0.4),10,0,0,3);"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>

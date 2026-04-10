@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+    GestionFilieres.fxml
+    Ce FXML charge GestionFilieresController qui redirige automatiquement
+    vers FiliereView.fxml (CRUD complet avec cartes, images, tri, filtre).
+-->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.esprit.controllers.GestionFilieresController"
+      spacing="16"
+      style="-fx-background-color: #f4f6fb; -fx-padding: 0;">
+
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Label text="Gestion des filières"
+               style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <Button text="+ Nouvelle filière" onAction="#addFiliere"
+                style="-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-size: 12;
+                       -fx-font-weight: bold; -fx-padding: 8 14; -fx-background-radius: 8; -fx-cursor: hand;"/>
+    </HBox>
+
+    <!-- TableView gardée pour compatibilité FXML — la redirection se fait dans initialize() -->
+    <TableView fx:id="filieresTable" VBox.vgrow="ALWAYS"
+               style="-fx-background-color: white; -fx-border-color: #e2e8f4;
+                      -fx-border-radius: 12; -fx-background-radius: 12;">
+        <columns>
+            <TableColumn fx:id="colId"          text="ID"          prefWidth="60"/>
+            <TableColumn fx:id="colNom"         text="Nom"         prefWidth="200"/>
+            <TableColumn fx:id="colDescription" text="Description" prefWidth="350"/>
+            <TableColumn fx:id="colActions"     text="Actions"     prefWidth="160"/>
+        </columns>
+        <placeholder>
+            <Label text="Chargement des filières..." style="-fx-text-fill: #8898b8;"/>
+        </placeholder>
+    </TableView>
+
+    <!-- Champs cachés nécessaires pour le contrôleur -->
+    <VBox visible="false" managed="false">
+        <TextField fx:id="searchField"/>
+        <TextField fx:id="nomField"/>
+        <TextField fx:id="categorieField"/>
+        <TextField fx:id="niveauField"/>
+        <TextField fx:id="iconField"/>
+        <TextArea  fx:id="descriptionField"/>
+        <TextArea  fx:id="debouchesField"/>
+        <TextArea  fx:id="competencesField"/>
+        <Label     fx:id="messageLabel"/>
+        <Button    fx:id="btnRetour" text="Retour" onAction="#goBack"/>
+    </VBox>
+
+</VBox>

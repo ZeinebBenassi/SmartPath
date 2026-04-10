@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.esprit.controllers.QuestionFormController"
+      prefWidth="600" style="-fx-background-color: #FFFFFF;" spacing="0">
+
+    <HBox style="-fx-background-color: linear-gradient(to right,#6366F1,#8B5CF6); -fx-padding: 20 24;">
+        <Label fx:id="lblTitle" text="➕ Nouvelle Question"
+               style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-background: #FFFFFF; -fx-border-width: 0;">
+        <VBox spacing="18" style="-fx-padding: 24 28;">
+
+            <VBox spacing="6">
+                <Label text="Texte de la question *"
+                       style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                <TextArea fx:id="txtText" promptText="Ex : Quel type de problème aimez-vous résoudre ?"
+                          prefRowCount="2" wrapText="true"
+                          style="-fx-background-color: #F8FAFC; -fx-background-radius: 8;
+                                 -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1;
+                                 -fx-padding: 8 12; -fx-font-size: 13px;"/>
+            </VBox>
+
+            <HBox spacing="16">
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="Catégorie *"
+                           style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <ComboBox fx:id="cbCategory" maxWidth="Infinity"/>
+                </VBox>
+                <VBox spacing="6">
+                    <Label text="Ordre" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <Spinner fx:id="spOrdre" prefWidth="90"/>
+                </VBox>
+            </HBox>
+
+            <CheckBox fx:id="chkActive" text="Question active (visible dans le quiz)" selected="true"
+                      style="-fx-font-size: 13px; -fx-text-fill: #475569;"/>
+
+            <VBox spacing="0">
+                <Separator style="-fx-background-color: #E2E8F0;"/>
+                <Label text="Les 4 Réponses"
+                       style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #6366F1; -fx-padding: 12 0 4 0;"/>
+                <Label text="Chaque réponse doit avoir un texte, un nombre de points (1-10) et un trait de personnalité."
+                       style="-fx-font-size: 11px; -fx-text-fill: #94A3B8; -fx-wrap-text: true;"/>
+            </VBox>
+
+            <VBox fx:id="vboxAnswers" spacing="10"/>
+
+        </VBox>
+    </ScrollPane>
+
+    <HBox spacing="12" alignment="CENTER_RIGHT"
+          style="-fx-background-color: #F8FAFC; -fx-padding: 16 24;
+                 -fx-border-color: #E2E8F0 transparent transparent transparent; -fx-border-width: 1;">
+        <Button fx:id="btnCancel" text="Annuler" onAction="#handleCancel"
+                style="-fx-background-color: #F8FAFC; -fx-text-fill: #64748B; -fx-background-radius: 20;
+                       -fx-padding: 9 20; -fx-cursor: hand; -fx-border-color: #E2E8F0; -fx-border-radius: 20; -fx-border-width: 1;"/>
+        <Button fx:id="btnSave" text="💾  Enregistrer" onAction="#handleSave"
+                style="-fx-background-color: #6366F1; -fx-text-fill: white; -fx-font-weight: bold;
+                       -fx-font-size: 13px; -fx-background-radius: 20; -fx-padding: 9 20; -fx-cursor: hand;"/>
+    </HBox>
+
+</VBox>
