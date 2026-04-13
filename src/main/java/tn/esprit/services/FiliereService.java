@@ -1,4 +1,4 @@
-package services;
+package tn.esprit.services;
 
 import tn.esprit.entity.Filiere;
 import tn.esprit.utils.MyDatabase;

@@ -4,7 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import services.UserService;
+import tn.esprit.services.UserService;
 
 public class ForgotPasswordController {
 

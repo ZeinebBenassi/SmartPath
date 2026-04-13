@@ -7,7 +7,7 @@
       fx:controller="tn.esprit.controllers.FiliereFormController"
       prefWidth="520" style="-fx-background-color: #FFFFFF;" spacing="0">
 
-    <HBox style="-fx-background-color: linear-gradient(to right,#6366F1,#8B5CF6); -fx-padding: 20 24;">
+    <HBox style="-fx-background-color: linear-gradient(to right,#2563eb,#3b82f6); -fx-padding: 20 24;">
         <Label fx:id="lblTitle" text="➕  Nouvelle Filière"
                style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;"/>
     </HBox>
@@ -64,7 +64,7 @@
                                       -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1;
                                       -fx-padding: 8 12; -fx-font-size: 12px;"/>
                     <Button text="📁 Choisir" onAction="#handleChooseImage"
-                            style="-fx-background-color: #6366F1; -fx-text-fill: white; -fx-font-weight: bold;
+                            style="-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold;
                                    -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;"/>
                     <Button text="✕" onAction="#handleRemoveImage"
                             style="-fx-background-color: #FEE2E2; -fx-text-fill: #EF4444;
@@ -95,7 +95,7 @@
                 style="-fx-background-color: #F8FAFC; -fx-text-fill: #64748B; -fx-background-radius: 20;
                        -fx-padding: 9 20; -fx-cursor: hand; -fx-border-color: #E2E8F0; -fx-border-radius: 20; -fx-border-width: 1;"/>
         <Button fx:id="btnSave" text="💾  Enregistrer" onAction="#handleSave"
-                style="-fx-background-color: #6366F1; -fx-text-fill: white; -fx-font-weight: bold;
+                style="-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold;
                        -fx-font-size: 13px; -fx-background-radius: 20; -fx-padding: 9 20; -fx-cursor: hand;"/>
     </HBox>
 

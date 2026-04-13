@@ -35,13 +35,13 @@
         <Pane HBox.hgrow="ALWAYS"/>
 
         <Label fx:id="lblStats" text=""
-               style="-fx-font-size: 12px; -fx-text-fill: #6366F1; -fx-font-weight: bold;"/>
+               style="-fx-font-size: 12px; -fx-text-fill: #2563eb; -fx-font-weight: bold;"/>
 
         <Label fx:id="lblCount" text="0 questions"
                style="-fx-font-size: 12px; -fx-text-fill: #64748B;"/>
 
         <Button text="➕  Ajouter" onAction="#handleAdd"
-                style="-fx-background-color: #6366F1; -fx-text-fill: white;
+                style="-fx-background-color: #2563eb; -fx-text-fill: white;
                        -fx-font-weight: bold; -fx-font-size: 13px;
                        -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;
                        -fx-effect: dropshadow(gaussian,rgba(99,102,241,0.35),8,0,0,3);"/>

@@ -2,7 +2,7 @@ package tn.esprit.services;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import models.Prof;
+import tn.esprit.entity.Prof;
 import tn.esprit.interfaces.IService;
 import tn.esprit.utils.MyDatabase;
 

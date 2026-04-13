@@ -17,7 +17,7 @@
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 2, 0);
 }
 .sidebar-logo-box, .sidebar-logo-zone {
-    -fx-background-color: linear-gradient(to bottom right, #6366F1, #8B5CF6);
+    -fx-background-color: linear-gradient(to bottom right, #2563eb, #3b82f6);
     -fx-padding: 24 20 20 20;
 }
 .sidebar-logo-title    { -fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: white; }
@@ -57,7 +57,7 @@
 }
 
 .avatar-admin {
-    -fx-background-color: #6366F1; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 15px;
+    -fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 15px;
     -fx-background-radius: 50%; -fx-min-width: 36px; -fx-max-width: 36px; -fx-min-height: 36px; -fx-max-height: 36px; -fx-alignment: CENTER;
 }
 .avatar-etudiant {
@@ -105,11 +105,11 @@
 .table-view .table-cell               { -fx-text-fill: #334155; -fx-font-size: 13px; -fx-padding: 11 10; }
 
 .btn-primary {
-    -fx-background-color: #6366F1; -fx-text-fill: white; -fx-font-weight: bold;
+    -fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold;
     -fx-font-size: 13px; -fx-background-radius: 20; -fx-padding: 9 20; -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(99,102,241,0.35), 8, 0, 0, 3);
+    -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.35), 8, 0, 0, 3);
 }
-.btn-primary:hover { -fx-background-color: #5254CC; }
+.btn-primary:hover { -fx-background-color: #1d4ed8; }
 
 .btn-secondary {
     -fx-background-color: #F8FAFC; -fx-text-fill: #64748B; -fx-background-radius: 20;
@@ -124,8 +124,8 @@
     -fx-text-fill: #334155; -fx-cursor: hand; -fx-wrap-text: true; -fx-max-width: infinity;
 }
 .answer-radio:hover    { -fx-background-color: #EEF2FF; -fx-border-color: #A5B4FC; }
-.answer-radio:selected { -fx-background-color: #EEF2FF; -fx-border-color: #6366F1; -fx-text-fill: #3730A3; }
-.answer-radio:selected .radio .dot { -fx-background-color: #6366F1; }
+.answer-radio:selected { -fx-background-color: #EEF2FF; -fx-border-color: #2563eb; -fx-text-fill: #3730A3; }
+.answer-radio:selected .radio .dot { -fx-background-color: #2563eb; }
 
 .score-bar-bg {
     -fx-background-color: #F1F5F9; -fx-background-radius: 12;
@@ -135,10 +135,10 @@
 .score-value-label  { -fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #64748B; -fx-min-width: 60; }
 .no-data-label      { -fx-font-size: 15px; -fx-text-fill: #94A3B8; -fx-wrap-text: true; }
 
-.progress-bar { -fx-accent: #6366F1; }
-.progress-bar .bar   { -fx-background-color: linear-gradient(to right, #6366F1, #8B5CF6); -fx-background-radius: 10; }
+.progress-bar { -fx-accent: #2563eb; }
+.progress-bar .bar   { -fx-background-color: linear-gradient(to right, #2563eb, #3b82f6); -fx-background-radius: 10; }
 .progress-bar .track { -fx-background-color: #EEF2FF; -fx-background-radius: 10; }
 
 .check-box { -fx-font-size: 13px; -fx-text-fill: #475569; }
-.check-box:selected .box  { -fx-background-color: #6366F1; -fx-border-color: #6366F1; }
+.check-box:selected .box  { -fx-background-color: #2563eb; -fx-border-color: #2563eb; }
 .check-box:selected .mark { -fx-background-color: white; }

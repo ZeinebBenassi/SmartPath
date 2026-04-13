@@ -8,7 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import tn.esprit.entity.Answer;
 import tn.esprit.entity.Question;
-import services.QuestionService;
+import tn.esprit.services.QuestionService;
 
 import java.net.URL;
 import java.sql.SQLException;

@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="tn.esprit.controllers.DashboardProfController"
-            prefWidth="1200" prefHeight="700"
-            stylesheets="@smartpath.css"
-            styleClass="app-bg">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="700" prefWidth="1200" styleClass="app-bg" stylesheets="@smartpath.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.esprit.controllers.DashboardProfController">
 
     <!-- ═══════ SIDEBAR ═══════ -->
     <left>
@@ -20,34 +26,32 @@
 
             <!-- Navigation -->
             <VBox spacing="2" style="-fx-padding: 16 10 0 10;">
-                <Label text="MENU" styleClass="sidebar-section-label"/>
-                <Button fx:id="btnDashboard" text="🏠  Tableau de bord"    onAction="#showDashboard"  maxWidth="Infinity" styleClass="nav-btn-active"/>
-                <Button fx:id="btnMatieres"  text="📖  Mes matières"        onAction="#showMatieres"   maxWidth="Infinity" styleClass="nav-btn"/>
-                <Button fx:id="btnLecons"    text="📝  Mes leçons"          onAction="#showLecons"     maxWidth="Infinity" styleClass="nav-btn"/>
-                <Button fx:id="btnTests"     text="📋  Tests / Évaluations" onAction="#showTests"      maxWidth="Infinity" styleClass="nav-btn"/>
-                <Button fx:id="btnProfil"    text="👤  Mon profil"          onAction="#showProfil"     maxWidth="Infinity" styleClass="nav-btn"/>
-                <Button fx:id="btnEtudiants" text="🎓  Mes étudiants"       onAction="#showEtudiants"  maxWidth="Infinity" styleClass="nav-btn"/>
+                <Label styleClass="sidebar-section-label" text="MENU" />
+                <Button fx:id="btnDashboard" maxWidth="Infinity" onAction="#showDashboard" styleClass="nav-btn-active" text="🏠  Tableau de bord" />
+                <Button fx:id="btnMatieres" maxWidth="Infinity" onAction="#showMatieres" styleClass="nav-btn" text="📖  Mes matières" />
+                <Button fx:id="btnLecons" maxWidth="Infinity" onAction="#showLecons" styleClass="nav-btn" text="📝  Mes leçons" />
+                <Button fx:id="btnTests" maxWidth="Infinity" onAction="#showTests" styleClass="nav-btn" text="📋  Tests / Évaluations" />
+                <Button fx:id="btnProfil" maxWidth="Infinity" onAction="#showProfil" styleClass="nav-btn" text="👤  Mon profil" />
+                <Button fx:id="btnEtudiants" maxWidth="Infinity" onAction="#showEtudiants" styleClass="nav-btn" text="🎓  Mes étudiants" />
             </VBox>
 
-            <Pane VBox.vgrow="ALWAYS"/>
+            <Pane VBox.vgrow="ALWAYS" />
 
             <!-- Vue étudiant -->
             <VBox style="-fx-padding: 0 10 12 10;">
-                <Button fx:id="btnVueEtudiant" text="👁  Vue Étudiant"
-                        onAction="#switchToVueEtudiant" maxWidth="Infinity" styleClass="chip-btn"/>
+                <Button fx:id="btnVueEtudiant" maxWidth="Infinity" onAction="#switchToVueEtudiant" styleClass="chip-btn" text="👁  Vue Étudiant" />
             </VBox>
 
             <!-- Footer -->
             <VBox styleClass="sidebar-footer">
-                <HBox spacing="12" alignment="CENTER_LEFT">
-                    <Label text="P" styleClass="avatar-prof"/>
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label styleClass="avatar-prof" text="P" />
                     <VBox spacing="1">
-                        <Label fx:id="profNameLabel" text="Professeur" styleClass="user-name"/>
-                        <Label fx:id="profSpecLabel" text=""            styleClass="user-role"/>
+                        <Label fx:id="profNameLabel" styleClass="user-name" text="Professeur" />
+                        <Label fx:id="profSpecLabel" styleClass="user-role" text="" />
                     </VBox>
                 </HBox>
-                <Button text="Se déconnecter" onAction="#handleLogout"
-                        maxWidth="Infinity" styleClass="btn-logout"/>
+                <Button maxWidth="Infinity" onAction="#handleLogout" styleClass="btn-logout" text="Se déconnecter" />
             </VBox>
         </VBox>
     </left>
@@ -58,82 +62,79 @@
 
             <!-- Topbar -->
             <HBox alignment="CENTER_LEFT" styleClass="topbar-modern">
-                <Label fx:id="pageTitle" text="Tableau de bord" styleClass="topbar-title"/>
-                <Pane HBox.hgrow="ALWAYS"/>
-                <Button text="+ Nouvelle leçon" onAction="#addLecon" styleClass="btn-primary"/>
+                <Label fx:id="pageTitle" styleClass="topbar-title" text="Tableau de bord" />
+                <Pane HBox.hgrow="ALWAYS" />
+                <Button onAction="#addLecon" styleClass="btn-primary" text="+ Nouvelle leçon" />
             </HBox>
 
             <!-- Zone de contenu -->
-            <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS" style="-fx-padding: 24 28;">
+            <StackPane fx:id="contentArea" style="-fx-padding: 24 28;" VBox.vgrow="ALWAYS">
                 <VBox fx:id="dashboardView" spacing="22">
 
                     <!-- Titre -->
                     <VBox spacing="3">
-                        <Label text="Tableau de bord"
-                               style="-fx-font-size: 17; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
-                        <Label text="Bienvenue dans votre espace enseignant"
-                               style="-fx-font-size: 12; -fx-text-fill: #8898b8;"/>
+                        <Label style="-fx-font-size: 17; -fx-font-weight: bold; -fx-text-fill: #1a2340;" text="Tableau de bord" />
+                        <Label style="-fx-font-size: 12; -fx-text-fill: #8898b8;" text="Bienvenue dans votre espace enseignant" />
                     </VBox>
 
                     <!-- Cartes stats -->
                     <HBox spacing="16">
-                        <VBox HBox.hgrow="ALWAYS" spacing="12" styleClass="stat-card">
+                        <VBox spacing="12" styleClass="stat-card" HBox.hgrow="ALWAYS">
                             <HBox alignment="CENTER_LEFT" spacing="10">
-                                <Label text="📖" style="-fx-font-size: 20;"/>
-                                <Label text="Matières" styleClass="stat-label"/>
+                                <Label style="-fx-font-size: 20;" text="📖" />
+                                <Label styleClass="stat-label" text="Matières" />
                             </HBox>
-                            <Label fx:id="nbMatieres" text="0" styleClass="stat-number"/>
-                            <Label text="Enseignées" styleClass="muted-label"/>
+                            <Label fx:id="nbMatieres" styleClass="stat-number" text="0" />
+                            <Label styleClass="muted-label" text="Enseignées" />
                         </VBox>
-                        <VBox HBox.hgrow="ALWAYS" spacing="12" styleClass="stat-card">
+                        <VBox spacing="12" styleClass="stat-card" HBox.hgrow="ALWAYS">
                             <HBox alignment="CENTER_LEFT" spacing="10">
-                                <Label text="📝" style="-fx-font-size: 20;"/>
-                                <Label text="Leçons" styleClass="stat-label"/>
+                                <Label style="-fx-font-size: 20;" text="📝" />
+                                <Label styleClass="stat-label" text="Leçons" />
                             </HBox>
-                            <Label fx:id="nbLecons" text="0" styleClass="stat-number-green"/>
-                            <Label text="Publiées" styleClass="muted-label"/>
+                            <Label fx:id="nbLecons" styleClass="stat-number-green" text="0" />
+                            <Label styleClass="muted-label" text="Publiées" />
                         </VBox>
-                        <VBox HBox.hgrow="ALWAYS" spacing="12" styleClass="stat-card">
+                        <VBox spacing="12" styleClass="stat-card" HBox.hgrow="ALWAYS">
                             <HBox alignment="CENTER_LEFT" spacing="10">
-                                <Label text="📋" style="-fx-font-size: 20;"/>
-                                <Label text="Tests" styleClass="stat-label"/>
+                                <Label style="-fx-font-size: 20;" text="📋" />
+                                <Label styleClass="stat-label" text="Tests" />
                             </HBox>
-                            <Label fx:id="nbTests" text="0" styleClass="stat-number-purple"/>
-                            <Label text="Créés" styleClass="muted-label"/>
+                            <Label fx:id="nbTests" styleClass="stat-number-purple" text="0" />
+                            <Label styleClass="muted-label" text="Créés" />
                         </VBox>
-                        <VBox HBox.hgrow="ALWAYS" spacing="12" styleClass="stat-card">
+                        <VBox spacing="12" styleClass="stat-card" HBox.hgrow="ALWAYS">
                             <HBox alignment="CENTER_LEFT" spacing="10">
-                                <Label text="🎓" style="-fx-font-size: 20;"/>
-                                <Label text="Étudiants" styleClass="stat-label"/>
+                                <Label style="-fx-font-size: 20;" text="🎓" />
+                                <Label styleClass="stat-label" text="Étudiants" />
                             </HBox>
-                            <Label fx:id="nbEtudiants" text="0" styleClass="stat-number-amber"/>
-                            <Label text="Suivis" styleClass="muted-label"/>
+                            <Label fx:id="nbEtudiants" styleClass="stat-number-amber" text="0" />
+                            <Label styleClass="muted-label" text="Suivis" />
                         </VBox>
                     </HBox>
 
                     <!-- Actions rapides -->
                     <VBox spacing="14" styleClass="section-card">
                         <VBox spacing="3">
-                            <Label text="Actions rapides" styleClass="card-title"/>
-                            <Label text="Accédez rapidement à vos outils d'enseignement"
-                                   styleClass="card-subtitle"/>
+                            <Label styleClass="card-title" text="Actions rapides" />
+                            <Label styleClass="card-subtitle" text="Accédez rapidement à vos outils d'enseignement" />
                         </VBox>
                         <HBox spacing="12">
-                            <Button text="📝  Nouvelle leçon"   onAction="#addLecon"      styleClass="chip-btn"/>
-                            <Button text="📖  Mes matières"     onAction="#showMatieres"  styleClass="chip-btn-success"/>
-                            <Button text="🎓  Mes étudiants"    onAction="#showEtudiants" styleClass="chip-btn-warn"/>
+                            <Button onAction="#addLecon" styleClass="chip-btn" text="📝  Nouvelle leçon" />
+                            <Button onAction="#showMatieres" styleClass="chip-btn-success" text="📖  Mes matières" />
+                            <Button onAction="#showEtudiants" styleClass="chip-btn-warn" text="🎓  Mes étudiants" />
                         </HBox>
                     </VBox>
 
                     <!-- Champs cachés -->
-                    <VBox visible="false" managed="false">
+                    <VBox managed="false" visible="false">
                         <TableView fx:id="leconsTable">
                             <columns>
-                                <TableColumn fx:id="colTitre"/>
-                                <TableColumn fx:id="colMatiere"/>
-                                <TableColumn fx:id="colDuree"/>
-                                <TableColumn fx:id="colDate"/>
-                                <TableColumn fx:id="colActionsLecon"/>
+                                <TableColumn fx:id="colTitre" />
+                                <TableColumn fx:id="colMatiere" />
+                                <TableColumn fx:id="colDuree" />
+                                <TableColumn fx:id="colDate" />
+                                <TableColumn fx:id="colActionsLecon" />
                             </columns>
                         </TableView>
                     </VBox>

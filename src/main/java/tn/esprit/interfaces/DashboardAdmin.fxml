@@ -1,12 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="tn.esprit.controllers.DashboardAdminController"
-            prefWidth="1200" prefHeight="700"
-            stylesheets="@smartpath.css"
-            styleClass="app-bg">
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane prefHeight="700" prefWidth="1200" styleClass="app-bg" stylesheets="@smartpath.css" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="tn.esprit.controllers.DashboardAdminController">
 
     <!-- ═══════ SIDEBAR ═══════ -->
     <left>
@@ -20,34 +26,32 @@
 
             <!-- Navigation principale -->
             <VBox spacing="2" style="-fx-padding: 16 10 0 10;">
-                <Label text="MENU" styleClass="sidebar-section-label"/>
-                <Button fx:id="btnDashboard" text="🏠  Dashboard"        onAction="#showDashboard"   maxWidth="Infinity" styleClass="nav-btn-active"/>
-                <Button fx:id="btnUsers"     text="👥  Utilisateurs"      onAction="#showUsers"       maxWidth="Infinity" styleClass="nav-btn"/>
-                <Button fx:id="btnFilieres"  text="📚  Filières"          onAction="#showFilieres"    maxWidth="Infinity" styleClass="nav-btn"/>
-                <Button fx:id="btnOffres"    text="💼  Offres de stage"   onAction="#showOffres"      maxWidth="Infinity" styleClass="nav-btn"/>
-                <Button fx:id="btnQuizAdmin" text="🧠  Quiz personnalité" onAction="#showQuizAdmin"   maxWidth="Infinity" styleClass="nav-btn"/>
-                <Button fx:id="btnProfil"    text="👤  Mon profil"        onAction="#showProfil"      maxWidth="Infinity" styleClass="nav-btn"/>
+                <Label styleClass="sidebar-section-label" text="MENU" />
+                <Button fx:id="btnDashboard" maxWidth="Infinity" onAction="#showDashboard" styleClass="nav-btn-active" text="🏠  Dashboard" />
+                <Button fx:id="btnUsers" maxWidth="Infinity" onAction="#showUsers" styleClass="nav-btn" text="👥  Utilisateurs" />
+                <Button fx:id="btnFilieres" maxWidth="Infinity" onAction="#showFilieres" styleClass="nav-btn" text="📚  Filières" />
+                <Button fx:id="btnOffres" maxWidth="Infinity" onAction="#showOffres" styleClass="nav-btn" text="💼  Offres de stage" />
+                <Button fx:id="btnQuizAdmin" maxWidth="Infinity" onAction="#showQuizAdmin" styleClass="nav-btn" text="🧠  Quiz personnalité" />
+                <Button fx:id="btnProfil" maxWidth="Infinity" onAction="#showProfil" styleClass="nav-btn" text="👤  Mon profil" />
             </VBox>
 
-            <Pane VBox.vgrow="ALWAYS"/>
+            <Pane VBox.vgrow="ALWAYS" />
 
             <!-- Bouton vue étudiant -->
             <VBox style="-fx-padding: 0 10 12 10;">
-                <Button fx:id="btnVueEtudiant" text="👁  Vue Étudiant"
-                        onAction="#switchToVueEtudiant" maxWidth="Infinity" styleClass="chip-btn"/>
+                <Button fx:id="btnVueEtudiant" maxWidth="Infinity" onAction="#switchToVueEtudiant" styleClass="chip-btn" text="👁  Vue Étudiant" />
             </VBox>
 
             <!-- Footer utilisateur -->
             <VBox styleClass="sidebar-footer">
-                <HBox spacing="12" alignment="CENTER_LEFT">
-                    <Label text="A" styleClass="avatar-admin"/>
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label styleClass="avatar-admin" text="A" />
                     <VBox spacing="1">
-                        <Label fx:id="adminNameLabel" text="Admin" styleClass="user-name"/>
-                        <Label text="Administrateur" styleClass="user-role"/>
+                        <Label fx:id="adminNameLabel" styleClass="user-name" text="Admin" />
+                        <Label styleClass="user-role" text="Administrateur" />
                     </VBox>
                 </HBox>
-                <Button text="Se déconnecter" onAction="#handleLogout"
-                        maxWidth="Infinity" styleClass="btn-logout"/>
+                <Button maxWidth="Infinity" onAction="#handleLogout" styleClass="btn-logout" text="Se déconnecter" />
             </VBox>
         </VBox>
     </left>
@@ -58,83 +62,80 @@
 
             <!-- Topbar -->
             <HBox alignment="CENTER_LEFT" styleClass="topbar-modern">
-                <Label fx:id="pageTitle" text="Dashboard" styleClass="topbar-title"/>
-                <Pane HBox.hgrow="ALWAYS"/>
-                <Label fx:id="dateLabel" text="" styleClass="topbar-date"/>
+                <Label fx:id="pageTitle" styleClass="topbar-title" text="Dashboard" />
+                <Pane HBox.hgrow="ALWAYS" />
+                <Label fx:id="dateLabel" styleClass="topbar-date" text="" />
             </HBox>
 
             <!-- Contenu dynamique -->
-            <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS" style="-fx-padding: 24 28;">
+            <StackPane fx:id="contentArea" style="-fx-padding: 24 28;" VBox.vgrow="ALWAYS">
                 <VBox fx:id="dashboardView" spacing="22">
 
                     <!-- Titre section -->
                     <VBox spacing="3">
-                        <Label text="Vue d'ensemble"
-                               style="-fx-font-size: 17; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
-                        <Label text="Statistiques générales de la plateforme"
-                               style="-fx-font-size: 12; -fx-text-fill: #8898b8;"/>
+                        <Label style="-fx-font-size: 17; -fx-font-weight: bold; -fx-text-fill: #1a2340;" text="Vue d'ensemble" />
+                        <Label style="-fx-font-size: 12; -fx-text-fill: #8898b8;" text="Statistiques générales de la plateforme" />
                     </VBox>
 
                     <!-- Cartes stats -->
                     <HBox spacing="16">
-                        <VBox HBox.hgrow="ALWAYS" spacing="12" styleClass="stat-card">
+                        <VBox spacing="12" styleClass="stat-card" HBox.hgrow="ALWAYS">
                             <HBox alignment="CENTER_LEFT" spacing="10">
-                                <Label text="👥" style="-fx-font-size: 20;"/>
-                                <Label text="Utilisateurs" styleClass="stat-label"/>
+                                <Label style="-fx-font-size: 20;" text="👥" />
+                                <Label styleClass="stat-label" text="Utilisateurs" />
                             </HBox>
-                            <Label fx:id="totalUsers" text="—" styleClass="stat-number"/>
-                            <Label text="Total inscrits" styleClass="muted-label"/>
+                            <Label fx:id="totalUsers" styleClass="stat-number" text="—" />
+                            <Label styleClass="muted-label" text="Total inscrits" />
                         </VBox>
-                        <VBox HBox.hgrow="ALWAYS" spacing="12" styleClass="stat-card">
+                        <VBox spacing="12" styleClass="stat-card" HBox.hgrow="ALWAYS">
                             <HBox alignment="CENTER_LEFT" spacing="10">
-                                <Label text="🎓" style="-fx-font-size: 20;"/>
-                                <Label text="Étudiants" styleClass="stat-label"/>
+                                <Label style="-fx-font-size: 20;" text="🎓" />
+                                <Label styleClass="stat-label" text="Étudiants" />
                             </HBox>
-                            <Label fx:id="totalEtudiants" text="—" styleClass="stat-number-green"/>
-                            <Label text="Apprenants actifs" styleClass="muted-label"/>
+                            <Label fx:id="totalEtudiants" styleClass="stat-number-green" text="—" />
+                            <Label styleClass="muted-label" text="Apprenants actifs" />
                         </VBox>
-                        <VBox HBox.hgrow="ALWAYS" spacing="12" styleClass="stat-card">
+                        <VBox spacing="12" styleClass="stat-card" HBox.hgrow="ALWAYS">
                             <HBox alignment="CENTER_LEFT" spacing="10">
-                                <Label text="👨‍🏫" style="-fx-font-size: 20;"/>
-                                <Label text="Professeurs" styleClass="stat-label"/>
+                                <Label style="-fx-font-size: 20;" text="👨‍🏫" />
+                                <Label styleClass="stat-label" text="Professeurs" />
                             </HBox>
-                            <Label fx:id="totalProfs" text="—" styleClass="stat-number-purple"/>
-                            <Label text="Enseignants" styleClass="muted-label"/>
+                            <Label fx:id="totalProfs" styleClass="stat-number-purple" text="—" />
+                            <Label styleClass="muted-label" text="Enseignants" />
                         </VBox>
-                        <VBox HBox.hgrow="ALWAYS" spacing="12" styleClass="stat-card">
+                        <VBox spacing="12" styleClass="stat-card" HBox.hgrow="ALWAYS">
                             <HBox alignment="CENTER_LEFT" spacing="10">
-                                <Label text="💼" style="-fx-font-size: 20;"/>
-                                <Label text="Offres" styleClass="stat-label"/>
+                                <Label style="-fx-font-size: 20;" text="💼" />
+                                <Label styleClass="stat-label" text="Offres" />
                             </HBox>
-                            <Label fx:id="totalOffres" text="—" styleClass="stat-number-amber"/>
-                            <Label text="Offres de stage" styleClass="muted-label"/>
+                            <Label fx:id="totalOffres" styleClass="stat-number-amber" text="—" />
+                            <Label styleClass="muted-label" text="Offres de stage" />
                         </VBox>
                     </HBox>
 
                     <!-- Actions rapides -->
                     <VBox spacing="14" styleClass="section-card">
                         <VBox spacing="3">
-                            <Label text="Actions rapides" styleClass="card-title"/>
-                            <Label text="Gérez rapidement les ressources de la plateforme"
-                                   styleClass="card-subtitle"/>
+                            <Label styleClass="card-title" text="Actions rapides" />
+                            <Label styleClass="card-subtitle" text="Gérez rapidement les ressources de la plateforme" />
                         </VBox>
                         <HBox spacing="12">
-                            <Button text="➕  Ajouter un utilisateur" onAction="#showUsers"     styleClass="chip-btn"/>
-                            <Button text="📚  Gérer les filières"     onAction="#showFilieres"  styleClass="chip-btn-success"/>
-                            <Button text="💼  Voir les offres"        onAction="#showOffres"    styleClass="chip-btn-warn"/>
+                            <Button onAction="#showUsers" styleClass="chip-btn" text="➕  Ajouter un utilisateur" />
+                            <Button onAction="#showFilieres" styleClass="chip-btn-success" text="📚  Gérer les filières" />
+                            <Button onAction="#showOffres" styleClass="chip-btn-warn" text="💼  Voir les offres" />
                         </HBox>
                     </VBox>
 
                     <!-- Champs cachés contrôleur -->
-                    <VBox visible="false" managed="false">
+                    <VBox managed="false" visible="false">
                         <TableView fx:id="usersTable">
                             <columns>
-                                <TableColumn fx:id="colNom"/>
-                                <TableColumn fx:id="colPrenom"/>
-                                <TableColumn fx:id="colEmail"/>
-                                <TableColumn fx:id="colType"/>
-                                <TableColumn fx:id="colStatus"/>
-                                <TableColumn fx:id="colActions"/>
+                                <TableColumn fx:id="colNom" />
+                                <TableColumn fx:id="colPrenom" />
+                                <TableColumn fx:id="colEmail" />
+                                <TableColumn fx:id="colType" />
+                                <TableColumn fx:id="colStatus" />
+                                <TableColumn fx:id="colActions" />
                             </columns>
                         </TableView>
                     </VBox>

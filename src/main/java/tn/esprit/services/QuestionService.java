@@ -1,4 +1,4 @@
-package services;
+package tn.esprit.services;
 
 import tn.esprit.entity.Answer;
 import tn.esprit.entity.Question;

@@ -5,15 +5,17 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import models.User;
-import services.UserService;
+import javafx.stage.Stage;
+import javafx.stage.Modality;
+import tn.esprit.entity.User;
+import tn.esprit.services.UserService;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -226,7 +228,7 @@ public class GestionUsersController {
         }
     }
 
-    private void loadUsers() {
+    public void loadUsers() {
         try {
             List<User> list = userService.findAll();
             allUsers.setAll(list);
@@ -328,126 +330,30 @@ public class GestionUsersController {
     }
 
     private void showUserDialog(User userToEdit) {
-        Dialog<User> dialog = new Dialog<>();
-        boolean isNew = (userToEdit == null);
-        dialog.setTitle(isNew ? "Ajouter" : "Modifier");
-        dialog.setHeaderText(null);
+        try {
+            // Charger le FXML UserForm
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/esprit/interfaces/UserForm.fxml"));
+            Parent root = loader.load();
+            UserFormController formController = loader.getController();
 
-        VBox mainContainer = new VBox();
-        mainContainer.setSpacing(20);
-        mainContainer.setStyle("-fx-padding: 25; -fx-background-color: white;");
+            // Créer et afficher la fenêtre
+            Stage stage = new Stage();
+            stage.setTitle(userToEdit == null ? "Ajouter Utilisateur" : "Modifier Utilisateur");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setResizable(false);
 
-        GridPane grid = new GridPane();
-        grid.setHgap(15); grid.setVgap(14); grid.setStyle("-fx-padding: 0;");
-
-        TextField tfNom       = createStyledTextField("Nom complet");
-        TextField tfPrenom    = createStyledTextField("Prénom");
-        TextField tfEmail     = createStyledTextField("Adresse email");
-        PasswordField pfPassword = new PasswordField();
-        pfPassword.setStyle("-fx-font-size: 12; -fx-padding: 12; -fx-border-color: #bfdbfe; -fx-border-radius: 8; -fx-border-width: 1; -fx-background-insets: 0;");
-        pfPassword.setPromptText("Mot de passe");
-        TextField tfCIN       = createStyledTextField("Numéro CIN");
-        TextField tfTelephone = createStyledTextField("Téléphone");
-        TextField tfAdresse   = createStyledTextField("Adresse");
-        ComboBox<String> cbType = new ComboBox<>();
-        cbType.setItems(FXCollections.observableArrayList("admin", "prof", "etudiant"));
-        cbType.setStyle("-fx-font-size: 12; -fx-padding: 10; -fx-border-color: #bfdbfe; -fx-border-radius: 8; -fx-border-width: 1;");
-        cbType.setPrefWidth(300);
-
-        if (userToEdit != null) {
-            tfNom.setText(userToEdit.getNom());
-            tfPrenom.setText(userToEdit.getPrenom());
-            tfEmail.setText(userToEdit.getEmail());
-            tfCIN.setText(userToEdit.getCin() != null ? userToEdit.getCin() : "");
-            tfTelephone.setText(userToEdit.getTelephone() != null ? userToEdit.getTelephone() : "");
-            tfAdresse.setText(userToEdit.getAdresse() != null ? userToEdit.getAdresse() : "");
-            cbType.setValue(userToEdit.getType() != null ? userToEdit.getType() : "admin");
-            pfPassword.setPromptText("Laisser vide pour conserver le mot de passe");
-        } else {
-            cbType.getSelectionModel().selectFirst();
-        }
-
-        int row = 0;
-        grid.add(createStyledLabel("Nom:"),          0, row); grid.add(tfNom,       1, row++);
-        grid.add(createStyledLabel("Prénom:"),       0, row); grid.add(tfPrenom,    1, row++);
-        grid.add(createStyledLabel("Email:"),        0, row); grid.add(tfEmail,     1, row++);
-        grid.add(createStyledLabel("Mot de passe:"),0, row); grid.add(pfPassword,  1, row++);
-        grid.add(createStyledLabel("CIN:"),          0, row); grid.add(tfCIN,       1, row++);
-        grid.add(createStyledLabel("Téléphone:"),   0, row); grid.add(tfTelephone, 1, row++);
-        grid.add(createStyledLabel("Adresse:"),      0, row); grid.add(tfAdresse,   1, row++);
-        grid.add(createStyledLabel("Type:"),         0, row); grid.add(cbType,      1, row);
-
-        mainContainer.getChildren().add(grid);
-        dialog.getDialogPane().setContent(mainContainer);
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-        dialog.getDialogPane().setStyle("-fx-padding: 15; -fx-background-color: #f4f6fb;");
-
-        Button okBtn     = (Button) dialog.getDialogPane().lookupButton(ButtonType.OK);
-        Button cancelBtn = (Button) dialog.getDialogPane().lookupButton(ButtonType.CANCEL);
-        if (okBtn != null) {
-            okBtn.setText(isNew ? "Créer" : "Modifier");
-            okBtn.setStyle("-fx-font-size: 12; -fx-font-weight: bold; -fx-padding: 12 32; -fx-background-color: #2563eb; -fx-text-fill: white; -fx-background-radius: 8; -fx-cursor: hand;");
-        }
-        if (cancelBtn != null) {
-            cancelBtn.setText("Annuler");
-            cancelBtn.setStyle("-fx-font-size: 12; -fx-padding: 12 32; -fx-background-color: #e2e8f4; -fx-text-fill: #1a2340; -fx-background-radius: 8; -fx-cursor: hand;");
-        }
-
-        dialog.setResultConverter(buttonType -> {
-            if (buttonType == ButtonType.OK) {
-                User user = userToEdit != null ? userToEdit : new User();
-                user.setNom(tfNom.getText());
-                user.setPrenom(tfPrenom.getText());
-                user.setEmail(tfEmail.getText());
-                user.setCin(tfCIN.getText());
-                user.setTelephone(tfTelephone.getText());
-                user.setAdresse(tfAdresse.getText());
-                user.setType(cbType.getValue() != null ? cbType.getValue() : "admin");
-                String password = pfPassword.getText();
-                if (!password.isEmpty()) user.setPassword(password);
-                return user;
+            // Initialiser le contrôleur
+            if (userToEdit == null) {
+                formController.initializeForCreate(this);
+            } else {
+                formController.initializeForEdit(userToEdit, this);
             }
-            return null;
-        });
 
-        Optional<User> result = dialog.showAndWait();
-        if (result.isPresent()) {
-            User user = result.get();
-            try {
-                if (user.getNom() == null || user.getNom().isEmpty()) { showError("Validation", "Le nom est obligatoire"); return; }
-                if (user.getPrenom() == null || user.getPrenom().isEmpty()) { showError("Validation", "Le prénom est obligatoire"); return; }
-                if (user.getEmail() == null || user.getEmail().isEmpty()) { showError("Validation", "L'email est obligatoire"); return; }
-
-                if (userToEdit == null) {
-                    if (user.getPassword() == null || user.getPassword().isEmpty()) {
-                        showError("Validation", "Le mot de passe est obligatoire pour un nouvel utilisateur"); return;
-                    }
-                    int newId = userService.create(user);
-                    if (newId > 0) showSuccess("Succès", "Utilisateur créé avec succès !\n\n" + user.getNom() + " " + user.getPrenom() + "\n" + user.getEmail());
-                    else showError("Erreur", "Impossible de créer l'utilisateur");
-                } else {
-                    if (userService.update(user)) showSuccess("Succès", "Utilisateur modifié avec succès !\n\n" + user.getNom() + " " + user.getPrenom());
-                    else showError("Erreur", "Impossible de modifier l'utilisateur");
-                }
-                loadUsers();
-            } catch (Exception e) {
-                showError("Erreur", e.getMessage());
-            }
+            stage.showAndWait();
+        } catch (Exception e) {
+            showError("Erreur", "Impossible de charger le formulaire : " + e.getMessage());
         }
-    }
-
-    private TextField createStyledTextField(String promptText) {
-        TextField tf = new TextField();
-        tf.setPromptText(promptText);
-        tf.setStyle("-fx-font-size: 12; -fx-padding: 12; -fx-border-color: #bfdbfe; -fx-border-radius: 8; -fx-border-width: 1; -fx-background-insets: 0;");
-        tf.setPrefWidth(300);
-        return tf;
-    }
-
-    private Label createStyledLabel(String text) {
-        Label label = new Label(text);
-        label.setStyle("-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #1a2340;");
-        return label;
     }
 
     private void showSuccess(String title, String content) {

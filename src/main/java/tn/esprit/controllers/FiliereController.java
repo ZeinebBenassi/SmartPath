@@ -14,7 +14,7 @@ import javafx.scene.layout.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tn.esprit.entity.Filiere;
-import services.FiliereService;
+import tn.esprit.services.FiliereService;
 
 import java.io.File;
 import java.io.IOException;

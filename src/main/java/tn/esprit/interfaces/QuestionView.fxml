@@ -11,7 +11,7 @@
     <left>
         <VBox prefWidth="230" style="-fx-background-color: #FFFFFF; -fx-border-color: #E2E8F0; -fx-border-width: 0 1 0 0;">
             <VBox alignment="CENTER"
-                  style="-fx-background-color: linear-gradient(to bottom right,#6366F1,#8B5CF6); -fx-padding: 24 20 20 20;">
+                  style="-fx-background-color: linear-gradient(to bottom right,#2563eb,#3b82f6); -fx-padding: 24 20 20 20;">
                 <Label text="SmartPath" style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: white;"/>
                 <Label text="Administration" style="-fx-font-size: 11px; -fx-text-fill: rgba(255,255,255,0.7);"/>
             </VBox>
@@ -27,7 +27,7 @@
                 <HBox alignment="CENTER_LEFT" spacing="10"
                       style="-fx-background-color: #EEF2FF; -fx-background-radius: 8; -fx-padding: 11 14;">
                     <Label text="❓" style="-fx-font-size: 15px;"/>
-                    <Label text="Questions Quiz" style="-fx-font-size: 13px; -fx-text-fill: #6366F1; -fx-font-weight: bold;"/>
+                    <Label text="Questions Quiz" style="-fx-font-size: 13px; -fx-text-fill: #2563eb; -fx-font-weight: bold;"/>
                 </HBox>
                 <HBox alignment="CENTER_LEFT" spacing="10"
                       style="-fx-background-radius: 8; -fx-padding: 11 14; -fx-cursor: hand;" onMouseClicked="#goToFilieres">
@@ -46,10 +46,10 @@
             <VBox style="-fx-background-color: #EEF2FF; -fx-background-radius: 10; -fx-padding: 14 14 14 14;">
                 <padding><Insets top="0" right="12" bottom="12" left="12"/></padding>
                 <Label text="📈 Statistiques"
-                       style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #6366F1; -fx-padding: 0 0 6 0;"/>
+                       style="-fx-font-size: 11px; -fx-font-weight: bold; -fx-text-fill: #2563eb; -fx-padding: 0 0 6 0;"/>
                 <HBox alignment="CENTER_LEFT" spacing="8">
                     <Label text="Questions actives :" style="-fx-font-size: 12px; -fx-text-fill: #64748B;"/>
-                    <Label fx:id="lblStats" text="—" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #6366F1;"/>
+                    <Label fx:id="lblStats" text="—" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #2563eb;"/>
                 </HBox>
             </VBox>
             <padding><Insets bottom="16"/></padding>
@@ -85,7 +85,7 @@
                 <Label fx:id="lblCount" text="0 questions" style="-fx-font-size: 13px; -fx-text-fill: #64748B;"/>
 
                 <Button text="＋  Nouvelle Question" onAction="#handleAdd"
-                        style="-fx-background-color: #6366F1; -fx-text-fill: white; -fx-font-weight: bold;
+                        style="-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold;
                                -fx-font-size: 13px; -fx-background-radius: 8; -fx-padding: 9 20; -fx-cursor: hand;
                                -fx-effect: dropshadow(gaussian,rgba(99,102,241,0.35),8,0,0,3);"/>
             </HBox>

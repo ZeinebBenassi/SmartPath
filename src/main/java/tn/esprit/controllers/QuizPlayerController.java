@@ -14,8 +14,8 @@ import tn.esprit.entity.Answer;
 import tn.esprit.entity.Question;
 import tn.esprit.entity.QuizResult;
 import tn.esprit.entity.User;
-import services.QuizAnalyzer;
-import services.QuizService;
+import tn.esprit.services.QuizAnalyzer;
+import tn.esprit.services.QuizService;
 
 import java.io.IOException;
 import java.net.URL;

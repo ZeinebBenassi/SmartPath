@@ -8,7 +8,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import tn.esprit.entity.Filiere;
-import services.FiliereService;
+import tn.esprit.services.FiliereService;
 
 import java.io.File;
 import java.net.URL;

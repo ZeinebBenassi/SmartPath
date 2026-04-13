@@ -44,7 +44,7 @@
         <!-- lblStats retiré ici pour éviter le doublon avec lblCount -->
 
         <Button text="➕  Ajouter" onAction="#handleAdd"
-                style="-fx-background-color: #6366F1; -fx-text-fill: white;
+                style="-fx-background-color: #2563eb; -fx-text-fill: white;
                        -fx-font-weight: bold; -fx-font-size: 13px;
                        -fx-background-radius: 8; -fx-padding: 8 18; -fx-cursor: hand;
                        -fx-effect: dropshadow(gaussian,rgba(99,102,241,0.35),8,0,0,3);"/>

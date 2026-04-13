@@ -4,8 +4,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import models.Etudiant;
-import services.UserService;
+import tn.esprit.entity.Etudiant;
+import tn.esprit.services.UserService;
 
 import java.time.LocalDate;
 import java.util.Date;

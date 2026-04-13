@@ -1,8 +1,8 @@
-package services;
+package tn.esprit.services;
 
-import models.Etudiant;
-import models.Prof;
-import models.User;
+import tn.esprit.entity.Etudiant;
+import tn.esprit.entity.Prof;
+import tn.esprit.entity.User;
 import tn.esprit.utils.MyDatabase;
 
 import java.sql.Connection;

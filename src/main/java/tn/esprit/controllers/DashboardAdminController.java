@@ -12,7 +12,7 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import tn.esprit.entity.User;
-import services.UserService;
+import tn.esprit.services.UserService;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;

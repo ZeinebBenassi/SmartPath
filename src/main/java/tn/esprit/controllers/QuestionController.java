@@ -12,7 +12,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import tn.esprit.entity.Answer;
 import tn.esprit.entity.Question;
-import services.QuestionService;
+import tn.esprit.services.QuestionService;
 
 import java.io.IOException;
 import java.net.URL;
