@@ -6,9 +6,16 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="smartpath-desktop" />
+      </profile>
+      <profile name="Annotation profile for smartpath-desktop" enabled="true">
+        <sourceOutputDir name="build/generated-sources/annotations" />
+        <sourceTestOutputDir name="build/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
         <module name="java2" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="smartpath-desktop" target="17" />
+    </bytecodeTargetLevel>
   </component>
 </project>
