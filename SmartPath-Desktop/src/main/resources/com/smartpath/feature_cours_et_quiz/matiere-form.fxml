@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.smartpath.controller.feature_cours_et_quiz.MatiereFormController"
+  prefWidth="1100.0" prefHeight="700.0"
+  stylesheets="@app.css,@matiere-form.css"
+    styleClass="page-root sp-bg">
+
+    <VBox styleClass="welcome-banner">
+        <Label fx:id="titleLabel" text="➕ Nouvelle Matière" styleClass="welcome-title"/>
+        <Label text="Contrôle de saisie: titre obligatoire (min 3)." styleClass="welcome-desc"/>
+    </VBox>
+
+    <Label fx:id="errorLabel" text="" styleClass="error-inline"/>
+
+    <TextField fx:id="titreField" promptText="Titre"/>
+    <TextArea fx:id="descField" promptText="Description"/>
+
+    <HBox spacing="10">
+        <Button text="Annuler" onAction="#handleCancel" styleClass="sp-btn sp-btn-secondary"/>
+        <Button text="Enregistrer" onAction="#handleSave" styleClass="sp-btn sp-btn-primary"/>
+    </HBox>
+</VBox>

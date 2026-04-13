@@ -6,6 +6,7 @@ public class Question {
     private String category;
     private int ordre;
     private boolean isActive;
+    private int testId;
 
     public Question() {}
     public Question(int id, String text, String category) {
@@ -20,4 +21,10 @@ public class Question {
     public void setCategory(String category) { this.category = category; }
     public int getOrdre() { return ordre; }
     public void setOrdre(int ordre) { this.ordre = ordre; }
+
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean active) { isActive = active; }
+
+    public int getTestId() { return testId; }
+    public void setTestId(int testId) { this.testId = testId; }
 }

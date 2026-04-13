@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.smartpath.controller.feature_cours_et_quiz.MatiereCoursController"
+      spacing="14"
+    prefWidth="1100.0" prefHeight="700.0"
+    stylesheets="@app.css,@matiere-cours.css"
+    styleClass="page-root sp-bg">
+
+    <HBox spacing="12">
+        <Button text="← Retour" onAction="#handleBack" styleClass="sp-btn sp-btn-secondary"/>
+        <VBox spacing="2">
+            <Label fx:id="matiereTitle" text="📖 Cours" styleClass="section-title"/>
+            <Label text="Sélectionnez une leçon pour lire son contenu." styleClass="sp-card-meta"/>
+        </VBox>
+    </HBox>
+
+    <Label fx:id="errorLabel" text="" styleClass="error-inline"/>
+
+    <HBox spacing="16">
+        <VBox spacing="10" prefWidth="320" styleClass="sp-card">
+            <Label text="Leçons" styleClass="sp-card-title"/>
+
+            <VBox fx:id="pdfDropZone" styleClass="sp-dropzone">
+                <Label text="📄 Ajouter un cours (PDF)" styleClass="sp-card-title"/>
+                <Label text="Glissez-déposez un fichier .pdf ici (ADMIN / PROF)." styleClass="sp-card-meta" wrapText="true"/>
+            </VBox>
+
+            <ListView fx:id="leconsList" prefHeight="520"/>
+        </VBox>
+
+        <VBox spacing="10" HBox.hgrow="ALWAYS" styleClass="sp-card">
+            <HBox spacing="10">
+                <Label text="Contenu" styleClass="sp-card-title"/>
+                <HBox HBox.hgrow="ALWAYS"/>
+                <Button fx:id="openPdfBtn" text="Ouvrir PDF" onAction="#handleOpenPdf" styleClass="sp-btn sp-btn-secondary"/>
+            </HBox>
+            <TextArea fx:id="contenuArea" editable="false" wrapText="true" prefHeight="520"/>
+        </VBox>
+    </HBox>
+
+</VBox>

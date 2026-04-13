@@ -1,0 +1,6 @@
+/* Page-specific overrides for login.fxml. */
+
+.auth-box .sp-btn {
+    -fx-max-width: Infinity;
+    -fx-min-height: 44;
+}

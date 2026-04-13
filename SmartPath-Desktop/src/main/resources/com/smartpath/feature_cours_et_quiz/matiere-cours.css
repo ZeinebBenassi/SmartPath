@@ -1,0 +1,79 @@
+/* ─── matiere-cours.css ──────────────────────────────────────── */
+
+/* ── PDF drop zone ── */
+#pdfDropZone {
+    -fx-cursor: hand;
+    -fx-background-color: rgba(1, 105, 111, 0.10);
+    -fx-border-color: rgba(1, 105, 111, 0.35);
+    -fx-border-width: 1.5;
+    -fx-border-style: dashed;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 16 12;
+    -fx-alignment: center;
+    -fx-spacing: 6;
+}
+
+#pdfDropZone:hover {
+    -fx-background-color: rgba(1, 105, 111, 0.18);
+    -fx-border-color: rgba(79, 152, 163, 0.60);
+    -fx-effect: dropshadow(gaussian, rgba(1, 105, 111, 0.30), 8, 0, 0, 0);
+}
+
+#pdfDropZone .label {
+    -fx-text-fill: rgba(125, 211, 252, 0.90);
+    -fx-font-size: 13px;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+}
+
+/* ── Content text area ── */
+#contenuArea {
+    -fx-font-size: 13px;
+    -fx-background-color: rgba(255, 255, 255, 0.04);
+    -fx-border-color: rgba(255, 255, 255, 0.10);
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-text-fill: rgba(203, 213, 225, 0.92);
+    -fx-padding: 10 12;
+}
+
+/* ── "Ouvrir PDF" secondary button ── */
+.sp-btn-secondary {
+    -fx-background-color: rgba(255, 255, 255, 0.07);
+    -fx-text-fill: rgba(203, 213, 225, 0.90);
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-padding: 8 18;
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(255, 255, 255, 0.16);
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+}
+
+.sp-btn-secondary:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+    -fx-border-color: rgba(255, 255, 255, 0.28);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 6, 0, 0, 2);
+}
+
+.sp-btn-secondary:pressed {
+    -fx-background-color: rgba(255, 255, 255, 0.04);
+    -fx-effect: none;
+}
+
+/* ── Back button ── */
+.sp-btn-back {
+    -fx-background-color: rgba(255, 255, 255, 0.07);
+    -fx-text-fill: rgba(203, 213, 225, 0.90);
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-padding: 9 18;
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(255, 255, 255, 0.16);
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-cursor: hand;
+}

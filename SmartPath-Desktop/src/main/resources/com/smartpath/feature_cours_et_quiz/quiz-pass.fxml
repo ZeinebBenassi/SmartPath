@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.smartpath.controller.feature_cours_et_quiz.QuizPassController"
+      spacing="14"
+    prefWidth="1100.0" prefHeight="700.0"
+    stylesheets="@app.css,@quiz-pass.css"
+    styleClass="page-root sp-bg">
+
+    <HBox spacing="12">
+        <Button text="← Retour" onAction="#handleBack" styleClass="sp-btn sp-btn-secondary"/>
+        <VBox spacing="2">
+            <Label fx:id="quizTitle" text="▶ Passer le quiz" styleClass="section-title"/>
+            <Label fx:id="quizMeta" text="" styleClass="sp-card-meta"/>
+        </VBox>
+    </HBox>
+
+    <Label fx:id="errorLabel" text="" styleClass="error-inline"/>
+
+    <ScrollPane fitToWidth="true" pannable="true" style="-fx-background-color: transparent;">
+        <content>
+            <VBox fx:id="questionsBox" spacing="14"/>
+        </content>
+    </ScrollPane>
+
+    <HBox spacing="10">
+        <Button text="✅ Terminer" onAction="#handleFinish" styleClass="sp-btn sp-btn-primary"/>
+    </HBox>
+
+</VBox>

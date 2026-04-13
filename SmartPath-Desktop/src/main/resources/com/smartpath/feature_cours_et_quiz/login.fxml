@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.smartpath.controller.feature_cours_et_quiz.LoginController"
+           prefWidth="1100.0" prefHeight="700.0"
+           stylesheets="@app.css,@login.css"
+           styleClass="sp-bg">
+
+    <VBox styleClass="auth-container">
+        <VBox styleClass="auth-box">
+            <Label text="SmartPath" styleClass="brand-title"/>
+            <Label text="Connectez-vous" styleClass="auth-subtitle"/>
+
+            <Label fx:id="errorLabel" styleClass="auth-error"/>
+
+            <TextField fx:id="emailField" promptText="Email"/>
+            <PasswordField fx:id="passwordField" promptText="Mot de passe"/>
+
+            <Button text="Connexion"
+                    onAction="#handleLogin"
+                    styleClass="sp-btn sp-btn-primary"/>
+        </VBox>
+    </VBox>
+</StackPane>

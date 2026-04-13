@@ -1,0 +1,5 @@
+/* Page-specific overrides for app-shell.fxml. */
+
+.navbar {
+    -fx-background-color: rgba(10, 22, 40, 0.88);
+}

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.smartpath.controller.feature_cours_et_quiz.HomeController"
+      prefWidth="1100.0" prefHeight="700.0"
+      stylesheets="@app.css,@home.css"
+      styleClass="page-root sp-bg">
+
+    <VBox styleClass="welcome-banner">
+        <Label fx:id="welcomeLabel" text="Bienvenue sur SmartPath" styleClass="welcome-title"/>
+        <Label text="Accedez a vos matieres, cours et quiz dans une interface claire et moderne."
+               styleClass="welcome-desc" wrapText="true"/>
+
+        <HBox spacing="10">
+            <Button text="Explorer les Matieres" onAction="#goMatieres" styleClass="sp-btn sp-btn-primary"/>
+            <Button text="Explorer les Quiz" onAction="#goQuiz" styleClass="sp-btn sp-btn-secondary"/>
+        </HBox>
+    </VBox>
+
+    <Label text="Actions rapides" styleClass="section-title"/>
+
+    <HBox spacing="12">
+        <Button text="Ajouter une Matiere" onAction="#goMatieres" styleClass="sp-btn sp-btn-secondary"/>
+    </HBox>
+</VBox>

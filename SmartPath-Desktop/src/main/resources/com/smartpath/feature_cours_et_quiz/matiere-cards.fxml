@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.smartpath.controller.feature_cours_et_quiz.MatiereCardsController"
+    prefWidth="1100.0" prefHeight="700.0"
+    stylesheets="@app.css,@matiere-cards.css"
+    styleClass="page-root sp-bg">
+
+    <HBox spacing="12">
+        <VBox spacing="4">
+            <Label text="📚 Matières" styleClass="section-title"/>
+            <Label fx:id="errorLabel" text="" styleClass="error-inline"/>
+        </VBox>
+
+        <HBox spacing="10" VBox.vgrow="NEVER">
+            <Button fx:id="addBtn" text="➕ Ajouter" onAction="#handleAdd" styleClass="sp-btn sp-btn-primary"/>
+        </HBox>
+    </HBox>
+
+    <ScrollPane fx:id="scroll" fitToWidth="true" pannable="true" style="-fx-background-color: transparent;">
+        <content>
+            <FlowPane fx:id="cardsPane" hgap="16" vgap="16" prefWrapLength="980" styleClass="cards-grid"/>
+        </content>
+    </ScrollPane>
+</VBox>

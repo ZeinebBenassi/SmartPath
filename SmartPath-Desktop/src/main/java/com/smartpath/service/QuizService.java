@@ -6,8 +6,12 @@ import com.smartpath.util.DBConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class QuizService {
+
+    private static volatile Boolean testHasCreatedAt;
+    private static volatile Boolean testHasProfId;
 
     public List<Quiz> getAll() throws SQLException {
         List<Quiz> list = new ArrayList<>();
@@ -37,15 +41,62 @@ public class QuizService {
     }
 
     public void create(Quiz q) throws SQLException {
+        createAndReturnId(q, null);
+    }
+
+    public int createAndReturnId(Quiz q, Integer profId) throws SQLException {
+        Connection conn = DBConnection.getInstance();
+
         // Detect correct column name first
         String dureCol = getDureeColumnName();
-        String sql = "INSERT INTO test (titre, contenu, " + dureCol + ", matiere_id, created_at) VALUES (?, ?, ?, ?, NOW())";
-        PreparedStatement ps = DBConnection.getInstance().prepareStatement(sql);
-        ps.setString(1, q.getTitre());
-        ps.setString(2, q.getContenu());
-        ps.setInt(3, q.getDuree());
-        ps.setInt(4, q.getMatiereId());
-        ps.executeUpdate();
+        boolean hasCreatedAt = tableHasColumn(conn, "test", "created_at");
+        boolean hasProfId = tableHasColumn(conn, "test", "prof_id");
+
+        Integer effectiveProfId = profId;
+        if (hasProfId) {
+            if (effectiveProfId == null || effectiveProfId <= 0) {
+                throw new SQLException("La table 'test' exige prof_id. Impossible de créer un quiz sans prof_id.");
+            }
+        }
+
+        String sql;
+        if (hasProfId && hasCreatedAt) {
+            sql = "INSERT INTO test (titre, contenu, " + dureCol + ", matiere_id, prof_id, created_at) VALUES (?, ?, ?, ?, ?, ?)";
+        } else if (hasProfId) {
+            sql = "INSERT INTO test (titre, contenu, " + dureCol + ", matiere_id, prof_id) VALUES (?, ?, ?, ?, ?)";
+        } else if (hasCreatedAt) {
+            sql = "INSERT INTO test (titre, contenu, " + dureCol + ", matiere_id, created_at) VALUES (?, ?, ?, ?, ?)";
+        } else {
+            sql = "INSERT INTO test (titre, contenu, " + dureCol + ", matiere_id) VALUES (?, ?, ?, ?)";
+        }
+
+        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, q.getTitre());
+            ps.setString(2, q.getContenu());
+            ps.setInt(3, q.getDuree());
+            ps.setInt(4, q.getMatiereId());
+
+            int idx = 5;
+            if (hasProfId) {
+                ps.setInt(idx++, effectiveProfId);
+            }
+            if (hasCreatedAt) {
+                ps.setTimestamp(idx, new Timestamp(System.currentTimeMillis()));
+            }
+            ps.executeUpdate();
+
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys != null && keys.next()) {
+                    return keys.getInt(1);
+                }
+            }
+        }
+
+        // Fallback (should rarely happen)
+        try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery("SELECT LAST_INSERT_ID()")) {
+            if (rs.next()) return rs.getInt(1);
+        }
+        return 0;
     }
 
     public void update(Quiz q) throws SQLException {
@@ -61,10 +112,23 @@ public class QuizService {
 
     public void delete(int id) throws SQLException {
         // Delete linked questions first to avoid foreign key errors
-        PreparedStatement ps1 = DBConnection.getInstance()
-                .prepareStatement("DELETE FROM question WHERE test_id=?");
-        ps1.setInt(1, id);
-        ps1.executeUpdate();
+        SQLException last = null;
+        String[] candidates = { "test_id", "quiz_id", "id_test", "id_quiz" };
+        for (String col : candidates) {
+            try {
+                PreparedStatement ps1 = DBConnection.getInstance()
+                        .prepareStatement("DELETE FROM question WHERE " + col + "=?");
+                ps1.setInt(1, id);
+                ps1.executeUpdate();
+                last = null;
+                break;
+            } catch (SQLException e) {
+                last = e;
+            }
+        }
+        if (last != null && !last.getMessage().toLowerCase().contains("unknown column")) {
+            throw last;
+        }
 
         // Then delete the quiz
         PreparedStatement ps2 = DBConnection.getInstance()
@@ -84,5 +148,46 @@ public class QuizService {
         } catch (SQLException e) {
             return "dureo";
         }
+    }
+
+    private static boolean tableHasColumn(Connection conn, String table, String column) throws SQLException {
+        if ("test".equalsIgnoreCase(table) && "created_at".equalsIgnoreCase(column)) {
+            Boolean cached = testHasCreatedAt;
+            if (cached != null) return cached;
+        }
+        if ("test".equalsIgnoreCase(table) && "prof_id".equalsIgnoreCase(column)) {
+            Boolean cached = testHasProfId;
+            if (cached != null) return cached;
+        }
+
+        DatabaseMetaData meta = conn.getMetaData();
+        String catalog = conn.getCatalog();
+        boolean found = false;
+
+        try (ResultSet rs = meta.getColumns(catalog, null, table, null)) {
+            while (rs.next()) {
+                String name = rs.getString("COLUMN_NAME");
+                if (name != null && name.toLowerCase(Locale.ROOT).equals(column.toLowerCase(Locale.ROOT))) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (!found) {
+            try (ResultSet rs = meta.getColumns(catalog, null, table.toUpperCase(Locale.ROOT), null)) {
+                while (rs.next()) {
+                    String name = rs.getString("COLUMN_NAME");
+                    if (name != null && name.toLowerCase(Locale.ROOT).equals(column.toLowerCase(Locale.ROOT))) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if ("test".equalsIgnoreCase(table) && "created_at".equalsIgnoreCase(column)) testHasCreatedAt = found;
+        if ("test".equalsIgnoreCase(table) && "prof_id".equalsIgnoreCase(column)) testHasProfId = found;
+        return found;
     }
 }

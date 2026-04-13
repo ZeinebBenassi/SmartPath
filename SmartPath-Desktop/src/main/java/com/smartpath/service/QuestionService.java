@@ -5,29 +5,247 @@ import com.smartpath.util.DBConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+import java.util.HashSet;
 
 public class QuestionService {
+    private static volatile String cachedQuizFkColumn;
+    private static volatile Boolean questionHasCreatedAt;
+    private static volatile Boolean questionHasProfId;
+
     public List<Question> getAll() throws SQLException {
         List<Question> list = new ArrayList<>();
         ResultSet rs = DBConnection.getInstance().createStatement()
                 .executeQuery("SELECT * FROM question");
         while (rs.next()) {
-            list.add(new Question(
+            Question q = new Question(
                     rs.getInt("id"),
                     rs.getString("text"),
                     rs.getString("category")
-            ));
+            );
+            try { q.setOrdre(rs.getInt("ordre")); } catch (SQLException ignored) {}
+            try { q.setActive(rs.getInt("is_active") == 1); } catch (SQLException ignored) {}
+            try { q.setTestId(rs.getInt("test_id")); } catch (SQLException ignored) {}
+            list.add(q);
         }
         return list;
     }
 
+    public List<Question> getByTestId(int testId) throws SQLException {
+        List<Question> list = new ArrayList<>();
+        try {
+            String fkCol = detectQuizFkColumn();
+            String sql = "SELECT * FROM question WHERE " + fkCol + "=? ORDER BY ordre ASC, id ASC";
+            PreparedStatement ps = DBConnection.getInstance().prepareStatement(sql);
+            ps.setInt(1, testId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Question q = new Question(
+                        rs.getInt("id"),
+                        rs.getString("text"),
+                        rs.getString("category")
+                );
+                q.setTestId(testId);
+                try { q.setOrdre(rs.getInt("ordre")); } catch (SQLException ignored) { q.setOrdre(0); }
+                boolean active = true;
+                try { active = rs.getInt("is_active") == 1; } catch (SQLException ignored) {}
+                q.setActive(active);
+                if (q.isActive()) {
+                    list.add(q);
+                }
+            }
+            return list;
+        } catch (SQLException noFk) {
+            // Fallback mode: DB schema doesn't link questions to a quiz.
+            // We still allow "Passer le quiz" by showing all active questions.
+            String sql = "SELECT * FROM question ORDER BY ordre ASC, id ASC";
+            ResultSet rs = DBConnection.getInstance().createStatement().executeQuery(sql);
+            while (rs.next()) {
+                Question q = new Question(
+                        rs.getInt("id"),
+                        rs.getString("text"),
+                        rs.getString("category")
+                );
+                q.setTestId(testId);
+                try { q.setOrdre(rs.getInt("ordre")); } catch (SQLException ignored) { q.setOrdre(0); }
+                boolean active = true;
+                try { active = rs.getInt("is_active") == 1; } catch (SQLException ignored) {}
+                q.setActive(active);
+                if (q.isActive()) {
+                    list.add(q);
+                }
+            }
+            return list;
+        }
+    }
+
+    private String detectQuizFkColumn() throws SQLException {
+        String cached = cachedQuizFkColumn;
+        if (cached != null && !cached.isBlank()) {
+            return cached;
+        }
+
+        Connection conn = DBConnection.getInstance();
+        DatabaseMetaData meta = conn.getMetaData();
+
+        Set<String> columns = new HashSet<>();
+        try (ResultSet rs = meta.getColumns(conn.getCatalog(), null, "question", null)) {
+            while (rs.next()) {
+                String name = rs.getString("COLUMN_NAME");
+                if (name != null) {
+                    columns.add(name.toLowerCase(Locale.ROOT));
+                }
+            }
+        }
+        // Some MySQL setups might store table names in different case
+        if (columns.isEmpty()) {
+            try (ResultSet rs = meta.getColumns(conn.getCatalog(), null, "Question", null)) {
+                while (rs.next()) {
+                    String name = rs.getString("COLUMN_NAME");
+                    if (name != null) {
+                        columns.add(name.toLowerCase(Locale.ROOT));
+                    }
+                }
+            }
+        }
+
+        String[] candidates = { "test_id", "quiz_id", "id_test", "id_quiz", "testid", "quizid" };
+        for (String candidate : candidates) {
+            if (columns.contains(candidate)) {
+                cachedQuizFkColumn = candidate;
+                return candidate;
+            }
+        }
+
+        // If metadata didn't help (or schema differs), probe common candidates.
+        for (String candidate : candidates) {
+            try {
+                PreparedStatement ps = conn.prepareStatement("SELECT 1 FROM question WHERE " + candidate + "=? LIMIT 1");
+                ps.setInt(1, 0);
+                ps.executeQuery().close();
+                cachedQuizFkColumn = candidate;
+                return candidate;
+            } catch (SQLException e) {
+                String msg = (e.getMessage() == null ? "" : e.getMessage().toLowerCase(Locale.ROOT));
+                if (!msg.contains("unknown column") && !msg.contains("column") && !msg.contains("doesn't exist")) {
+                    // Unexpected SQL error (permissions, etc.)
+                    throw e;
+                }
+            }
+        }
+
+        throw new SQLException("Impossible de trouver la colonne de liaison quiz->question (ex: test_id / quiz_id). Vérifiez la table 'question'.");
+    }
+
     public void create(Question q) throws SQLException {
-        String sql = "INSERT INTO question (text, category, ordre, is_active) VALUES (?, ?, ?, 1)";
-        PreparedStatement ps = DBConnection.getInstance().prepareStatement(sql);
-        ps.setString(1, q.getText());
-        ps.setString(2, q.getCategory());
-        ps.setInt(3, q.getOrdre());
-        ps.executeUpdate();
+        createForTestId(q.getTestId(), q, null);
+    }
+
+    public void createForTestId(int testId, Question q) throws SQLException {
+        createForTestId(testId, q, null);
+    }
+
+    public void createForTestId(int testId, Question q, Integer profId) throws SQLException {
+        Connection conn = DBConnection.getInstance();
+        String fkCol = null;
+        try {
+            fkCol = detectQuizFkColumn();
+        } catch (SQLException ignored) {
+            // DB schema may not link questions to a quiz; still allow insert.
+        }
+        boolean hasCreatedAt = tableHasColumn(conn, "question", "created_at");
+        boolean hasProfId = tableHasColumn(conn, "question", "prof_id");
+
+        Integer effectiveProfId = profId;
+        if (hasProfId) {
+            if (effectiveProfId == null || effectiveProfId <= 0) {
+                throw new SQLException("La table 'question' exige prof_id. Impossible d'ajouter une question sans prof_id.");
+            }
+        }
+
+        boolean includeFk = fkCol != null && !fkCol.isBlank() && testId > 0;
+
+        String sql;
+        if (includeFk && hasProfId && hasCreatedAt) {
+            sql = "INSERT INTO question (text, category, ordre, is_active, " + fkCol + ", prof_id, created_at) VALUES (?, ?, ?, 1, ?, ?, ?)";
+        } else if (includeFk && hasProfId) {
+            sql = "INSERT INTO question (text, category, ordre, is_active, " + fkCol + ", prof_id) VALUES (?, ?, ?, 1, ?, ?)";
+        } else if (includeFk && hasCreatedAt) {
+            sql = "INSERT INTO question (text, category, ordre, is_active, " + fkCol + ", created_at) VALUES (?, ?, ?, 1, ?, ?)";
+        } else if (includeFk) {
+            sql = "INSERT INTO question (text, category, ordre, is_active, " + fkCol + ") VALUES (?, ?, ?, 1, ?)";
+        } else if (hasProfId && hasCreatedAt) {
+            sql = "INSERT INTO question (text, category, ordre, is_active, prof_id, created_at) VALUES (?, ?, ?, 1, ?, ?)";
+        } else if (hasProfId) {
+            sql = "INSERT INTO question (text, category, ordre, is_active, prof_id) VALUES (?, ?, ?, 1, ?)";
+        } else if (hasCreatedAt) {
+            sql = "INSERT INTO question (text, category, ordre, is_active, created_at) VALUES (?, ?, ?, 1, ?)";
+        } else {
+            sql = "INSERT INTO question (text, category, ordre, is_active) VALUES (?, ?, ?, 1)";
+        }
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            int idx = 1;
+            ps.setString(idx++, q.getText());
+            ps.setString(idx++, q.getCategory());
+            ps.setInt(idx++, q.getOrdre());
+            if (includeFk) {
+                ps.setInt(idx++, testId);
+            }
+            if (hasProfId) {
+                ps.setInt(idx++, effectiveProfId);
+            }
+            if (hasCreatedAt) {
+                ps.setTimestamp(idx, new Timestamp(System.currentTimeMillis()));
+            }
+            ps.executeUpdate();
+        }
+    }
+
+    private static boolean tableHasColumn(Connection conn, String table, String column) throws SQLException {
+        if ("question".equalsIgnoreCase(table) && "created_at".equalsIgnoreCase(column)) {
+            Boolean cached = questionHasCreatedAt;
+            if (cached != null) return cached;
+        }
+        if ("question".equalsIgnoreCase(table) && "prof_id".equalsIgnoreCase(column)) {
+            Boolean cached = questionHasProfId;
+            if (cached != null) return cached;
+        }
+
+        DatabaseMetaData meta = conn.getMetaData();
+        String catalog = conn.getCatalog();
+        boolean found = false;
+
+        try (ResultSet rs = meta.getColumns(catalog, null, table, null)) {
+            while (rs.next()) {
+                String name = rs.getString("COLUMN_NAME");
+                if (name != null && name.toLowerCase(Locale.ROOT).equals(column.toLowerCase(Locale.ROOT))) {
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if (!found) {
+            try (ResultSet rs = meta.getColumns(catalog, null, table.toUpperCase(Locale.ROOT), null)) {
+                while (rs.next()) {
+                    String name = rs.getString("COLUMN_NAME");
+                    if (name != null && name.toLowerCase(Locale.ROOT).equals(column.toLowerCase(Locale.ROOT))) {
+                        found = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if ("question".equalsIgnoreCase(table) && "created_at".equalsIgnoreCase(column)) {
+            questionHasCreatedAt = found;
+        }
+        if ("question".equalsIgnoreCase(table) && "prof_id".equalsIgnoreCase(column)) {
+            questionHasProfId = found;
+        }
+        return found;
     }
 
     public void update(Question q) throws SQLException {

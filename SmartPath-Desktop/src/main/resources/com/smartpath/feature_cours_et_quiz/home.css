@@ -1,0 +1,5 @@
+/* Page-specific overrides for home.fxml. */
+
+.welcome-banner .button {
+    -fx-min-width: 220;
+}
