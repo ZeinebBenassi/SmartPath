@@ -4,7 +4,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import models.User;
+import tn.esprit.entity.User;
 import services.UserService;
 
 public class LoginController {
@@ -17,7 +17,7 @@ public class LoginController {
 
     @FXML
     public void handleLogin() {
-        String email = emailField.getText().trim();
+        String email    = emailField.getText().trim();
         String password = passwordField.getText().trim();
 
         if (email.isEmpty() || password.isEmpty()) {
@@ -28,34 +28,39 @@ public class LoginController {
         User user = userService.login(email, password);
 
         if (user != null) {
+            if ("ban".equalsIgnoreCase(user.getStatus())) {
+                errorLabel.setStyle("-fx-text-fill: #e94560; -fx-font-size: 12;");
+                errorLabel.setText("❌ Accès refusé: Votre compte est banni");
+                return;
+            }
+
             errorLabel.setStyle("-fx-text-fill: #00c896; -fx-font-size: 12;");
             errorLabel.setText("Bienvenue " + user.getNom() + " ! (" + user.getType() + ")");
 
-            // Navigation selon le rôle
             try {
                 String fxml;
                 switch (user.getType()) {
                     case "admin":
-                        tn.esprit.controllers.DashboardAdminController.setCurrentUser(user);
-                        tn.esprit.controllers.DashboardEtudiantController.setSourceDashboardType(null);
+                        DashboardAdminController.setCurrentUser(user);
+                        DashboardEtudiantController.setSourceDashboardType(null);
                         fxml = "/tn/esprit/interfaces/DashboardAdmin.fxml";
                         break;
                     case "prof":
-                        tn.esprit.controllers.DashboardProfController.setCurrentUser(user);
-                        tn.esprit.controllers.DashboardEtudiantController.setSourceDashboardType(null);
+                        DashboardProfController.setCurrentUser(user);
+                        DashboardEtudiantController.setSourceDashboardType(null);
                         fxml = "/tn/esprit/interfaces/DashboardProf.fxml";
                         break;
                     default:
-                        tn.esprit.controllers.DashboardEtudiantController.setCurrentUser(user);
-                        tn.esprit.controllers.DashboardEtudiantController.setSourceDashboardType(null);
+                        DashboardEtudiantController.setCurrentUser(user);
+                        DashboardEtudiantController.setSourceDashboardType(null);
                         fxml = "/tn/esprit/interfaces/DashboardEtudiant.fxml";
                         break;
                 }
                 Parent root = FXMLLoader.load(getClass().getResource(fxml));
                 emailField.getScene().setRoot(root);
             } catch (Exception e) {
-                // Dashboard pas encore créé - message de succès suffit
-                System.out.println("Dashboard à créer pour : " + user.getType());
+                System.out.println("Erreur navigation: " + e.getMessage());
+                e.printStackTrace();
             }
         } else {
             showError("Email ou mot de passe incorrect.");
@@ -87,4 +92,3 @@ public class LoginController {
         errorLabel.setText(msg);
     }
 }
-

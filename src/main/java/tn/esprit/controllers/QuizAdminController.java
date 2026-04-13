@@ -7,12 +7,12 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 
 /**
- * QuizAdminController — pont vers QuestionView.fxml (CRUD complet).
- * Redirige automatiquement au chargement vers la vraie vue de gestion.
+ * QuizAdminController — utilisé uniquement pour compatibilité FXML.
+ * La vraie logique est dans QuestionController (chargé via QuestionContent.fxml).
+ * Ce controller NE redirige PLUS toute la scène — il reste dans le contentArea.
  */
 public class QuizAdminController {
 
-    // Champs FXML gardés pour compatibilité
     @FXML private ListView<String> questionsList;
     @FXML private Label countLabel, totalQLabel, totalRepLabel, editorTitle, saveStatus;
     @FXML private TextArea questionTextArea;
@@ -26,29 +26,15 @@ public class QuizAdminController {
         for (ComboBox<String> cb : new ComboBox[]{profil1Combo, profil2Combo, profil3Combo, profil4Combo, categorieCombo}) {
             if (cb != null) cb.setItems(FXCollections.observableArrayList());
         }
-        // Rediriger vers QuestionView.fxml dès que la scène est prête
-        javafx.application.Platform.runLater(this::redirectToQuestionView);
+        // Ne rien faire d'autre : ce FXML n'est plus utilisé directement.
+        // Le DashboardAdminController charge QuestionContent.fxml directement dans contentArea.
     }
 
-    private void redirectToQuestionView() {
-        try {
-            Parent root = FXMLLoader.load(
-                    getClass().getResource("/tn/esprit/interfaces/QuestionView.fxml"));
-            javafx.scene.Node anchor = questionsList != null ? questionsList : totalQLabel;
-            if (anchor != null && anchor.getScene() != null) {
-                anchor.getScene().setRoot(root);
-            }
-        } catch (Exception e) {
-            System.err.println("Redirection QuestionView impossible : " + e.getMessage());
-        }
-    }
-
-    // Actions redirigent toutes vers QuestionView
-    @FXML public void addQuestion()  { redirectToQuestionView(); }
-    @FXML public void saveQuestion() { redirectToQuestionView(); }
-    @FXML public void deleteQuestion(){ redirectToQuestionView(); }
-    @FXML public void cancelEdit()   {}
-    @FXML public void previewQuiz()  { redirectToQuestionView(); }
+    @FXML public void addQuestion()    {}
+    @FXML public void saveQuestion()   {}
+    @FXML public void deleteQuestion() {}
+    @FXML public void cancelEdit()     {}
+    @FXML public void previewQuiz()    {}
 
     @FXML public void goBack() {
         try {

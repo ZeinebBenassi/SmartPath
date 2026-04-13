@@ -6,7 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import models.User;
+import tn.esprit.entity.User;
 
 public class ReleveController {
 
@@ -29,32 +29,25 @@ public class ReleveController {
             if (niveauLabel  != null) niveauLabel.setText("L2");
             if (filiereLabel != null) filiereLabel.setText("Informatique");
         }
-
-        // Données exemple
         if (colMatiere != null) colMatiere.setCellValueFactory(new PropertyValueFactory<>("matiere"));
         if (colNote    != null) colNote.setCellValueFactory(new PropertyValueFactory<>("note"));
         if (colCoeff   != null) colCoeff.setCellValueFactory(new PropertyValueFactory<>("coeff"));
         if (colMention != null) colMention.setCellValueFactory(new PropertyValueFactory<>("mention"));
-
         if (notesTable != null) {
             notesTable.setItems(FXCollections.observableArrayList(
-                new NoteRow("Mathématiques",     "15.5", "4", "Bien"),
-                new NoteRow("Informatique",       "17.0", "5", "Très bien"),
-                new NoteRow("Physique",           "12.0", "3", "Assez bien"),
-                new NoteRow("Anglais",            "14.5", "2", "Bien"),
-                new NoteRow("Économie",           "11.0", "2", "Passable"),
-                new NoteRow("Base de données",    "16.0", "4", "Très bien")
+                new NoteRow("Mathématiques",  "15.5", "4", "Bien"),
+                new NoteRow("Informatique",   "17.0", "5", "Très bien"),
+                new NoteRow("Physique",       "12.0", "3", "Assez bien"),
+                new NoteRow("Anglais",        "14.5", "2", "Bien"),
+                new NoteRow("Économie",       "11.0", "2", "Passable"),
+                new NoteRow("Base de données","16.0", "4", "Très bien")
             ));
         }
-
         if (moyenneGenerale != null) moyenneGenerale.setText("14.8 / 20");
         if (mentionLabel    != null) mentionLabel.setText("Bien");
     }
 
-    @FXML public void exportPDF() {
-        new Alert(Alert.AlertType.INFORMATION,
-            "Export PDF en cours de développement.", ButtonType.OK).showAndWait();
-    }
+    @FXML public void exportPDF() { new Alert(Alert.AlertType.INFORMATION, "Export PDF en cours de développement.", ButtonType.OK).showAndWait(); }
 
     @FXML public void goBack() {
         try {
@@ -64,16 +57,10 @@ public class ReleveController {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    // Inner class pour les lignes du tableau
     public static class NoteRow {
-        private final String matiere;
-        private final String note;
-        private final String coeff;
-        private final String mention;
-
+        private final String matiere, note, coeff, mention;
         public NoteRow(String matiere, String note, String coeff, String mention) {
-            this.matiere = matiere; this.note = note;
-            this.coeff = coeff; this.mention = mention;
+            this.matiere = matiere; this.note = note; this.coeff = coeff; this.mention = mention;
         }
         public String getMatiere()  { return matiere; }
         public String getNote()     { return note; }
@@ -81,4 +68,3 @@ public class ReleveController {
         public String getMention()  { return mention; }
     }
 }
-

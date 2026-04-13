@@ -1,0 +1,11 @@
+Les 3 images suivantes doivent être copiées manuellement depuis :
+
+  SOURCE : C:\Users\GIGABYTE\Downloads\SmartPath-gestion_user\SmartPath-gestion_user\images\
+
+  - block.png
+  - modifier.png
+  - ajouter.png
+
+  DESTINATION : C:\Users\GIGABYTE\Downloads\SmartPath-main (2)\SmartPath-main\images\
+
+  (Copier-coller les 3 fichiers dans le dossier images du projet SmartPath-main)

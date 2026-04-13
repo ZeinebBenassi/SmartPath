@@ -78,7 +78,7 @@ public class QuestionController implements Initializable {
     }
 
     private VBox createQuestionCard(Question q, int numero) {
-        String color = "#6366F1"; // toujours bleu
+        String color = "#6366F1";
         String icon = CAT_ICONS.getOrDefault(
             q.getCategory() != null ? q.getCategory().toLowerCase() : "", "❓");
 
@@ -130,7 +130,6 @@ public class QuestionController implements Initializable {
 
         header.getChildren().addAll(lblNum, lblIcon, centerBox, actions);
 
-        // Réponses
         if (q.getAnswers() != null && !q.getAnswers().isEmpty()) {
             Separator sep = new Separator();
             GridPane grid = new GridPane();
@@ -219,7 +218,6 @@ public class QuestionController implements Initializable {
         });
     }
 
-    // ─── Lancer le quiz (nouvelle fenêtre) ────────────────────────────────────
     @FXML private void handleStartQuiz() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(
@@ -234,15 +232,39 @@ public class QuestionController implements Initializable {
 
     @FXML private void handleStartQuizFromMenu() { handleStartQuiz(); }
 
-    // ─── Navigation (utilisée seulement depuis QuestionView.fxml standalone) ──
-    @FXML private void goToDashboard() { navigateScene("/tn/esprit/interfaces/DashboardAdmin.fxml"); }
-    @FXML private void goToFilieres()  { navigateScene("/tn/esprit/interfaces/FiliereView.fxml"); }
-
-    private void navigateScene(String fxml) {
+    /**
+     * Navigation depuis la sidebar de QuestionView.fxml (standalone).
+     * Quand QuestionContent.fxml est chargé dans le contentArea du Dashboard,
+     * ces méthodes ne sont pas appelées (pas de sidebar).
+     */
+    @FXML private void goToDashboard() {
         try {
-            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(fxml)));
-            Stage stage = (Stage) vboxQuestions.getScene().getWindow();
-            stage.setScene(new Scene(root));
+            Parent root = FXMLLoader.load(Objects.requireNonNull(
+                    getClass().getResource("/tn/esprit/interfaces/DashboardAdmin.fxml")));
+            if (vboxQuestions != null && vboxQuestions.getScene() != null) {
+                vboxQuestions.getScene().setRoot(root);
+            }
+        } catch (IOException e) { showError("Navigation impossible : " + e.getMessage()); }
+    }
+
+    @FXML private void goToFilieres() {
+        // Charge FiliereContent.fxml (sans sidebar)
+        try {
+            Parent root = FXMLLoader.load(Objects.requireNonNull(
+                    getClass().getResource("/tn/esprit/interfaces/FiliereContent.fxml")));
+            if (vboxQuestions != null && vboxQuestions.getScene() != null) {
+                // Si on est dans un contentArea (StackPane parent), on remplace le contenu
+                javafx.scene.Node parent = vboxQuestions.getParent();
+                while (parent != null && !(parent instanceof StackPane)) {
+                    parent = parent.getParent();
+                }
+                if (parent instanceof StackPane) {
+                    ((StackPane) parent).getChildren().setAll(root);
+                } else {
+                    Stage stage = (Stage) vboxQuestions.getScene().getWindow();
+                    stage.setScene(new Scene(root));
+                }
+            }
         } catch (IOException e) { showError("Navigation impossible : " + e.getMessage()); }
     }
 

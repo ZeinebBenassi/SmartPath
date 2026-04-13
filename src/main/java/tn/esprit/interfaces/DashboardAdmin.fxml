@@ -25,7 +25,7 @@
                 <Button fx:id="btnUsers"     text="👥  Utilisateurs"      onAction="#showUsers"       maxWidth="Infinity" styleClass="nav-btn"/>
                 <Button fx:id="btnFilieres"  text="📚  Filières"          onAction="#showFilieres"    maxWidth="Infinity" styleClass="nav-btn"/>
                 <Button fx:id="btnOffres"    text="💼  Offres de stage"   onAction="#showOffres"      maxWidth="Infinity" styleClass="nav-btn"/>
-                <Button                      text="🧠  Quiz personnalité" onAction="#showQuizAdmin"   maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnQuizAdmin" text="🧠  Quiz personnalité" onAction="#showQuizAdmin"   maxWidth="Infinity" styleClass="nav-btn"/>
                 <Button fx:id="btnProfil"    text="👤  Mon profil"        onAction="#showProfil"      maxWidth="Infinity" styleClass="nav-btn"/>
             </VBox>
 

@@ -39,8 +39,8 @@
         </VBox>
 
         <!-- ── Panneau droit ── -->
-        <VBox alignment="CENTER" prefWidth="600" spacing="14"
-              style="-fx-padding: 32 48;">
+        <VBox alignment="CENTER" prefWidth="600" spacing="10"
+              style="-fx-padding: 24 48;">
 
             <!-- Onglets -->
             <HBox maxWidth="460" spacing="0"
@@ -63,57 +63,82 @@
 
             <!-- Nom / Prénom -->
             <HBox maxWidth="460" spacing="12">
-                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <VBox spacing="3" HBox.hgrow="ALWAYS">
                     <Label style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #5a6a8a;" text="Nom"/>
-                    <TextField fx:id="nomField" prefHeight="40" promptText="Votre nom"
+                    <TextField fx:id="nomField" prefHeight="38" promptText="Votre nom"
                                style="-fx-background-color: #f7f9fc; -fx-border-color: #e2e8f4;
-                                      -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 9 12; -fx-font-size: 13;"/>
+                                      -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 7 12; -fx-font-size: 13;"/>
+                    <Label fx:id="nomError" style="-fx-font-size: 10; -fx-text-fill: #e94560;" text=""/>
                 </VBox>
-                <VBox spacing="5" HBox.hgrow="ALWAYS">
-                    <Label style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #5a6a8a;" text="Prénom"/>
-                    <TextField fx:id="prenomField" prefHeight="40" promptText="Votre prénom"
+                <VBox spacing="3" HBox.hgrow="ALWAYS">
+                    <Label style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #5a6a8a;" text="Prenom"/>
+                    <TextField fx:id="prenomField" prefHeight="38" promptText="Votre prenom"
                                style="-fx-background-color: #f7f9fc; -fx-border-color: #e2e8f4;
-                                      -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 9 12; -fx-font-size: 13;"/>
+                                      -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 7 12; -fx-font-size: 13;"/>
+                    <Label fx:id="prenomError" style="-fx-font-size: 10; -fx-text-fill: #e94560;" text=""/>
                 </VBox>
             </HBox>
 
             <!-- Email -->
-            <VBox maxWidth="460" spacing="5">
+            <VBox maxWidth="460" spacing="3">
                 <Label style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #5a6a8a;" text="Adresse email"/>
-                <TextField fx:id="emailField" prefHeight="40" promptText="exemple@email.com"
+                <TextField fx:id="emailField" prefHeight="38" promptText="exemple@email.com"
                            style="-fx-background-color: #f7f9fc; -fx-border-color: #e2e8f4;
-                                  -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 9 12; -fx-font-size: 13;"/>
+                                  -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 7 12; -fx-font-size: 13;"/>
+                <Label fx:id="emailError" style="-fx-font-size: 10; -fx-text-fill: #e94560;" text=""/>
             </VBox>
 
-            <!-- CIN / Téléphone -->
+            <!-- CIN / Telephone -->
             <HBox maxWidth="460" spacing="12">
-                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <VBox spacing="3" HBox.hgrow="ALWAYS">
                     <Label style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #5a6a8a;" text="CIN"/>
-                    <TextField fx:id="cinField" prefHeight="40" promptText="12345678"
+                    <TextField fx:id="cinField" prefHeight="38" promptText="12345678"
                                style="-fx-background-color: #f7f9fc; -fx-border-color: #e2e8f4;
-                                      -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 9 12; -fx-font-size: 13;"/>
+                                      -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 7 12; -fx-font-size: 13;"/>
+                    <Label fx:id="cinError" style="-fx-font-size: 10; -fx-text-fill: #e94560;" text=""/>
                 </VBox>
-                <VBox spacing="5" HBox.hgrow="ALWAYS">
-                    <Label style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #5a6a8a;" text="Téléphone"/>
-                    <TextField fx:id="telephoneField" prefHeight="40" promptText="+216 ..."
+                <VBox spacing="3" HBox.hgrow="ALWAYS">
+                    <Label style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #5a6a8a;" text="Telephone"/>
+                    <TextField fx:id="telephoneField" prefHeight="38" promptText="+216 ..."
                                style="-fx-background-color: #f7f9fc; -fx-border-color: #e2e8f4;
-                                      -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 9 12; -fx-font-size: 13;"/>
+                                      -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 7 12; -fx-font-size: 13;"/>
+                    <Label fx:id="phoneError" style="-fx-font-size: 10; -fx-text-fill: #e94560;" text=""/>
+                </VBox>
+            </HBox>
+
+            <!-- Adresse / Date de naissance -->
+            <HBox maxWidth="460" spacing="12">
+                <VBox spacing="3" HBox.hgrow="ALWAYS">
+                    <Label style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #5a6a8a;" text="Adresse"/>
+                    <TextField fx:id="adresseField" prefHeight="38" promptText="Votre adresse"
+                               style="-fx-background-color: #f7f9fc; -fx-border-color: #e2e8f4;
+                                      -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 7 12; -fx-font-size: 13;"/>
+                    <Label fx:id="adresseError" style="-fx-font-size: 10; -fx-text-fill: #e94560;" text=""/>
+                </VBox>
+                <VBox spacing="3" HBox.hgrow="ALWAYS">
+                    <Label style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #5a6a8a;" text="Date de naissance"/>
+                    <DatePicker fx:id="dateNaissancePicker" prefHeight="38"
+                               style="-fx-background-color: #f7f9fc; -fx-border-color: #e2e8f4;
+                                      -fx-border-radius: 8; -fx-background-radius: 8; -fx-font-size: 13;"/>
+                    <Label fx:id="dateError" style="-fx-font-size: 10; -fx-text-fill: #e94560;" text=""/>
                 </VBox>
             </HBox>
 
             <!-- Mots de passe -->
             <HBox maxWidth="460" spacing="12">
-                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <VBox spacing="3" HBox.hgrow="ALWAYS">
                     <Label style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #5a6a8a;" text="Mot de passe"/>
-                    <PasswordField fx:id="passwordField" prefHeight="40" promptText="••••••••"
+                    <PasswordField fx:id="passwordField" prefHeight="38" promptText="..."
                                    style="-fx-background-color: #f7f9fc; -fx-border-color: #e2e8f4;
-                                          -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 9 12; -fx-font-size: 13;"/>
+                                          -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 7 12; -fx-font-size: 13;"/>
+                    <Label fx:id="passwordError" style="-fx-font-size: 10; -fx-text-fill: #e94560;" text=""/>
                 </VBox>
-                <VBox spacing="5" HBox.hgrow="ALWAYS">
+                <VBox spacing="3" HBox.hgrow="ALWAYS">
                     <Label style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #5a6a8a;" text="Confirmation"/>
-                    <PasswordField fx:id="confirmPasswordField" prefHeight="40" promptText="••••••••"
+                    <PasswordField fx:id="confirmPasswordField" prefHeight="38" promptText="..."
                                    style="-fx-background-color: #f7f9fc; -fx-border-color: #e2e8f4;
-                                          -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 9 12; -fx-font-size: 13;"/>
+                                          -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 7 12; -fx-font-size: 13;"/>
+                    <Label fx:id="confirmError" style="-fx-font-size: 10; -fx-text-fill: #e94560;" text=""/>
                 </VBox>
             </HBox>
 
@@ -122,7 +147,7 @@
                    style="-fx-font-size: 12;" text="" wrapText="true"/>
 
             <!-- Bouton -->
-            <Button onAction="#handleRegister" prefHeight="44" prefWidth="460"
+            <Button onAction="#handleRegister" prefHeight="42" prefWidth="460"
                     style="-fx-background-color: #2563eb; -fx-text-fill: white;
                            -fx-font-size: 14; -fx-font-weight: bold;
                            -fx-background-radius: 10; -fx-cursor: hand;"

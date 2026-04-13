@@ -6,13 +6,12 @@ import javafx.scene.Parent;
 import javafx.scene.control.*;
 
 /**
- * GestionFilieresController — redirige vers FiliereView.fxml (CRUD complet)
- * Ce contrôleur est conservé pour compatibilité avec le FXML existant,
- * mais dès l'initialisation il charge la vraie vue de gestion des filières.
+ * GestionFilieresController — utilisé uniquement pour compatibilité FXML.
+ * La vraie logique est dans FiliereController (chargé via FiliereContent.fxml).
+ * Ce controller NE redirige PLUS toute la scène — il reste dans le contentArea.
  */
 public class GestionFilieresController {
 
-    // Champs FXML — gardés pour éviter les erreurs de chargement FXML
     @FXML private Button       btnRetour;
     @FXML private TextField    searchField;
     @FXML private TableView<?> filieresTable;
@@ -32,32 +31,16 @@ public class GestionFilieresController {
 
     @FXML
     public void initialize() {
-        // Rediriger immédiatement vers la vraie vue FiliereView
-        javafx.application.Platform.runLater(this::redirectToFiliereView);
+        // Ne rien faire : ce FXML n'est plus utilisé directement.
+        // Le DashboardAdminController charge FiliereContent.fxml directement dans contentArea.
     }
 
-    private void redirectToFiliereView() {
-        try {
-            Parent root = FXMLLoader.load(
-                    getClass().getResource("/tn/esprit/interfaces/FiliereView.fxml"));
-            // Trouver un nœud de la scène courante pour récupérer la scène
-            javafx.scene.Node anchor = filieresTable != null ? filieresTable
-                    : (searchField != null ? searchField : btnRetour);
-            if (anchor != null && anchor.getScene() != null) {
-                anchor.getScene().setRoot(root);
-            }
-        } catch (Exception e) {
-            System.err.println("Redirection FiliereView impossible : " + e.getMessage());
-        }
-    }
-
-    // Stubs pour éviter les erreurs FXML
-    @FXML public void addFiliere()  { redirectToFiliereView(); }
-    @FXML public void saveFiliere() { redirectToFiliereView(); }
-    @FXML public void deleteFiliere() { redirectToFiliereView(); }
-    @FXML public void clearForm()   {}
-    @FXML public void handleSearch(){}
-    @FXML public void handleFilter(){}
+    @FXML public void addFiliere()    {}
+    @FXML public void saveFiliere()   {}
+    @FXML public void deleteFiliere() {}
+    @FXML public void clearForm()     {}
+    @FXML public void handleSearch()  {}
+    @FXML public void handleFilter()  {}
 
     @FXML public void goBack() {
         try {

@@ -51,9 +51,7 @@ public class FiliereController implements Initializable {
         "Licence","Master","Doctorat","Débutant","Intermédiaire","Avancé","Expert"
     );
 
-    // Largeur des cartes : calculée dynamiquement pour avoir 3 cartes par ligne
     private double cardWidth = 274.0;
-    // Mémoriser la liste courante pour pouvoir redessiner quand la fenêtre est redimensionnée
     private List<Filiere> currentList = new ArrayList<>();
 
     private int niveauIndex(String n) {
@@ -67,7 +65,6 @@ public class FiliereController implements Initializable {
         if (cbSort != null)
             cbSort.getItems().addAll("Nom A→Z","Nom Z→A","Niveau ↑","Niveau ↓","Catégorie A→Z","Catégorie Z→A");
 
-        // Listener sur la largeur du FlowPane : redessine les cartes quand la taille change
         flowCards.widthProperty().addListener((obs, oldW, newW) -> {
             double fw = newW.doubleValue();
             if (fw > 100) {
@@ -101,16 +98,13 @@ public class FiliereController implements Initializable {
     }
 
     private void afficherCartes(List<Filiere> filieres) {
-        currentList = filieres; // mémoriser pour le redimensionnement
+        currentList = filieres;
         flowCards.getChildren().clear();
-        // Calculer la largeur des cartes maintenant (FlowPane peut déjà avoir une taille)
         double fw = flowCards.getWidth();
         if (fw > 100) {
             cardWidth = (fw - 2 * flowCards.getHgap() - 4) / 3.0;
         }
-        // Afficher le nombre une seule fois dans lblCount (barre de contrôles)
         if (lblCount  != null) lblCount.setText(filieres.size() + " filière" + (filieres.size() > 1 ? "s" : ""));
-        // lblStats dans FiliereView.fxml (sidebar) affiche uniquement le chiffre
         if (lblStats != null) lblStats.setText(String.valueOf(filieres.size()));
         if (filieres.isEmpty()) {
             vboxEmpty.setVisible(true); vboxEmpty.setManaged(true); return;
@@ -127,14 +121,10 @@ public class FiliereController implements Initializable {
             f.getCategorie() != null ? f.getCategorie().toLowerCase() : "", "🎓");
 
         VBox card = new VBox(0);
-        card.setPrefWidth(CW);
-        card.setMaxWidth(CW);
-        card.setMinWidth(CW);
-        card.setMinHeight(340);
+        card.setPrefWidth(CW); card.setMaxWidth(CW); card.setMinWidth(CW); card.setMinHeight(340);
         card.setStyle("-fx-background-color: white; -fx-background-radius: 14;" +
                 "-fx-effect: dropshadow(gaussian,rgba(0,0,0,0.10),10,0,0,3); -fx-cursor: hand;");
 
-        // Header image / icône
         StackPane header = new StackPane();
         header.setPrefHeight(140); header.setMinHeight(140); header.setMaxHeight(140);
         header.setStyle("-fx-background-color: " + color + "; -fx-background-radius: 14 14 0 0;");
@@ -171,7 +161,6 @@ public class FiliereController implements Initializable {
         StackPane.setMargin(lblNiv, new javafx.geometry.Insets(0, 8, 8, 0));
         header.getChildren().add(lblNiv);
 
-        // Body
         VBox body = new VBox(5); body.setStyle("-fx-padding: 10 12 6 12;");
         VBox.setVgrow(body, Priority.ALWAYS);
 
@@ -193,7 +182,6 @@ public class FiliereController implements Initializable {
 
         Region spacer = new Region(); VBox.setVgrow(spacer, Priority.ALWAYS);
 
-        // Footer boutons
         HBox footer = new HBox(6); footer.setAlignment(Pos.CENTER);
         footer.setStyle("-fx-padding: 8 12 10 12; -fx-border-color: #F1F5F9 transparent transparent transparent; -fx-border-width: 1;");
 
@@ -249,8 +237,10 @@ public class FiliereController implements Initializable {
         txtSearch.textProperty().addListener((obs, o, n) -> afficherCartes(getCurrentFiltered()));
     }
 
-    @FXML private void handleFilter() { afficherCartes(getCurrentFiltered()); }
-    @FXML private void handleAdd()    { openFiliereForm(null); }
+    @FXML private void handleFilter()
+    { afficherCartes(getCurrentFiltered()); }
+    @FXML private void handleAdd()
+    { openFiliereForm(null); }
     private void handleEdit(Filiere f){ openFiliereForm(f); }
 
     private void handleDelete(Filiere f) {
@@ -266,9 +256,41 @@ public class FiliereController implements Initializable {
         });
     }
 
-    @FXML private void goToDashboard() { navigateScene("/tn/esprit/interfaces/DashboardAdmin.fxml"); }
-    @FXML private void goToQuestions(){ navigateScene("/tn/esprit/interfaces/QuestionView.fxml"); }
-    @FXML private void goToQuiz()     {
+    @FXML private void goToDashboard() {
+        // Retour au Dashboard — remplace toute la scène
+        try {
+            Parent root = FXMLLoader.load(Objects.requireNonNull(
+                    getClass().getResource("/tn/esprit/interfaces/DashboardAdmin.fxml")));
+            // Essayer d'abord via flowCards, sinon via la fenêtre
+            if (flowCards != null && flowCards.getScene() != null) {
+                flowCards.getScene().setRoot(root);
+            }
+        } catch (IOException e) { showError("Navigation impossible : " + e.getMessage()); }
+    }
+
+    @FXML private void goToQuestions() {
+        // Charge QuestionContent.fxml (sans sidebar) — remplace dans la scène courante
+        try {
+            Parent root = FXMLLoader.load(Objects.requireNonNull(
+                    getClass().getResource("/tn/esprit/interfaces/QuestionContent.fxml")));
+            if (flowCards != null && flowCards.getScene() != null) {
+                // Si on est dans un contentArea (parent = StackPane), on remplace le contenu
+                javafx.scene.Node parent = flowCards.getParent();
+                while (parent != null && !(parent instanceof StackPane)) {
+                    parent = parent.getParent();
+                }
+                if (parent instanceof StackPane) {
+                    ((StackPane) parent).getChildren().setAll(root);
+                } else {
+                    // Standalone : on remplace la scène entière
+                    Stage stage = (Stage) flowCards.getScene().getWindow();
+                    stage.setScene(new Scene(root));
+                }
+            }
+        } catch (IOException e) { showError("Navigation impossible : " + e.getMessage()); }
+    }
+
+    @FXML private void goToQuiz() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(
                     getClass().getResource("/tn/esprit/interfaces/QuizPlayer.fxml")));
@@ -278,14 +300,6 @@ public class FiliereController implements Initializable {
             stage.setMinWidth(900); stage.setMinHeight(650);
             stage.show();
         } catch (IOException e) { showError("Impossible d'ouvrir le quiz : " + e.getMessage()); }
-    }
-
-    private void navigateScene(String fxml) {
-        try {
-            Parent root = FXMLLoader.load(Objects.requireNonNull(getClass().getResource(fxml)));
-            Stage stage = (Stage) flowCards.getScene().getWindow();
-            stage.setScene(new Scene(root));
-        } catch (IOException e) { showError("Navigation impossible : " + e.getMessage()); }
     }
 
     private void openFiliereForm(Filiere filiere) {
