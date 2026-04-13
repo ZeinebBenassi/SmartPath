@@ -1,17 +1,16 @@
+### Build outputs ###
 target/
+build/
+
+*.class
+
+### Maven wrapper (keep jar if present) ###
 !.mvn/wrapper/maven-wrapper.jar
-!**/src/main/**/target/
-!**/src/test/**/target/
-.kotlin
 
 ### IntelliJ IDEA ###
 .idea/
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
-*.iws
 *.iml
+*.iws
 *.ipr
 
 ### Eclipse ###
@@ -29,12 +28,16 @@ target/
 /dist/
 /nbdist/
 /.nb-gradle/
-build/
-!**/src/main/**/build/
-!**/src/test/**/build/
 
 ### VS Code ###
 .vscode/
 
-### Mac OS ###
+### OS files ###
 .DS_Store
+Thumbs.db
+
+### Logs ###
+*.log
+
+### Kotlin ###
+.kotlin
