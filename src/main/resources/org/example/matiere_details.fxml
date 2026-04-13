@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="700.0" prefWidth="900.0" spacing="20.0" styleClass="root" stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.MatiereDetailController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+
+    <children>
+        <fx:include source="nav_bar.fxml" />
+
+        <!-- Header -->
+        <VBox spacing="5.0" styleClass="page-header">
+        <children>
+            <Button onAction="#handleBack" style="-fx-background-color: transparent; -fx-text-fill: #60a5fa;" text="← Retour au catalogue" />
+            <Label fx:id="matiereTitleLabel" styleClass="header-title" text="Titre du Cours" />
+            <Label fx:id="matiereDescLabel" styleClass="header-subtitle" text="Description détaillée du cours..." wrapText="true" />
+        </children>
+    </VBox>
+
+    <HBox spacing="20.0" VBox.vgrow="ALWAYS">
+        <!-- Left Column: Leçons -->
+        <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+            <Label style="-fx-text-fill: #e0f2fe; -fx-font-size: 18px; -fx-font-weight: bold;" text="📖 Leçons" />
+            <ListView fx:id="leconsListView" style="-fx-background-color: rgba(10, 22, 40, 0.6); -fx-background-radius: 10;" VBox.vgrow="ALWAYS" />
+        </VBox>
+
+        <!-- Right Column: Quiz (Tests) -->
+        <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+            <Label style="-fx-text-fill: #e0f2fe; -fx-font-size: 18px; -fx-font-weight: bold;" text="📝 Quiz &amp; Évaluations" />
+            <ListView fx:id="testsListView" style="-fx-background-color: rgba(10, 22, 40, 0.6); -fx-background-radius: 10;" VBox.vgrow="ALWAYS" />
+        </VBox>
+    </HBox>
+
+    <Button onAction="#handleStartSelectedTest" prefHeight="45.0" prefWidth="250.0" styleClass="btn-primary" text="Lancer le Quiz sélectionné →" />
+
+    </children>
+</VBox>

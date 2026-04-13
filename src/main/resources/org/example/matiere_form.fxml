@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="500.0" prefWidth="600.0" spacing="20.0" styleClass="root" stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.MatiereFormController">
+    <padding>
+        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+    </padding>
+
+    <fx:include source="nav_bar.fxml" />
+
+    <VBox spacing="5.0" styleClass="page-header">
+        <children>
+            <Label fx:id="formTitle" styleClass="header-title" text="📝 Ajouter un nouveau cours" />
+        </children>
+    </VBox>
+
+    <GridPane hgap="15.0" vgap="15.0">
+        <columnConstraints>
+            <ColumnConstraints minWidth="100.0" prefWidth="120.0" />
+            <ColumnConstraints hgrow="ALWAYS" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="40.0" />
+            <RowConstraints minHeight="100.0" />
+            <RowConstraints minHeight="40.0" />
+        </rowConstraints>
+        <children>
+            <Label style="-fx-text-fill: white;" text="Titre :" />
+            <TextField fx:id="titreField" promptText="Entrez le titre du cours" GridPane.columnIndex="1" />
+
+            <Label style="-fx-text-fill: white;" text="Description :" GridPane.rowIndex="1" />
+            <TextArea fx:id="descriptionArea" prefHeight="100.0" promptText="Entrez la description" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+
+            <Label style="-fx-text-fill: white;" text="Visible :" GridPane.rowIndex="2" />
+            <CheckBox fx:id="visibleCheckBox" selected="true" text="Rendre ce cours public" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        </children>
+    </GridPane>
+
+    <HBox alignment="CENTER_RIGHT" spacing="15.0">
+        <children>
+            <Button onAction="#handleCancel" style="-fx-background-color: #475569;" text="Annuler" textFill="WHITE" />
+            <Button onAction="#handleSave" styleClass="btn-primary" text="Enregistrer le cours" />
+        </children>
+    </HBox>
+</VBox>

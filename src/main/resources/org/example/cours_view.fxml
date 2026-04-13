@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="600.0" prefWidth="900.0" spacing="20.0" styleClass="root" stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.CoursController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+    <children>
+        <fx:include source="nav_bar.fxml" />
+        <VBox spacing="5.0" styleClass="page-header">
+            <children>
+                <Label styleClass="header-title" text="📚 Catalogue des cours" />
+                <Label styleClass="header-subtitle" text="Découvrez tous vos cours" />
+            </children>
+        </VBox>
+        <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <children>
+                <TextField fx:id="searchField" prefHeight="40.0" prefWidth="300.0" promptText="Rechercher..." />
+                <ComboBox fx:id="filiereFilter" prefHeight="40.0" prefWidth="200.0" promptText="Filières" />
+                <Button onAction="#handleFilter" text="Filtrer" styleClass="btn-primary"/>
+            </children>
+        </HBox>
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS">
+            <content>
+                <FlowPane fx:id="coursesContainer" hgap="20.0" vgap="20.0" />
+            </content>
+        </ScrollPane>
+    </children>
+</VBox>

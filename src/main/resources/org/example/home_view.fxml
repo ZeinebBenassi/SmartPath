@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox prefHeight="700.0" prefWidth="1000.0" spacing="20.0" styleClass="root" stylesheets="@../../style.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.example.controller.HomeController">
+    <padding>
+        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+
+    <children>
+        <fx:include source="nav_bar.fxml" />
+
+        <VBox spacing="6.0" styleClass="page-header">
+            <children>
+                <Label styleClass="header-title" text="Bienvenue sur SmartPath" />
+                <Label styleClass="header-subtitle" text="Accédez rapidement à vos cours et évaluations." />
+            </children>
+        </VBox>
+
+        <HBox spacing="14.0">
+            <children>
+                <VBox spacing="10.0" styleClass="home-card" prefWidth="320.0">
+                    <padding>
+                        <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+                    </padding>
+                    <children>
+                        <Label styleClass="home-card-title" text="📚 Catalogue" />
+                        <Label styleClass="header-subtitle" wrapText="true" text="Parcourez tous les cours disponibles et recherchez par mot-clé." />
+                        <Button onAction="#openCourses" styleClass="btn-primary" text="Voir les cours →" />
+                    </children>
+                </VBox>
+
+                <VBox spacing="10.0" styleClass="home-card" prefWidth="320.0">
+                    <padding>
+                        <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+                    </padding>
+                    <children>
+                        <Label styleClass="home-card-title" text="📝 Ajouter un cours" />
+                        <Label styleClass="header-subtitle" wrapText="true" text="Créez une nouvelle matière et rendez-la visible aux apprenants." />
+                        <Button onAction="#openAddCourse" styleClass="btn-primary" text="Ajouter →" />
+                    </children>
+                </VBox>
+            </children>
+        </HBox>
+
+        <Label styleClass="home-footer" text="Astuce: Lancez un quiz depuis la page d’un cours." />
+    </children>
+</VBox>
