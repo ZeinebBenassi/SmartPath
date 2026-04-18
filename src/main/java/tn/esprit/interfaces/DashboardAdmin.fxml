@@ -21,9 +21,23 @@
             <VBox spacing="2" style="-fx-padding: 16 10 0 10;">
                 <Label styleClass="sidebar-section-label" text="MENU"/>
                 <Button fx:id="btnDashboard"  maxWidth="Infinity" onAction="#showDashboard"  styleClass="nav-btn-active" text="🏠  Dashboard"/>
-                <Button fx:id="btnUsers"      maxWidth="Infinity" onAction="#showUsers"      styleClass="nav-btn"        text="👥  Utilisateurs"/>
-                <Button fx:id="btnEtudiants"  maxWidth="Infinity" onAction="#showEtudiants"  styleClass="nav-btn"        text="👨‍🎓  Étudiants"/>
-                <Button fx:id="btnProfs"      maxWidth="Infinity" onAction="#showProfs"      styleClass="nav-btn"        text="👨‍🏫  Professeurs"/>
+
+                <!-- Bouton Utilisateurs avec sous-menu -->
+                <Button fx:id="btnUsers"      maxWidth="Infinity" onAction="#toggleUsersMenu" styleClass="nav-btn" text="👥  Utilisateurs"/>
+
+                <!-- Sous-boutons Gestion utilisateurs (cachés par défaut) -->
+                <VBox fx:id="usersSubMenu" managed="false" visible="false" spacing="2"
+                      style="-fx-padding: 0 0 0 18;">
+                    <Button fx:id="btnGestionProfs"     maxWidth="Infinity" onAction="#showProfsFromMenu"
+                            styleClass="nav-btn"
+                            text="👨‍🏫  Gestion profs"
+                            style="-fx-font-size: 12; -fx-background-color: #f1f5fe; -fx-text-fill: #4f46e5; -fx-background-radius: 7; -fx-padding: 7 14; -fx-cursor: hand; -fx-border-color: #c7d2fe; -fx-border-radius: 7; -fx-border-width: 1;"/>
+                    <Button fx:id="btnGestionEtudiants" maxWidth="Infinity" onAction="#showEtudiantsFromMenu"
+                            styleClass="nav-btn"
+                            text="👨‍🎓  Gestion étudiants"
+                            style="-fx-font-size: 12; -fx-background-color: #f1f5fe; -fx-text-fill: #4f46e5; -fx-background-radius: 7; -fx-padding: 7 14; -fx-cursor: hand; -fx-border-color: #c7d2fe; -fx-border-radius: 7; -fx-border-width: 1;"/>
+                </VBox>
+
                 <Button fx:id="btnFilieres"   maxWidth="Infinity" onAction="#showFilieres"   styleClass="nav-btn"        text="📚  Filières"/>
                 <Button fx:id="btnOffres"     maxWidth="Infinity" onAction="#showOffres"     styleClass="nav-btn"        text="💼  Offres de stage"/>
                 <Button fx:id="btnQuizAdmin"  maxWidth="Infinity" onAction="#showQuizAdmin"  styleClass="nav-btn"        text="🧠  Quiz personnalité"/>

@@ -27,8 +27,9 @@ public class DashboardAdminController {
     @FXML private Label      totalOffres;
     @FXML private Button     btnDashboard;
     @FXML private Button     btnUsers;
-    @FXML private Button     btnEtudiants;
-    @FXML private Button     btnProfs;
+    @FXML private VBox       usersSubMenu;
+    @FXML private Button     btnGestionProfs;
+    @FXML private Button     btnGestionEtudiants;
     @FXML private Button     btnFilieres;
     @FXML private Button     btnOffres;
     @FXML private Button     btnQuizAdmin;
@@ -44,6 +45,7 @@ public class DashboardAdminController {
 
     private static User currentUser;
     private final UserService userService = new UserService();
+    private boolean usersMenuOpen = false;
 
     public static void setCurrentUser(User user) { currentUser = user; }
 
@@ -73,21 +75,54 @@ public class DashboardAdminController {
 
     @FXML public void showDashboard() {
         if (pageTitle != null) pageTitle.setText("Dashboard");
-        setActiveButton(btnDashboard); showOnly(dashboardView);
+        setActiveButton(btnDashboard);
+        showOnly(dashboardView);
+        // Fermer le sous-menu si ouvert
+        if (usersSubMenu != null) {
+            usersSubMenu.setVisible(false);
+            usersSubMenu.setManaged(false);
+        }
+        usersMenuOpen = false;
     }
 
-    @FXML public void showUsers() {
+    /**
+     * Toggle le sous-menu Gestion utilisateurs (Profs / Étudiants).
+     * Ne navigue plus directement vers GestionUsers.
+     */
+    @FXML public void toggleUsersMenu() {
+        if (usersSubMenu == null) return;
+        usersMenuOpen = !usersMenuOpen;
+        usersSubMenu.setVisible(usersMenuOpen);
+        usersSubMenu.setManaged(usersMenuOpen);
+
+        if (usersMenuOpen) {
+            btnUsers.getStyleClass().remove("nav-btn");
+            if (!btnUsers.getStyleClass().contains("nav-btn-active"))
+                btnUsers.getStyleClass().add("nav-btn-active");
+        } else {
+            btnUsers.getStyleClass().remove("nav-btn-active");
+            if (!btnUsers.getStyleClass().contains("nav-btn"))
+                btnUsers.getStyleClass().add("nav-btn");
+        }
+    }
+
+    /** Appelé par le sous-bouton "Gestion profs" */
+    @FXML public void showProfsFromMenu() {
         setActiveButton(btnUsers);
-        navigate("/tn/esprit/interfaces/GestionUsers.fxml", "Gestion des utilisateurs");
+        navigate("/tn/esprit/interfaces/GestionProfs.fxml", "Gestion des professeurs");
+    }
+
+    /** Appelé par le sous-bouton "Gestion étudiants" */
+    @FXML public void showEtudiantsFromMenu() {
+        setActiveButton(btnUsers);
+        navigate("/tn/esprit/interfaces/GestionEtudiants.fxml", "Gestion des étudiants");
     }
 
     @FXML public void showEtudiants() {
-        setActiveButton(btnEtudiants);
         navigate("/tn/esprit/interfaces/GestionEtudiants.fxml", "Gestion des étudiants");
     }
 
     @FXML public void showProfs() {
-        setActiveButton(btnProfs);
         navigate("/tn/esprit/interfaces/GestionProfs.fxml", "Gestion des professeurs");
     }
 
@@ -147,7 +182,7 @@ public class DashboardAdminController {
     }
 
     private void setActiveButton(Button active) {
-        Button[] all = {btnDashboard, btnUsers, btnEtudiants, btnProfs, btnFilieres, btnOffres, btnQuizAdmin, btnProfil};
+        Button[] all = {btnDashboard, btnUsers, btnFilieres, btnOffres, btnQuizAdmin, btnProfil};
         for (Button b : all) {
             if (b == null) continue;
             if (b == active) {

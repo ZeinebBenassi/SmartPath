@@ -210,6 +210,15 @@ public class UserService {
         return false;
     }
 
+    public boolean updateStatusByEmail(String email, String status) {
+        ensureStatusColumn();
+        if (!Boolean.TRUE.equals(statusColumnExists)) return false;
+        try (PreparedStatement ps = connection.prepareStatement("UPDATE `user` SET status=? WHERE email=?")) {
+            ps.setString(1, status); ps.setString(2, email); return ps.executeUpdate() > 0;
+        } catch (Exception e) { System.out.println("Erreur updateStatusByEmail: " + e.getMessage()); }
+        return false;
+    }
+
     public void delete(int id) {
         try {
             connection.setAutoCommit(false);

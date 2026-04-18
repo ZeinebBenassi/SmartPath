@@ -8,6 +8,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -52,21 +54,51 @@ public class GestionProfsController {
     private void setupActionColumn() {
         if (colActions == null) return;
         colActions.setCellFactory(col -> new TableCell<>() {
-            private final Button btnEdit = makeBtn("✏ Modifier",  "#2563eb");
-            private final Button btnDel  = makeBtn("🗑 Supprimer", "#dc2626");
-            private final HBox   box     = new HBox(6, btnEdit, btnDel);
-            { box.setStyle("-fx-alignment:CENTER;");
+
+            // Bouton Modifier — icône uniquement
+            private final Button btnEdit = makeIconBtn("/images/modifier.png", "✏", "#2563eb", "Modifier");
+            // Bouton Ban
+            private final Button btnBan  = makeIconBtn("/images/block.png",    "🚫", "#f59e0b", "Bannir");
+            // Bouton Supprimer
+            private final Button btnDel  = makeTextBtn("🗑", "#dc2626", "Supprimer");
+            private final HBox   box     = new HBox(6, btnEdit, btnBan, btnDel);
+
+            {
+                box.setStyle("-fx-alignment:CENTER;");
                 btnEdit.setOnAction(e -> openForm(getTableRow().getItem(), false));
-                btnDel .setOnAction(e -> confirmDelete(getTableRow().getItem())); }
-            @Override protected void updateItem(Void item, boolean empty) {
+                btnBan .setOnAction(e -> confirmBan(getTableRow().getItem()));
+                btnDel .setOnAction(e -> confirmDelete(getTableRow().getItem()));
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty || getTableRow()==null || getTableRow().getItem()==null ? null : box);
+                setGraphic(empty || getTableRow() == null || getTableRow().getItem() == null ? null : box);
             }
         });
     }
 
-    private Button makeBtn(String text, String color) {
+    /** Bouton avec image (fallback texte si image absente) */
+    private Button makeIconBtn(String imagePath, String fallbackText, String color, String tooltip) {
+        Button b = new Button();
+        b.setTooltip(new Tooltip(tooltip));
+        b.setStyle("-fx-background-color:" + color + ";-fx-background-radius:6;-fx-padding:4 8;-fx-cursor:hand;");
+        try {
+            Image img = new Image(getClass().getResourceAsStream(imagePath));
+            ImageView iv = new ImageView(img);
+            iv.setFitWidth(14); iv.setFitHeight(14);
+            b.setGraphic(iv);
+        } catch (Exception e) {
+            b.setText(fallbackText);
+            b.setStyle(b.getStyle() + "-fx-text-fill:white;-fx-font-size:11;");
+        }
+        return b;
+    }
+
+    /** Bouton texte/emoji standard */
+    private Button makeTextBtn(String text, String color, String tooltip) {
         Button b = new Button(text);
+        b.setTooltip(new Tooltip(tooltip));
         b.setStyle("-fx-background-color:" + color + ";-fx-text-fill:white;-fx-background-radius:6;-fx-font-size:11;-fx-padding:4 10;-fx-cursor:hand;");
         return b;
     }
@@ -115,6 +147,26 @@ public class GestionProfsController {
         } catch (Exception e) { showError("Erreur", e.getMessage()); }
     }
 
+    private void confirmBan(Prof prof) {
+        if (prof == null) return;
+        Alert a = new Alert(Alert.AlertType.CONFIRMATION);
+        a.setTitle("Bannir professeur");
+        a.setHeaderText(null);
+        a.setContentText("Voulez-vous bannir " + prof.getPrenom() + " " + prof.getNom() + " ?");
+        Optional<ButtonType> r = a.showAndWait();
+        if (r.isPresent() && r.get() == ButtonType.OK) {
+            try {
+                // Bannir via UserService si le prof est lié à un User
+                tn.esprit.services.UserService userService = new tn.esprit.services.UserService();
+                userService.updateStatusByEmail(prof.getEmail(), "ban");
+                showInfo("Banni", prof.getPrenom() + " " + prof.getNom() + " a été banni.");
+                loadData();
+            } catch (Exception e) {
+                showError("Erreur bannissement", e.getMessage());
+            }
+        }
+    }
+
     private void confirmDelete(Prof prof) {
         if (prof == null) return;
         Alert a = new Alert(Alert.AlertType.CONFIRMATION);
@@ -136,5 +188,9 @@ public class GestionProfsController {
 
     private void showError(String t, String msg) {
         Alert a = new Alert(Alert.AlertType.ERROR); a.setTitle(t); a.setHeaderText(null); a.setContentText(msg); a.showAndWait();
+    }
+
+    private void showInfo(String t, String msg) {
+        Alert a = new Alert(Alert.AlertType.INFORMATION); a.setTitle(t); a.setHeaderText(null); a.setContentText(msg); a.showAndWait();
     }
 }

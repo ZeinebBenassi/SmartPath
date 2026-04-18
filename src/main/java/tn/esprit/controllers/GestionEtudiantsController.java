@@ -8,6 +8,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -67,21 +69,65 @@ public class GestionEtudiantsController {
     private void setupActionColumn() {
         if (colActions == null) return;
         colActions.setCellFactory(col -> new TableCell<>() {
-            private final Button btnEdit = makeBtn("✏ Modifier",  "#2563eb");
-            private final Button btnDel  = makeBtn("🗑 Supprimer", "#dc2626");
-            private final HBox   box     = new HBox(6, btnEdit, btnDel);
-            { box.setStyle("-fx-alignment:CENTER;");
+
+            // Bouton Modifier — icône uniquement
+            private final Button btnEdit = makeIconBtn("/images/modifier.png", "✏", "#2563eb", "Modifier");
+            // Bouton Ban
+            private final Button btnBan  = makeIconBtn("/images/block.png",    "🚫", "#f59e0b", "Bannir");
+            // Bouton Supprimer
+            private final Button btnDel  = makeTextBtn("🗑", "#dc2626", "Supprimer");
+            private final HBox   box     = new HBox(6, btnEdit, btnBan, btnDel);
+
+            {
+                box.setStyle("-fx-alignment:CENTER;");
                 btnEdit.setOnAction(e -> openForm(getTableRow().getItem(), false));
-                btnDel .setOnAction(e -> confirmDelete(getTableRow().getItem())); }
-            @Override protected void updateItem(Void item, boolean empty) {
+                btnBan .setOnAction(e -> confirmBan(getTableRow().getItem()));
+                btnDel .setOnAction(e -> confirmDelete(getTableRow().getItem()));
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty || getTableRow()==null || getTableRow().getItem()==null ? null : box);
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null);
+                    return;
+                }
+                // Mettre à jour l'apparence du bouton Ban selon le statut actuel
+                Etudiant etudiant = getTableRow().getItem();
+                String st = etudiant.getStatus();
+                if ("ban".equalsIgnoreCase(st)) {
+                    btnBan.setTooltip(new Tooltip("Réactiver"));
+                    btnBan.setStyle("-fx-background-color:#10b981;-fx-background-radius:6;-fx-padding:4 8;-fx-cursor:hand;");
+                } else {
+                    btnBan.setTooltip(new Tooltip("Bannir"));
+                    btnBan.setStyle("-fx-background-color:#f59e0b;-fx-background-radius:6;-fx-padding:4 8;-fx-cursor:hand;");
+                }
+                setGraphic(box);
             }
         });
     }
 
-    private Button makeBtn(String text, String color) {
+    /** Bouton avec image (fallback texte si image absente) */
+    private Button makeIconBtn(String imagePath, String fallbackText, String color, String tooltip) {
+        Button b = new Button();
+        b.setTooltip(new Tooltip(tooltip));
+        b.setStyle("-fx-background-color:" + color + ";-fx-background-radius:6;-fx-padding:4 8;-fx-cursor:hand;");
+        try {
+            Image img = new Image(getClass().getResourceAsStream(imagePath));
+            ImageView iv = new ImageView(img);
+            iv.setFitWidth(14); iv.setFitHeight(14);
+            b.setGraphic(iv);
+        } catch (Exception e) {
+            b.setText(fallbackText);
+            b.setStyle(b.getStyle() + "-fx-text-fill:white;-fx-font-size:11;");
+        }
+        return b;
+    }
+
+    /** Bouton texte/emoji standard */
+    private Button makeTextBtn(String text, String color, String tooltip) {
         Button b = new Button(text);
+        b.setTooltip(new Tooltip(tooltip));
         b.setStyle("-fx-background-color:" + color + ";-fx-text-fill:white;-fx-background-radius:6;-fx-font-size:11;-fx-padding:4 10;-fx-cursor:hand;");
         return b;
     }
@@ -129,6 +175,31 @@ public class GestionEtudiantsController {
         } catch (Exception e) { showError("Erreur", e.getMessage()); }
     }
 
+    private void confirmBan(Etudiant etudiant) {
+        if (etudiant == null) return;
+        String currentStatus = etudiant.getStatus();
+        boolean isBanned = "ban".equalsIgnoreCase(currentStatus);
+        String newStatus = isBanned ? "actif" : "ban";
+        String action = isBanned ? "réactiver" : "bannir";
+
+        Alert a = new Alert(Alert.AlertType.CONFIRMATION);
+        a.setTitle(isBanned ? "Réactiver étudiant" : "Bannir étudiant");
+        a.setHeaderText(null);
+        a.setContentText("Voulez-vous " + action + " " + etudiant.getPrenom() + " " + etudiant.getNom() + " ?");
+        Optional<ButtonType> r = a.showAndWait();
+        if (r.isPresent() && r.get() == ButtonType.OK) {
+            try {
+                tn.esprit.services.UserService userService = new tn.esprit.services.UserService();
+                userService.updateStatusByEmail(etudiant.getEmail(), newStatus);
+                showInfo(isBanned ? "Réactivé" : "Banni",
+                        etudiant.getPrenom() + " " + etudiant.getNom() + " a été " + (isBanned ? "réactivé." : "banni."));
+                loadData();
+            } catch (Exception e) {
+                showError("Erreur bannissement", e.getMessage());
+            }
+        }
+    }
+
     private void confirmDelete(Etudiant etudiant) {
         if (etudiant == null) return;
         Alert a = new Alert(Alert.AlertType.CONFIRMATION);
@@ -150,5 +221,9 @@ public class GestionEtudiantsController {
 
     private void showError(String t, String msg) {
         Alert a = new Alert(Alert.AlertType.ERROR); a.setTitle(t); a.setHeaderText(null); a.setContentText(msg); a.showAndWait();
+    }
+
+    private void showInfo(String t, String msg) {
+        Alert a = new Alert(Alert.AlertType.INFORMATION); a.setTitle(t); a.setHeaderText(null); a.setContentText(msg); a.showAndWait();
     }
 }
