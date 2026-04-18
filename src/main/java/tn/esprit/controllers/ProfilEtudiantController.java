@@ -1,6 +1,7 @@
 package tn.esprit.controllers;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -214,10 +215,25 @@ public class ProfilEtudiantController {
             try {
                 File f = new File(photoPath);
                 if (f.exists()) {
-                    Image img = new Image(f.toURI().toString(), 88, 88, false, true);
+                    // Charger une version plus grande (meilleure qualité, surtout sur écrans HiDPI)
+                    Image img = new Image(f.toURI().toString(), 256, 256, true, true);
                     photoView.setImage(img);
-                    // Appliquer un clip circulaire
-                    javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(44, 44, 44);
+
+                    // Recadrage carré centré pour éviter la déformation (puis clip circulaire)
+                    double w = img.getWidth();
+                    double h = img.getHeight();
+                    if (w > 0 && h > 0) {
+                        double side = Math.min(w, h);
+                        photoView.setViewport(new Rectangle2D((w - side) / 2.0, (h - side) / 2.0, side, side));
+                    } else {
+                        photoView.setViewport(null);
+                    }
+                    photoView.setPreserveRatio(false);
+
+                    double size = Math.min(photoView.getFitWidth(), photoView.getFitHeight());
+                    if (size <= 0) size = 88;
+                    double r = size / 2.0;
+                    javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(r, r, r);
                     photoView.setClip(clip);
                     photoView.setVisible(true);
                     photoView.setManaged(true);
@@ -228,6 +244,10 @@ public class ProfilEtudiantController {
             } catch (Exception ignored) {}
         }
         // Pas de photo : afficher l'initiale
+        if (photoView != null) {
+            photoView.setViewport(null);
+            photoView.setClip(null);
+        }
         photoView.setVisible(false);
         photoView.setManaged(false);
         avatarLabel.setVisible(true);

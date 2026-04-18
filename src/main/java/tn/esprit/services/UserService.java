@@ -40,6 +40,14 @@ public class UserService {
         }
     }
 
+    public User findByEmail(String email) {
+        try (PreparedStatement ps = connection.prepareStatement(baseSelect() + " WHERE u.email=?")) {
+            ps.setString(1, email);
+            try (ResultSet rs = ps.executeQuery()) { if (rs.next()) return mapUser(rs); }
+        } catch (Exception e) { System.out.println("Erreur findByEmail: " + e.getMessage()); }
+        return null;
+    }
+
     public User login(String email, String password) {
         String statusExpr = Boolean.TRUE.equals(statusColumnExists)
                 ? " COALESCE(u.status, 'actif') AS status" : " 'actif' AS status";
@@ -310,7 +318,9 @@ public class UserService {
         u.setEmail(rs.getString("email"));        u.setPassword(rs.getString("password"));
         u.setCin(rs.getString("CIN"));            u.setTelephone(rs.getString("telephone"));
         u.setAdresse(rs.getString("adresse"));    u.setDateNaissance(rs.getDate("date_naissance"));
-        u.setPhoto(rs.getString("photo"));        u.setRoles(rs.getString("roles"));
+        u.setPhoto(rs.getString("photo"));
+        try { u.setPhotoFace(rs.getString("photo_face")); } catch (Exception ignored) {}
+        u.setRoles(rs.getString("roles"));
         try { String s = rs.getString("status"); u.setStatus(s != null ? s : "actif"); } catch (Exception e) { u.setStatus("actif"); }
         Timestamp created = rs.getTimestamp("created_at");
         u.setCreatedAt(created == null ? new java.util.Date() : new java.util.Date(created.getTime()));

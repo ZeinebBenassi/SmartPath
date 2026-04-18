@@ -335,3 +335,22 @@
 
 /* Separator */
 .separator { -fx-background-color: #E2E8F0; }
+
+/* ══════════════════════════════════════════════════════════════
+   FACE AUTH  –  Toggle + panel
+   ══════════════════════════════════════════════════════════════ */
+.toggle-button {
+    -fx-background-color: #cbd5e1;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+    -fx-padding: 5 12;
+}
+.toggle-button:selected {
+    -fx-background-color: #2563eb;
+    -fx-text-fill: white;
+}
+.toggle-button:selected:hover { -fx-background-color: #1d4ed8; }
+.toggle-button:hover          { -fx-background-color: #94a3b8; }

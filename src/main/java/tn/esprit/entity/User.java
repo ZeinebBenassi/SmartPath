@@ -17,6 +17,7 @@ public class User {
     private String adresse;
     private Date   dateNaissance;
     private String photo;
+    private String photoFace;
     private String roles;
     private Date   createdAt;
     private String type;       // "admin", "prof", "etudiant"
@@ -91,6 +92,9 @@ public class User {
 
     public String getPhoto()                           { return photo; }
     public void   setPhoto(String photo)               { this.photo = photo; }
+
+    public String getPhotoFace()                       { return photoFace; }
+    public void   setPhotoFace(String photoFace)       { this.photoFace = photoFace; }
 
     public String getRoles()                           { return roles; }
     public void   setRoles(String roles)               { this.roles = roles; }

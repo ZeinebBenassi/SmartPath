@@ -4,60 +4,50 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
 
-<StackPane prefHeight="620" prefWidth="980"
+<StackPane prefHeight="660" prefWidth="980"
            style="-fx-background-color: linear-gradient(to bottom right, #eef3ff, #f0f7ff);"
            xmlns:fx="http://javafx.com/fxml/1"
-           xmlns="http://javafx.com/javafx/25"
+           xmlns="http://javafx.com/javafx/21"
            fx:controller="tn.esprit.controllers.LoginController">
 
-    <HBox alignment="CENTER" prefHeight="540" prefWidth="880"
+    <HBox alignment="CENTER" prefHeight="580" prefWidth="900"
           style="-fx-background-color: white;
                  -fx-background-radius: 20;
                  -fx-border-color: #dce8fa;
                  -fx-border-radius: 20;
-                 -fx-border-width: 1;">
+                 -fx-border-width: 1;
+                 -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.10), 24, 0, 0, 6);">
 
-        <!-- ── Panneau gauche ── -->
-        <VBox alignment="CENTER" prefWidth="350" spacing="20"
+        <!-- ══ Panneau gauche (branding) ══ -->
+        <VBox alignment="CENTER" prefWidth="350" spacing="22"
               style="-fx-background-color: linear-gradient(to bottom right, #1e3a8a, #2563eb);
                      -fx-background-radius: 20 0 0 20;
                      -fx-padding: 48;">
 
-            <ImageView fitWidth="160" preserveRatio="true" smooth="true">
+            <ImageView fitWidth="150" preserveRatio="true" smooth="true">
                 <image><Image url="@/images/logo.png"/></image>
             </ImageView>
 
-            <VBox spacing="8" alignment="CENTER">
+            <VBox spacing="10" alignment="CENTER">
                 <Label text="Bon retour !"
-                       style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: white;"/>
-                <Label wrapText="true" maxWidth="250" textAlignment="CENTER"
-                       text="Connectez-vous pour accéder à votre espace d'apprentissage personnalisé."
-                       style="-fx-font-size: 12; -fx-text-fill: rgba(255,255,255,0.78); -fx-text-alignment: center;"/>
+                       style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: white;"/>
             </VBox>
-
-            <HBox alignment="CENTER" spacing="6" style="-fx-padding: 10 0 0 0;">
-                <Circle radius="4" fill="white" opacity="0.9"/>
-                <Circle radius="4" fill="white" opacity="0.4"/>
-                <Circle radius="4" fill="white" opacity="0.4"/>
-            </HBox>
         </VBox>
 
-        <!-- ── Panneau droit ── -->
-        <VBox alignment="CENTER" prefWidth="530" spacing="18"
-              style="-fx-padding: 48 56;">
+        <!-- ══ Panneau droit (formulaire) ══ -->
+        <VBox alignment="TOP_CENTER" prefWidth="550" spacing="14"
+              style="-fx-padding: 40 52;">
 
-            <HBox maxWidth="400" spacing="0"
-                  style="-fx-background-color: #f4f6fb;
-                         -fx-background-radius: 10;
-                         -fx-border-color: #e2e8f4;
-                         -fx-border-radius: 10;
-                         -fx-border-width: 1;">
-                <Button disable="true" prefHeight="36" prefWidth="200"
+            <!-- Onglets Connexion / Inscription -->
+            <HBox maxWidth="420" spacing="0"
+                  style="-fx-background-color: #f4f6fb; -fx-background-radius: 10;
+                         -fx-border-color: #e2e8f4; -fx-border-radius: 10; -fx-border-width: 1;">
+                <Button disable="true" prefHeight="36" prefWidth="210"
                         style="-fx-background-color: #2563eb; -fx-text-fill: white;
                                -fx-font-size: 12; -fx-font-weight: bold;
                                -fx-background-radius: 9 0 0 9; -fx-cursor: default;"
                         text="Connexion"/>
-                <Button onAction="#goToRegister" prefHeight="36" prefWidth="200"
+                <Button onAction="#goToRegister" prefHeight="36" prefWidth="210"
                         style="-fx-background-color: transparent; -fx-text-fill: #8898b8;
                                -fx-font-size: 12; -fx-font-weight: bold;
                                -fx-background-radius: 0 9 9 0; -fx-cursor: hand;"
@@ -67,17 +57,19 @@
             <Label text="Se connecter"
                    style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
 
-            <VBox maxWidth="400" spacing="5">
+            <!-- Email -->
+            <VBox maxWidth="420" spacing="4">
                 <Label text="Adresse email"
                        style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #5a6a8a;"/>
-                <TextField fx:id="emailField" prefHeight="44" promptText="exemple@email.com"
+                <TextField fx:id="emailField" prefHeight="42" promptText="exemple@email.com"
                            style="-fx-background-color: #f7f9fc; -fx-text-fill: #1a2340;
                                   -fx-prompt-text-fill: #a0aec0; -fx-border-color: #e2e8f4;
                                   -fx-border-radius: 9; -fx-background-radius: 9;
                                   -fx-padding: 10 14; -fx-font-size: 13;"/>
             </VBox>
 
-            <VBox maxWidth="400" spacing="5">
+            <!-- Mot de passe (masqué en mode face) -->
+            <VBox fx:id="passwordGroup" maxWidth="420" spacing="4">
                 <HBox alignment="CENTER_LEFT">
                     <Label text="Mot de passe"
                            style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #5a6a8a;"/>
@@ -87,30 +79,89 @@
                                    -fx-font-size: 11; -fx-cursor: hand; -fx-underline: true;"
                             text="Oublié ?"/>
                 </HBox>
-                <PasswordField fx:id="passwordField" prefHeight="44" promptText="••••••••"
+                <PasswordField fx:id="passwordField" prefHeight="42" promptText="••••••••"
                                style="-fx-background-color: #f7f9fc; -fx-text-fill: #1a2340;
                                       -fx-prompt-text-fill: #a0aec0; -fx-border-color: #e2e8f4;
                                       -fx-border-radius: 9; -fx-background-radius: 9;
                                       -fx-padding: 10 14; -fx-font-size: 13;"/>
             </VBox>
 
-            <Label fx:id="errorLabel" maxWidth="400"
-                   style="-fx-font-size: 12; -fx-text-fill: #dc2626;" text="" wrapText="true"/>
+            <!-- ══ Toggle Face Auth ══ -->
+            <HBox maxWidth="420" spacing="10" alignment="CENTER_LEFT"
+                  style="-fx-background-color: #f0f7ff; -fx-background-radius: 10;
+                         -fx-border-color: #bfdbfe; -fx-border-radius: 10; -fx-border-width: 1;
+                         -fx-padding: 10 14;">
+                <Label text="👁" style="-fx-font-size: 16;"/>
+                <VBox spacing="1" HBox.hgrow="ALWAYS">
+                    <Label text="Connexion par reconnaissance faciale"
+                           style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #1e40af;"/>
+                    <Label text="Activez pour vous connecter avec votre visage"
+                           style="-fx-font-size: 11; -fx-text-fill: #6b8fc9;"/>
+                </VBox>
+                <Button fx:id="faceToggleBtn" onAction="#handleFaceToggle"
+                        text="OFF"
+                        style="-fx-background-color: #cbd5e1; -fx-text-fill: white;
+                               -fx-font-size: 11; -fx-font-weight: bold;
+                               -fx-background-radius: 20; -fx-cursor: hand;
+                               -fx-padding: 5 14; -fx-border-width: 0;"/>
+            </HBox>
 
-            <Button onAction="#handleLogin" prefHeight="46" prefWidth="400"
+            <!-- ══ Panneau Face Auth (caché par défaut) ══ -->
+            <VBox fx:id="facePanel" maxWidth="420" spacing="10"
+                  style="-fx-background-color: #f8faff; -fx-background-radius: 12;
+                         -fx-border-color: #bfdbfe; -fx-border-radius: 12; -fx-border-width: 1;
+                         -fx-padding: 14;">
+
+                <!-- Preview webcam -->
+                <StackPane prefHeight="180" prefWidth="420"
+                           style="-fx-background-color: #1e293b; -fx-background-radius: 8;">
+                    <Label text="📷  Caméra non démarrée"
+                           style="-fx-text-fill: #64748b; -fx-font-size: 13;"/>
+                    <ImageView fx:id="cameraPreview" fitWidth="420" fitHeight="180"
+                               preserveRatio="true" smooth="true"/>
+                </StackPane>
+
+                <!-- Boutons caméra -->
+                <HBox spacing="8" alignment="CENTER">
+                    <Button fx:id="btnStartCamera" onAction="#handleStartCamera"
+                            prefHeight="36" prefWidth="190"
+                            text="▶  Activer la caméra"
+                            style="-fx-background-color: #e0e7ff; -fx-text-fill: #3730a3;
+                                   -fx-font-size: 12; -fx-font-weight: bold;
+                                   -fx-background-radius: 8; -fx-cursor: hand;"/>
+                    <Button fx:id="btnVerifyFace" onAction="#handleVerifyFace"
+                            prefHeight="36" prefWidth="190"
+                            text="✓  Vérifier mon visage"
+                            style="-fx-background-color: #2563eb; -fx-text-fill: white;
+                                   -fx-font-size: 12; -fx-font-weight: bold;
+                                   -fx-background-radius: 8; -fx-cursor: hand;"/>
+                </HBox>
+
+                <!-- Statut face -->
+                <Label fx:id="faceStatusLabel" maxWidth="420" wrapText="true"
+                       text="Cliquez sur « Activer la caméra » pour commencer."
+                       style="-fx-text-fill: #2563eb; -fx-font-size: 12; -fx-text-alignment: center;"/>
+            </VBox>
+
+            <!-- Message d'erreur global -->
+            <Label fx:id="errorLabel" maxWidth="420" wrapText="true"
+                   style="-fx-font-size: 12; -fx-text-fill: #dc2626;" text=""/>
+
+            <!-- Bouton Se connecter -->
+            <Button onAction="#handleLogin" prefHeight="44" prefWidth="420"
                     style="-fx-background-color: #2563eb; -fx-text-fill: white;
                            -fx-font-size: 14; -fx-font-weight: bold;
                            -fx-background-radius: 10; -fx-cursor: hand;"
                     text="Se connecter"/>
 
             <HBox alignment="CENTER" spacing="6">
-                <Label style="-fx-text-fill: #8898b8; -fx-font-size: 12;"
-                       text="Pas encore inscrit ?"/>
+                <Label style="-fx-text-fill: #8898b8; -fx-font-size: 12;" text="Pas encore inscrit ?"/>
                 <Button onAction="#goToRegister"
                         style="-fx-background-color: transparent; -fx-text-fill: #2563eb;
                                -fx-font-size: 12; -fx-font-weight: bold; -fx-cursor: hand; -fx-underline: true;"
                         text="Créer un compte"/>
             </HBox>
+
         </VBox>
     </HBox>
 </StackPane>
