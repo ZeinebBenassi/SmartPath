@@ -5,9 +5,17 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import tn.esprit.entity.User;
+import tn.esprit.services.UserService;
+import tn.esprit.utils.FormValidator;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ * Profil utilisateur — affiché selon le rôle (admin / prof / étudiant).
+ * Persiste les modifications en base via UserService.
+ */
 public class ProfilController {
 
     @FXML private Label avatarLabel;
@@ -19,95 +27,158 @@ public class ProfilController {
     @FXML private Label cinLabel;
     @FXML private Label dateNaissanceLabel;
     @FXML private Label membreDepuisLabel;
-    @FXML private TextField nomField;
-    @FXML private TextField prenomField;
-    @FXML private TextField telephoneField;
-    @FXML private TextField adresseField;
+
+    // Champs éditables
+    @FXML private TextField     nomField;
+    @FXML private TextField     prenomField;
+    @FXML private TextField     telephoneField;
+    @FXML private TextField     adresseField;
+
+    // Changement de mot de passe
     @FXML private PasswordField oldPwdField;
     @FXML private PasswordField newPwdField;
     @FXML private PasswordField confirmPwdField;
+
     @FXML private Label statusLabel;
 
     private static User currentUser;
+    private final UserService userService = new UserService();
 
     public static void setCurrentUser(User u) { currentUser = u; }
+
+    // ── Init ─────────────────────────────────────────────────────────────────
 
     @FXML
     public void initialize() {
         if (currentUser == null) return;
-        String initiale = currentUser.getPrenom() != null && !currentUser.getPrenom().isEmpty()
+
+        // Avatar : initiale du prénom
+        String initiale = (currentUser.getPrenom() != null && !currentUser.getPrenom().isEmpty())
             ? String.valueOf(currentUser.getPrenom().charAt(0)).toUpperCase() : "?";
-        if (avatarLabel     != null) avatarLabel.setText(initiale);
-        if (nomCompletLabel != null) nomCompletLabel.setText(currentUser.getPrenom() + " " + currentUser.getNom());
-        String roleDisplay;
-        switch (currentUser.getType()) {
-            case "admin":    roleDisplay = "Administrateur"; break;
-            case "prof":     roleDisplay = "Professeur";     break;
-            case "etudiant": roleDisplay = "Étudiant";       break;
-            default:         roleDisplay = currentUser.getType();
-        }
-        if (roleLabel          != null) roleLabel.setText(roleDisplay);
-        if (emailLabel         != null) emailLabel.setText(currentUser.getEmail());
-        if (telephoneLabel     != null) telephoneLabel.setText(currentUser.getTelephone() != null ? currentUser.getTelephone() : "Non renseigné");
-        if (adresseLabel       != null) adresseLabel.setText(currentUser.getAdresse() != null ? currentUser.getAdresse() : "Non renseignée");
-        if (cinLabel           != null) cinLabel.setText(currentUser.getCin() != null ? currentUser.getCin() : "Non renseigné");
-        if (dateNaissanceLabel != null) dateNaissanceLabel.setText(currentUser.getDateNaissance() != null ? currentUser.getDateNaissance().toString() : "Non renseignée");
-        if (membreDepuisLabel  != null) membreDepuisLabel.setText(currentUser.getCreatedAt() != null ? new SimpleDateFormat("yyyy-MM-dd").format(currentUser.getCreatedAt()) : "—");
-        if (nomField           != null) nomField.setText(currentUser.getNom());
-        if (prenomField        != null) prenomField.setText(currentUser.getPrenom());
-        if (telephoneField     != null && currentUser.getTelephone() != null) telephoneField.setText(currentUser.getTelephone());
-        if (adresseField       != null && currentUser.getAdresse()   != null) adresseField.setText(currentUser.getAdresse());
+        set(avatarLabel,        initiale);
+        set(nomCompletLabel,    currentUser.getPrenom() + " " + currentUser.getNom());
+        set(roleLabel,          roleDisplay(currentUser.getType()));
+        set(emailLabel,         currentUser.getEmail());
+        set(telephoneLabel,     nvl(currentUser.getTelephone(),  "Non renseigné"));
+        set(adresseLabel,       nvl(currentUser.getAdresse(),    "Non renseignée"));
+        set(cinLabel,           nvl(currentUser.getCin(),        "Non renseigné"));
+        set(membreDepuisLabel,  currentUser.getCreatedAt() != null
+            ? new SimpleDateFormat("dd/MM/yyyy").format(currentUser.getCreatedAt()) : "—");
+        set(dateNaissanceLabel, currentUser.getDateNaissance() != null
+            ? new SimpleDateFormat("dd/MM/yyyy").format(currentUser.getDateNaissance()) : "Non renseignée");
+
+        // Champs édition
+        setText(nomField,        currentUser.getNom());
+        setText(prenomField,     currentUser.getPrenom());
+        setText(telephoneField,  currentUser.getTelephone());
+        setText(adresseField,    currentUser.getAdresse());
+
+        hideStatus();
     }
 
-    @FXML public void saveProfile() {
+    // ── Sauvegarde profil ────────────────────────────────────────────────────
+
+    @FXML
+    public void saveProfile() {
         if (currentUser == null) return;
-        String nom = nomField != null ? nomField.getText().trim() : "";
-        String prenom = prenomField != null ? prenomField.getText().trim() : "";
-        String telephone = telephoneField != null ? telephoneField.getText().trim() : "";
-        String adresse = adresseField != null ? adresseField.getText().trim() : "";
-        if (nom.isEmpty())    { showStatus("❌ Le nom est obligatoire.", false); return; }
-        if (prenom.isEmpty()) { showStatus("❌ Le prénom est obligatoire.", false); return; }
-        currentUser.setNom(nom); currentUser.setPrenom(prenom);
-        if (!telephone.isEmpty()) currentUser.setTelephone(telephone);
-        if (!adresse.isEmpty())   currentUser.setAdresse(adresse);
-        showStatus("✅ Profil mis à jour avec succès.", true);
-        initialize();
+
+        List<String> errors = new ArrayList<>();
+        boolean ok = true;
+        ok &= FormValidator.validateRequired(nomField,    "Le nom",    errors);
+        ok &= FormValidator.validateRequired(prenomField, "Le prénom", errors);
+        ok &= FormValidator.validatePhone(telephoneField, errors);
+        FormValidator.showErrors(statusLabel, errors);
+        if (!ok) return;
+
+        currentUser.setNom(nomField.getText().trim());
+        currentUser.setPrenom(prenomField.getText().trim());
+        if (telephoneField != null && !telephoneField.getText().trim().isEmpty())
+            currentUser.setTelephone(telephoneField.getText().trim());
+        if (adresseField != null && !adresseField.getText().trim().isEmpty())
+            currentUser.setAdresse(adresseField.getText().trim());
+
+        boolean saved = userService.update(currentUser);
+        if (saved) {
+            showStatus("✅ Profil mis à jour avec succès.", true);
+            initialize();
+        } else {
+            showStatus("❌ Erreur lors de la sauvegarde. Vérifiez votre connexion.", false);
+        }
     }
 
-    @FXML public void changePassword() {
+    // ── Changement de mot de passe ───────────────────────────────────────────
+
+    @FXML
+    public void changePassword() {
         if (oldPwdField == null || newPwdField == null || confirmPwdField == null) return;
-        String newPwd = newPwdField.getText().trim();
-        String confirmPwd = confirmPwdField.getText().trim();
-        if (oldPwdField.getText().trim().isEmpty()) { showStatus("Saisissez votre mot de passe actuel.", false); return; }
-        if (newPwd.isEmpty())     { showStatus("Saisissez un nouveau mot de passe.", false); return; }
-        if (newPwd.length() < 6)  { showStatus("Le mot de passe doit contenir au moins 6 caractères.", false); return; }
-        if (!newPwd.equals(confirmPwd)) { showStatus("Les mots de passe ne correspondent pas.", false); return; }
-        showStatus("✅ Mot de passe modifié avec succès.", true);
-        oldPwdField.clear(); newPwdField.clear(); confirmPwdField.clear();
-    }
 
-    private void showStatus(String msg, boolean success) {
-        if (statusLabel == null) return;
-        statusLabel.setStyle("-fx-text-fill: " + (success ? "#00c896" : "#e94560") + "; -fx-font-size: 12; -fx-font-weight: bold;");
-        statusLabel.setText(msg);
-    }
+        String oldPwd     = oldPwdField.getText().trim();
+        String newPwd     = newPwdField.getText();
+        String confirmPwd = confirmPwdField.getText();
 
-    @FXML public void goBack() {
-        if (currentUser == null) return;
-        String dest;
-        switch (currentUser.getType()) {
-            case "admin": dest = "/tn/esprit/interfaces/DashboardAdmin.fxml"; break;
-            case "prof":  dest = "/tn/esprit/interfaces/DashboardProf.fxml";  break;
-            default:      dest = "/tn/esprit/interfaces/DashboardEtudiant.fxml";
+        if (oldPwd.isEmpty()) { showStatus("❌ Saisissez votre mot de passe actuel.", false); return; }
+        if (newPwd.isEmpty()) { showStatus("❌ Saisissez un nouveau mot de passe.", false); return; }
+        if (newPwd.length() < 6) { showStatus("❌ Le mot de passe doit contenir au moins 6 caractères.", false); return; }
+        if (!newPwd.equals(confirmPwd)) { showStatus("❌ Les mots de passe ne correspondent pas.", false); return; }
+
+        currentUser.setPassword(newPwd);
+        boolean saved = userService.update(currentUser);
+        if (saved) {
+            showStatus("✅ Mot de passe modifié avec succès.", true);
+            oldPwdField.clear(); newPwdField.clear(); confirmPwdField.clear();
+        } else {
+            showStatus("❌ Erreur lors du changement de mot de passe.", false);
         }
+    }
+
+    // ── Navigation ───────────────────────────────────────────────────────────
+
+    @FXML
+    public void goBack() {
+        if (currentUser == null) return;
+        String dest = switch (currentUser.getType()) {
+            case "admin"    -> "/tn/esprit/interfaces/DashboardAdmin.fxml";
+            case "prof"     -> "/tn/esprit/interfaces/DashboardProf.fxml";
+            default         -> "/tn/esprit/interfaces/DashboardEtudiant.fxml";
+        };
         try {
             Parent root = FXMLLoader.load(getClass().getResource(dest));
-            if (nomField != null) nomField.getScene().setRoot(root);
-            else if (emailLabel != null) emailLabel.getScene().setRoot(root);
+            javafx.scene.Node ref = (nomField != null) ? nomField : emailLabel;
+            if (ref != null) ref.getScene().setRoot(root);
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    @FXML public void uploadPhoto() {
-        new Alert(Alert.AlertType.INFORMATION, "Fonctionnalité d'upload photo à implémenter.", ButtonType.OK).showAndWait();
+    @FXML
+    public void uploadPhoto() {
+        new Alert(Alert.AlertType.INFORMATION,
+            "Fonctionnalité d'upload photo à implémenter.", ButtonType.OK).showAndWait();
+    }
+
+    // ── Helpers ──────────────────────────────────────────────────────────────
+
+    private String roleDisplay(String type) {
+        if (type == null) return "Utilisateur";
+        return switch (type) {
+            case "admin"    -> "Administrateur";
+            case "prof"     -> "Professeur";
+            case "etudiant" -> "Étudiant";
+            default         -> type;
+        };
+    }
+
+    private void set(Label l, String v)      { if (l != null) l.setText(v); }
+    private void setText(TextField f, String v) { if (f != null && v != null) f.setText(v); }
+    private String nvl(String s, String def) { return (s != null && !s.isBlank()) ? s : def; }
+
+    private void showStatus(String msg, boolean success) {
+        if (statusLabel == null) return;
+        statusLabel.setText(msg);
+        statusLabel.setStyle("-fx-text-fill: " + (success ? "#00c896" : "#e94560")
+            + "; -fx-font-size: 12; -fx-font-weight: bold;");
+        statusLabel.setVisible(true);
+    }
+
+    private void hideStatus() {
+        if (statusLabel != null) { statusLabel.setText(""); statusLabel.setVisible(false); }
     }
 }

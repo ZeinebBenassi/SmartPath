@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.esprit.controllers.GestionProfsController"
+      spacing="0" style="-fx-background-color:#F4F7FB;">
+    <HBox alignment="CENTER_LEFT" spacing="12"
+          style="-fx-background-color:white;-fx-padding:14 20;-fx-border-color:transparent transparent #E2E8F0 transparent;-fx-border-width:0 0 1 0;">
+        <VBox spacing="2">
+            <Label text="👨‍🏫  Gestion des Professeurs" style="-fx-font-size:16px;-fx-font-weight:bold;-fx-text-fill:#1E293B;"/>
+            <Label text="CRUD dédié aux professeurs"    style="-fx-font-size:11px;-fx-text-fill:#94A3B8;"/>
+        </VBox>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <HBox alignment="CENTER_LEFT" spacing="0" prefWidth="220"
+              style="-fx-background-color:#F8FAFC;-fx-background-radius:8;-fx-border-color:#E2E8F0;-fx-border-radius:8;-fx-border-width:1;-fx-padding:7 12;">
+            <Label text="🔍 " style="-fx-text-fill:#CBD5E1;-fx-font-size:13;"/>
+            <TextField fx:id="searchField" promptText="Rechercher..."
+                       style="-fx-background-color:transparent;-fx-border-width:0;-fx-font-size:13;" prefWidth="170"/>
+        </HBox>
+        <Label fx:id="countLabel" text="0 professeur(s)" style="-fx-font-size:13;-fx-text-fill:#64748B;"/>
+        <Button fx:id="btnAjouter" text="+ Ajouter un professeur" onAction="#handleAjouter"
+                style="-fx-background-color:#7C3AED;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:13;-fx-background-radius:8;-fx-padding:9 20;-fx-cursor:hand;"/>
+    </HBox>
+    <VBox VBox.vgrow="ALWAYS" style="-fx-background-color:#F4F7FB;-fx-padding:20;">
+        <TableView fx:id="profsTable" VBox.vgrow="ALWAYS"
+                   style="-fx-background-color:white;-fx-background-radius:12;-fx-border-color:#E2E8F0;-fx-border-radius:12;-fx-border-width:1;">
+            <columns>
+                <TableColumn fx:id="colNom"        text="Nom"        prefWidth="120"/>
+                <TableColumn fx:id="colPrenom"     text="Prénom"     prefWidth="120"/>
+                <TableColumn fx:id="colEmail"      text="Email"      prefWidth="190"/>
+                <TableColumn fx:id="colSpecialite" text="Spécialité" prefWidth="150"/>
+                <TableColumn fx:id="colCIN"        text="CIN"        prefWidth="100"/>
+                <TableColumn fx:id="colTelephone"  text="Téléphone"  prefWidth="110"/>
+                <TableColumn fx:id="colActions"    text="Actions"    prefWidth="150"/>
+            </columns>
+            <columnResizePolicy><TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/></columnResizePolicy>
+            <placeholder><Label text="Aucun professeur." style="-fx-text-fill:#94A3B8;"/></placeholder>
+        </TableView>
+    </VBox>
+</VBox>

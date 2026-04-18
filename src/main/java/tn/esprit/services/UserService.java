@@ -5,17 +5,8 @@ import tn.esprit.entity.Prof;
 import tn.esprit.entity.User;
 import tn.esprit.utils.MyDatabase;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.sql.*;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.mindrot.jbcrypt.BCrypt;
@@ -43,15 +34,11 @@ public class UserService {
                     "ALTER TABLE `user` ADD COLUMN `status` VARCHAR(20) DEFAULT 'actif'")) {
                 ps.executeUpdate();
                 statusColumnExists = true;
-                System.out.println("Colonne 'status' ajoutee dans la table user");
             } catch (Exception ex) {
                 statusColumnExists = false;
-                System.out.println("Impossible d'ajouter status : " + ex.getMessage());
             }
         }
     }
-
-    // ── AUTHENTIFICATION ─────────────────────────────────────────────────────
 
     public User login(String email, String password) {
         String statusExpr = Boolean.TRUE.equals(statusColumnExists)
@@ -83,8 +70,6 @@ public class UserService {
         return false;
     }
 
-    // ── STATISTIQUES ─────────────────────────────────────────────────────────
-
     public int countAll() { return scalarInt("SELECT COUNT(*) FROM `user`"); }
 
     public int countByType(String type) {
@@ -92,8 +77,6 @@ public class UserService {
         if ("prof".equalsIgnoreCase(type))     return scalarInt("SELECT COUNT(*) FROM prof");
         return 0;
     }
-
-    // ── LECTURE ──────────────────────────────────────────────────────────────
 
     private String statusExpr() {
         return Boolean.TRUE.equals(statusColumnExists)
@@ -150,8 +133,6 @@ public class UserService {
         return list;
     }
 
-    // ── ECRITURE ─────────────────────────────────────────────────────────────
-
     public boolean emailExists(String email) {
         try (PreparedStatement ps = connection.prepareStatement("SELECT 1 FROM `user` WHERE email=?")) {
             ps.setString(1, email);
@@ -184,7 +165,8 @@ public class UserService {
             }
             if ("etudiant".equals(type)) {
                 try (PreparedStatement ps = connection.prepareStatement("INSERT INTO etudiant(id,niveau,status,suspended_until,filiere_id) VALUES(?,?,?,?,?)")) {
-                    ps.setInt(1, userId); ps.setString(2, "L1"); ps.setString(3, status); ps.setTimestamp(4, null); ps.setNull(5, Types.INTEGER); ps.executeUpdate();
+                    ps.setInt(1, userId); ps.setString(2, "L1"); ps.setString(3, status);
+                    ps.setTimestamp(4, null); ps.setNull(5, Types.INTEGER); ps.executeUpdate();
                 }
             } else if ("prof".equals(type)) {
                 try (PreparedStatement ps = connection.prepareStatement("INSERT INTO prof(id,specialite) VALUES(?,?)")) {
@@ -230,13 +212,24 @@ public class UserService {
 
     public void delete(int id) {
         try {
-            try (PreparedStatement ps = connection.prepareStatement("DELETE FROM etudiant WHERE id=?")) { ps.setInt(1, id); ps.executeUpdate(); }
-            try (PreparedStatement ps = connection.prepareStatement("DELETE FROM prof WHERE id=?"))     { ps.setInt(1, id); ps.executeUpdate(); }
-            try (PreparedStatement ps = connection.prepareStatement("DELETE FROM `user` WHERE id=?"))   { ps.setInt(1, id); ps.executeUpdate(); }
-        } catch (Exception e) { System.out.println("Erreur delete: " + e.getMessage()); }
+            connection.setAutoCommit(false);
+            try (PreparedStatement ps = connection.prepareStatement("DELETE FROM etudiant WHERE id=?")) {
+                ps.setInt(1, id); ps.executeUpdate();
+            }
+            try (PreparedStatement ps = connection.prepareStatement("DELETE FROM prof WHERE id=?")) {
+                ps.setInt(1, id); ps.executeUpdate();
+            }
+            int rows;
+            try (PreparedStatement ps = connection.prepareStatement("DELETE FROM `user` WHERE id=?")) {
+                ps.setInt(1, id); rows = ps.executeUpdate();
+            }
+            connection.commit(); connection.setAutoCommit(true);
+            if (rows == 0) throw new RuntimeException("Aucun utilisateur trouvé avec l'id " + id);
+        } catch (Exception e) {
+            try { connection.rollback(); connection.setAutoCommit(true); } catch (Exception ignored) {}
+            throw new RuntimeException("Erreur suppression id=" + id + " : " + e.getMessage(), e);
+        }
     }
-
-    // ── INSCRIPTION ──────────────────────────────────────────────────────────
 
     public boolean registerEtudiant(Etudiant e) {
         String ins = "INSERT INTO `user`(nom,prenom,email,password,CIN,telephone,adresse,date_naissance,photo,roles,type,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
@@ -251,11 +244,12 @@ public class UserService {
                 try (ResultSet k=ps.getGeneratedKeys()) { if(!k.next()){connection.rollback();return false;} userId=k.getInt(1); }
             }
             try (PreparedStatement ps = connection.prepareStatement("INSERT INTO etudiant(id,niveau,status,suspended_until,filiere_id) VALUES(?,?,?,?,?)")) {
-                ps.setInt(1,userId); ps.setString(2,e.getNiveau()!=null?e.getNiveau():"L1"); ps.setString(3,e.getStatus()!=null?e.getStatus():"actif"); ps.setTimestamp(4,null);
+                ps.setInt(1,userId); ps.setString(2,e.getNiveau()!=null?e.getNiveau():"L1"); ps.setString(3,e.getStatus()!=null?e.getStatus():"actif");
+                ps.setTimestamp(4,null);
                 if(e.getFiliereId()>0) ps.setInt(5,e.getFiliereId()); else ps.setNull(5,Types.INTEGER); ps.executeUpdate();
             }
             connection.commit(); connection.setAutoCommit(true); return true;
-        } catch (Exception ex) { try{connection.rollback();connection.setAutoCommit(true);}catch(Exception ignored){} System.out.println("Erreur registerEtudiant: "+ex.getMessage()); return false; }
+        } catch (Exception ex) { try{connection.rollback();connection.setAutoCommit(true);}catch(Exception ignored){} return false; }
     }
 
     public boolean registerProf(Prof p) {
@@ -273,10 +267,8 @@ public class UserService {
                 ps.setInt(1,userId); ps.setString(2,p.getSpecialite()!=null?p.getSpecialite():""); ps.executeUpdate();
             }
             connection.commit(); connection.setAutoCommit(true); return true;
-        } catch (Exception ex) { try{connection.rollback();connection.setAutoCommit(true);}catch(Exception ignored){} System.out.println("Erreur registerProf: "+ex.getMessage()); return false; }
+        } catch (Exception ex) { try{connection.rollback();connection.setAutoCommit(true);}catch(Exception ignored){} return false; }
     }
-
-    // ── MOT DE PASSE OUBLIE ──────────────────────────────────────────────────
 
     public String generateResetToken(String email) {
         if (!emailExists(email)) return null;
@@ -295,8 +287,6 @@ public class UserService {
         return false;
     }
 
-    // ── UTILITAIRES ──────────────────────────────────────────────────────────
-
     private int scalarInt(String sql) {
         try (PreparedStatement ps = connection.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             if (rs.next()) return rs.getInt(1);
@@ -314,7 +304,7 @@ public class UserService {
         u.setPhoto(rs.getString("photo"));        u.setRoles(rs.getString("roles"));
         try { String s = rs.getString("status"); u.setStatus(s != null ? s : "actif"); } catch (Exception e) { u.setStatus("actif"); }
         Timestamp created = rs.getTimestamp("created_at");
-        u.setCreatedAt(created == null ? new Date() : new Date(created.getTime()));
+        u.setCreatedAt(created == null ? new java.util.Date() : new java.util.Date(created.getTime()));
         String type = rs.getString("user_type");
         u.setType(type == null || type.isBlank() ? "etudiant" : type);
         return u;

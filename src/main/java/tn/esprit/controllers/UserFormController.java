@@ -6,173 +6,101 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import tn.esprit.entity.User;
 import tn.esprit.services.UserService;
+import tn.esprit.utils.FormValidator;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserFormController {
 
-    @FXML private Label lblTitle;
-    @FXML private TextField txtNom;
-    @FXML private TextField txtPrenom;
-    @FXML private TextField txtEmail;
+    @FXML private Label            lblTitle;
+    @FXML private TextField        txtNom;
+    @FXML private TextField        txtPrenom;
+    @FXML private TextField        txtEmail;
     @FXML private ComboBox<String> cbType;
-    @FXML private PasswordField tfPassword;
-    @FXML private Label lblPassword;
-    @FXML private TextField txtCIN;
-    @FXML private TextField txtTelephone;
-    @FXML private TextField txtAdresse;
-    @FXML private Button btnCancel;
-    @FXML private Button btnSave;
+    @FXML private PasswordField    tfPassword;
+    @FXML private PasswordField    tfConfirm;
+    @FXML private Label            lblPassword;
+    @FXML private TextField        txtCIN;
+    @FXML private TextField        txtTelephone;
+    @FXML private TextField        txtAdresse;
+    @FXML private Label            lblErrors;
+    @FXML private Button           btnCancel;
+    @FXML private Button           btnSave;
 
-    private UserService userService = new UserService();
-    private User userToEdit;
-    private GestionUsersController parentController;
-    private boolean isEditMode = false;
+    private final UserService          userService = new UserService();
+    private User                       userToEdit;
+    private GestionUsersController     parentController;
+    private boolean                    isEditMode  = false;
 
     @FXML
     public void initialize() {
-        // Initialiser les types d'utilisateurs
-        cbType.setItems(FXCollections.observableArrayList("admin", "prof", "etudiant"));
-        cbType.getSelectionModel().selectFirst();
-
-        // Style du ComboBox
-        cbType.setStyle("-fx-font-size: 13px; -fx-padding: 8 12; -fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1;");
+        if (cbType != null)
+            cbType.setItems(FXCollections.observableArrayList("admin", "prof", "etudiant"));
     }
 
-    /**
-     * Initialiser le contrôleur en mode création
-     */
-    public void initializeForCreate(GestionUsersController parentController) {
-        this.parentController = parentController;
-        this.isEditMode = false;
-        this.userToEdit = null;
-        lblTitle.setText("➕  Nouvel Utilisateur");
-        lblPassword.setText("Mot de passe *");
-        tfPassword.setPromptText("Entrer le mot de passe");
-        clearForm();
+    public void initializeForCreate(GestionUsersController parent) {
+        this.parentController = parent; this.isEditMode = false;
+        if (lblTitle   != null) lblTitle.setText("➕  Nouvel Utilisateur");
+        if (lblPassword!= null) lblPassword.setText("Mot de passe *");
+        if (cbType     != null) cbType.getSelectionModel().selectFirst();
     }
 
-    /**
-     * Initialiser le contrôleur en mode édition
-     */
-    public void initializeForEdit(User user, GestionUsersController parentController) {
-        this.parentController = parentController;
-        this.isEditMode = true;
-        this.userToEdit = user;
-        lblTitle.setText("✏️  Modifier Utilisateur");
-        lblPassword.setText("Mot de passe (laisser vide pour conserver)");
-        tfPassword.setPromptText("Laisser vide pour conserver le mot de passe");
-        populateForm(user);
+    public void initializeForEdit(User user, GestionUsersController parent) {
+        this.parentController = parent; this.isEditMode = true; this.userToEdit = user;
+        if (lblTitle   != null) lblTitle.setText("✏️  Modifier Utilisateur");
+        if (lblPassword!= null) lblPassword.setText("Mot de passe (laisser vide pour conserver)");
+        populate(user);
     }
 
-    private void populateForm(User user) {
-        if (user != null) {
-            txtNom.setText(user.getNom() != null ? user.getNom() : "");
-            txtPrenom.setText(user.getPrenom() != null ? user.getPrenom() : "");
-            txtEmail.setText(user.getEmail() != null ? user.getEmail() : "");
-            cbType.setValue(user.getType() != null ? user.getType() : "etudiant");
-            txtCIN.setText(user.getCin() != null ? user.getCin() : "");
-            txtTelephone.setText(user.getTelephone() != null ? user.getTelephone() : "");
-            txtAdresse.setText(user.getAdresse() != null ? user.getAdresse() : "");
-        }
-    }
-
-    private void clearForm() {
-        txtNom.clear();
-        txtPrenom.clear();
-        txtEmail.clear();
-        tfPassword.clear();
-        txtCIN.clear();
-        txtTelephone.clear();
-        txtAdresse.clear();
-        cbType.getSelectionModel().selectFirst();
+    private void populate(User u) {
+        if (u == null) return;
+        set(txtNom, u.getNom()); set(txtPrenom, u.getPrenom()); set(txtEmail, u.getEmail());
+        set(txtCIN, u.getCin()); set(txtTelephone, u.getTelephone()); set(txtAdresse, u.getAdresse());
+        if (cbType != null && u.getType() != null) cbType.setValue(u.getType());
     }
 
     @FXML
     private void handleSave() {
+        List<String> errors = new ArrayList<>();
+        boolean ok = true;
+        ok &= FormValidator.validateRequired(txtNom,    "Le nom",    errors);
+        ok &= FormValidator.validateRequired(txtPrenom, "Le prénom", errors);
+        ok &= FormValidator.validateEmail(txtEmail, errors);
+        ok &= FormValidator.validatePassword(tfPassword, !isEditMode, errors);
+        ok &= FormValidator.validatePasswordMatch(tfPassword, tfConfirm, errors);
+        ok &= FormValidator.validateCIN(txtCIN, errors);
+        ok &= FormValidator.validatePhone(txtTelephone, errors);
+        if (lblErrors != null) { lblErrors.setManaged(!errors.isEmpty()); lblErrors.setVisible(!errors.isEmpty()); }
+        FormValidator.showErrors(lblErrors, errors);
+        if (!ok) return;
         try {
-            // Validation
-            if (txtNom.getText().isEmpty()) {
-                showError("Validation", "Le nom est obligatoire");
-                return;
-            }
-            if (txtPrenom.getText().isEmpty()) {
-                showError("Validation", "Le prénom est obligatoire");
-                return;
-            }
-            if (txtEmail.getText().isEmpty()) {
-                showError("Validation", "L'email est obligatoire");
-                return;
-            }
-
-            if (!isEditMode && tfPassword.getText().isEmpty()) {
-                showError("Validation", "Le mot de passe est obligatoire pour un nouvel utilisateur");
-                return;
-            }
-
             User user = isEditMode ? userToEdit : new User();
-            user.setNom(txtNom.getText());
-            user.setPrenom(txtPrenom.getText());
-            user.setEmail(txtEmail.getText());
-            user.setType(cbType.getValue() != null ? cbType.getValue() : "etudiant");
-            user.setCin(txtCIN.getText().isEmpty() ? null : txtCIN.getText());
-            user.setTelephone(txtTelephone.getText().isEmpty() ? null : txtTelephone.getText());
-            user.setAdresse(txtAdresse.getText().isEmpty() ? null : txtAdresse.getText());
-
-            // Gérer le mot de passe
-            String password = tfPassword.getText();
-            if (!password.isEmpty()) {
-                user.setPassword(password);
-            }
-
+            user.setNom(txtNom.getText().trim()); user.setPrenom(txtPrenom.getText().trim());
+            user.setEmail(txtEmail.getText().trim());
+            user.setType(cbType != null && cbType.getValue() != null ? cbType.getValue() : "etudiant");
+            user.setCin(txt(txtCIN)); user.setTelephone(txt(txtTelephone)); user.setAdresse(txt(txtAdresse));
+            String pwd = tfPassword != null ? tfPassword.getText() : "";
+            if (!pwd.isEmpty()) user.setPassword(pwd);
             if (isEditMode) {
-                // Modifier
-                if (userService.update(user)) {
-                    showSuccess("Succès", "Utilisateur modifié avec succès !\n\n" + user.getNom() + " " + user.getPrenom());
-                    if (parentController != null) parentController.loadUsers();
-                    closeWindow();
-                } else {
-                    showError("Erreur", "Impossible de modifier l'utilisateur");
-                }
+                if (userService.update(user)) { if (parentController!=null) parentController.loadUsers(); closeWindow(); }
+                else showError("Erreur", "Impossible de modifier l'utilisateur.");
             } else {
-                // Créer
-                int newId = userService.create(user);
-                if (newId > 0) {
-                    showSuccess("Succès", "Utilisateur créé avec succès !\n\n" + user.getNom() + " " + user.getPrenom());
-                    if (parentController != null) parentController.loadUsers();
-                    closeWindow();
-                } else {
-                    showError("Erreur", "Impossible de créer l'utilisateur");
-                }
+                int id = userService.create(user);
+                if (id > 0) { if (parentController!=null) parentController.loadUsers(); closeWindow(); }
+                else showError("Erreur", "Impossible de créer l'utilisateur.");
             }
-        } catch (Exception e) {
-            showError("Erreur", e.getMessage());
-        }
+        } catch (Exception e) { showError("Erreur", e.getMessage()); }
     }
 
-    @FXML
-    private void handleCancel() {
-        closeWindow();
-    }
+    @FXML private void handleCancel() { closeWindow(); }
 
     private void closeWindow() {
-        Stage stage = (Stage) btnCancel.getScene().getWindow();
-        stage.close();
+        Stage s = btnCancel!=null ? (Stage)btnCancel.getScene().getWindow() : (Stage)btnSave.getScene().getWindow();
+        s.close();
     }
 
-    private void showSuccess(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.getDialogPane().setStyle("-fx-padding: 20;");
-        alert.showAndWait();
-    }
-
-    private void showError(String title, String content) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(content);
-        alert.getDialogPane().setStyle("-fx-padding: 20;");
-        alert.showAndWait();
-    }
+    private void set(TextField f, String v) { if (f != null) f.setText(v != null ? v : ""); }
+    private String txt(TextField f) { if (f==null) return null; String v=f.getText().trim(); return v.isEmpty()?null:v; }
+    private void showError(String t, String msg) { Alert a=new Alert(Alert.AlertType.ERROR); a.setTitle(t); a.setHeaderText(null); a.setContentText(msg); a.showAndWait(); }
 }
