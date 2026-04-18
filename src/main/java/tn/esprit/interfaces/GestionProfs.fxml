@@ -20,7 +20,7 @@
         </HBox>
         <Label fx:id="countLabel" text="0 professeur(s)" style="-fx-font-size:13;-fx-text-fill:#64748B;"/>
         <Button fx:id="btnAjouter" text="+ Ajouter un professeur" onAction="#handleAjouter"
-                style="-fx-background-color:#7C3AED;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:13;-fx-background-radius:8;-fx-padding:9 20;-fx-cursor:hand;"/>
+                style="-fx-background-color:#2563EB;-fx-text-fill:white;-fx-font-weight:bold;-fx-font-size:13;-fx-background-radius:8;-fx-padding:9 20;-fx-cursor:hand;"/>
     </HBox>
     <VBox VBox.vgrow="ALWAYS" style="-fx-background-color:#F4F7FB;-fx-padding:20;">
         <TableView fx:id="profsTable" VBox.vgrow="ALWAYS"

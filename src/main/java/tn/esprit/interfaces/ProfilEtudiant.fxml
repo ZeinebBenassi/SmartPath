@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<!-- Profil étudiant — chargé dans le contentArea du DashboardEtudiant (sidebar reste visible) -->
+<ScrollPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="tn.esprit.controllers.ProfilEtudiantController"
+            fitToWidth="true" hbarPolicy="NEVER"
+            style="-fx-background: transparent; -fx-background-color: transparent;">
+    <content>
+        <VBox spacing="18" style="-fx-padding: 24 28 32 28;">
+            <HBox spacing="18" alignment="TOP_LEFT">
+
+                <!-- ═══ Carte identité gauche ═══ -->
+                <VBox prefWidth="300" spacing="0"
+                      style="-fx-background-color: white; -fx-background-radius: 16;
+                             -fx-border-color: #e8eef8; -fx-border-radius: 16;">
+
+                    <!-- En-tête bleu dégradé -->
+                    <VBox alignment="CENTER" spacing="10"
+                          style="-fx-background-color: linear-gradient(to bottom right, #1e3a8a, #2563eb);
+                                 -fx-background-radius: 16 16 0 0; -fx-padding: 28 20 22 20;">
+
+                        <!-- Avatar : photo ou initiale -->
+                        <StackPane fx:id="avatarPane" minWidth="88" minHeight="88">
+                            <Label fx:id="avatarLabel" text="E"
+                                   style="-fx-background-color: rgba(255,255,255,0.20);
+                                          -fx-text-fill: white; -fx-font-size: 34;
+                                          -fx-font-weight: bold; -fx-min-width: 88;
+                                          -fx-min-height: 88; -fx-background-radius: 44;
+                                          -fx-alignment: CENTER;"/>
+                            <ImageView fx:id="photoView" fitWidth="88" fitHeight="88"
+                                       preserveRatio="false" smooth="true"
+                                       visible="false" managed="false"/>
+                        </StackPane>
+
+                        <Label fx:id="nomCompletLabel" text="Nom Prénom"
+                               style="-fx-font-size: 17; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                        <Label fx:id="niveauBadge" text="Étudiant"
+                               style="-fx-font-size: 11; -fx-text-fill: rgba(255,255,255,0.90);
+                                      -fx-background-color: rgba(255,255,255,0.18);
+                                      -fx-padding: 3 12; -fx-background-radius: 20;"/>
+                    </VBox>
+
+                    <!-- Informations -->
+                    <VBox spacing="11" style="-fx-padding: 18 20;">
+                        <Label text="INFORMATIONS"
+                               style="-fx-font-size: 10; -fx-font-weight: bold;
+                                      -fx-text-fill: #8898b8; -fx-padding: 0 0 4 0;"/>
+
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="✉" style="-fx-font-size: 13; -fx-text-fill: #2563eb;"/>
+                            <VBox spacing="1">
+                                <Label text="Email" style="-fx-font-size:10;-fx-text-fill:#8898b8;"/>
+                                <Label fx:id="emailLabel" text="—" style="-fx-font-size: 12; -fx-text-fill: #1a2340;"/>
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="☎" style="-fx-font-size: 13; -fx-text-fill: #2563eb;"/>
+                            <VBox spacing="1">
+                                <Label text="Téléphone" style="-fx-font-size:10;-fx-text-fill:#8898b8;"/>
+                                <Label fx:id="telephoneLabel" text="—" style="-fx-font-size: 12; -fx-text-fill: #1a2340;"/>
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="⌂" style="-fx-font-size: 13; -fx-text-fill: #2563eb;"/>
+                            <VBox spacing="1">
+                                <Label text="Adresse" style="-fx-font-size:10;-fx-text-fill:#8898b8;"/>
+                                <Label fx:id="adresseLabel" text="—" style="-fx-font-size: 12; -fx-text-fill: #1a2340;"/>
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="🪪" style="-fx-font-size: 13; -fx-text-fill: #2563eb;"/>
+                            <VBox spacing="1">
+                                <Label text="CIN" style="-fx-font-size:10;-fx-text-fill:#8898b8;"/>
+                                <Label fx:id="cinLabel" text="—" style="-fx-font-size: 12; -fx-text-fill: #1a2340;"/>
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="🎓" style="-fx-font-size: 13; -fx-text-fill: #2563eb;"/>
+                            <VBox spacing="1">
+                                <Label text="Niveau" style="-fx-font-size:10;-fx-text-fill:#8898b8;"/>
+                                <Label fx:id="niveauLabel" text="—"
+                                       style="-fx-font-size: 12; -fx-text-fill: #1a2340; -fx-font-weight: bold;"/>
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="📚" style="-fx-font-size: 13; -fx-text-fill: #2563eb;"/>
+                            <VBox spacing="1">
+                                <Label text="Filière" style="-fx-font-size:10;-fx-text-fill:#8898b8;"/>
+                                <Label fx:id="filiereLabel" text="—" style="-fx-font-size: 12; -fx-text-fill: #1a2340;"/>
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="📅" style="-fx-font-size: 13; -fx-text-fill: #2563eb;"/>
+                            <VBox spacing="1">
+                                <Label text="Date de naissance" style="-fx-font-size:10;-fx-text-fill:#8898b8;"/>
+                                <Label fx:id="dateNaissanceLabel" text="—" style="-fx-font-size: 12; -fx-text-fill: #1a2340;"/>
+                            </VBox>
+                        </HBox>
+
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label text="🗓" style="-fx-font-size: 13; -fx-text-fill: #2563eb;"/>
+                            <VBox spacing="1">
+                                <Label text="Membre depuis" style="-fx-font-size:10;-fx-text-fill:#8898b8;"/>
+                                <Label fx:id="membreDepuisLabel" text="—" style="-fx-font-size: 12; -fx-text-fill: #1a2340;"/>
+                            </VBox>
+                        </HBox>
+
+                        <Separator/>
+                        <Button text="🖼  Changer la photo" onAction="#uploadPhoto"
+                                maxWidth="Infinity"
+                                style="-fx-background-color: #eff6ff; -fx-text-fill: #2563eb;
+                                       -fx-font-size: 12; -fx-font-weight: bold;
+                                       -fx-padding: 9 14; -fx-background-radius: 8;
+                                       -fx-border-color: #bfdbfe; -fx-border-radius: 8; -fx-cursor: hand;"/>
+                    </VBox>
+                </VBox>
+
+                <!-- ═══ Colonne droite ═══ -->
+                <VBox spacing="16" HBox.hgrow="ALWAYS">
+
+                    <!-- Modifier le profil -->
+                    <VBox spacing="14" styleClass="section-card">
+                        <VBox spacing="3">
+                            <Label text="✏  Modifier le profil" styleClass="card-title"/>
+                            <Label text="Mettez à jour vos informations personnelles" styleClass="card-subtitle"/>
+                        </VBox>
+                        <HBox spacing="14">
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="Nom" styleClass="input-label"/>
+                                <TextField fx:id="nomField" promptText="Votre nom" prefHeight="40"
+                                           style="-fx-background-color: #f7f9fc; -fx-border-color: #e2e8f4;
+                                                  -fx-border-radius: 8; -fx-background-radius: 8;
+                                                  -fx-padding: 9 12; -fx-font-size: 13;"/>
+                            </VBox>
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="Prénom" styleClass="input-label"/>
+                                <TextField fx:id="prenomField" promptText="Votre prénom" prefHeight="40"
+                                           style="-fx-background-color: #f7f9fc; -fx-border-color: #e2e8f4;
+                                                  -fx-border-radius: 8; -fx-background-radius: 8;
+                                                  -fx-padding: 9 12; -fx-font-size: 13;"/>
+                            </VBox>
+                        </HBox>
+                        <HBox spacing="14">
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="Téléphone" styleClass="input-label"/>
+                                <TextField fx:id="telephoneField" promptText="Ex : 55 123 456" prefHeight="40"
+                                           style="-fx-background-color: #f7f9fc; -fx-border-color: #e2e8f4;
+                                                  -fx-border-radius: 8; -fx-background-radius: 8;
+                                                  -fx-padding: 9 12; -fx-font-size: 13;"/>
+                            </VBox>
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="Adresse" styleClass="input-label"/>
+                                <TextField fx:id="adresseField" promptText="Ex : Tunis, Tunisie" prefHeight="40"
+                                           style="-fx-background-color: #f7f9fc; -fx-border-color: #e2e8f4;
+                                                  -fx-border-radius: 8; -fx-background-radius: 8;
+                                                  -fx-padding: 9 12; -fx-font-size: 13;"/>
+                            </VBox>
+                        </HBox>
+                        <HBox alignment="CENTER_RIGHT" spacing="12">
+                            <Label fx:id="statusLabel" text="" style="-fx-font-size: 12;"/>
+                            <Button text="💾  Enregistrer les modifications" onAction="#saveProfile"
+                                    style="-fx-background-color: #2563eb; -fx-text-fill: white;
+                                           -fx-font-size: 13; -fx-font-weight: bold;
+                                           -fx-padding: 9 20; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Parcours académique -->
+                    <VBox spacing="12" styleClass="section-card">
+                        <VBox spacing="3">
+                            <Label text="🎓  Parcours académique" styleClass="card-title"/>
+                            <Label text="Informations liées à votre scolarité" styleClass="card-subtitle"/>
+                        </VBox>
+                        <HBox spacing="14">
+                            <VBox spacing="6" HBox.hgrow="ALWAYS"
+                                  style="-fx-background-color:#eff6ff;-fx-border-color:#bfdbfe;
+                                         -fx-border-radius:10;-fx-background-radius:10;-fx-padding:14 16;">
+                                <Label text="NIVEAU" style="-fx-font-size:10;-fx-text-fill:#3b82f6;-fx-font-weight:bold;"/>
+                                <Label fx:id="niveauCardLabel" text="—"
+                                       style="-fx-font-size:22;-fx-font-weight:bold;-fx-text-fill:#1d4ed8;"/>
+                                <Label text="Niveau d'études" style="-fx-font-size:11;-fx-text-fill:#64748b;"/>
+                            </VBox>
+                            <VBox spacing="6" HBox.hgrow="ALWAYS"
+                                  style="-fx-background-color:#f0fdf4;-fx-border-color:#bbf7d0;
+                                         -fx-border-radius:10;-fx-background-radius:10;-fx-padding:14 16;">
+                                <Label text="FILIÈRE" style="-fx-font-size:10;-fx-text-fill:#16a34a;-fx-font-weight:bold;"/>
+                                <Label fx:id="filiereCardLabel" text="—"
+                                       style="-fx-font-size:16;-fx-font-weight:bold;-fx-text-fill:#15803d;-fx-wrap-text:true;"/>
+                                <Label text="Spécialisation" style="-fx-font-size:11;-fx-text-fill:#64748b;"/>
+                            </VBox>
+                            <VBox spacing="6" HBox.hgrow="ALWAYS"
+                                  style="-fx-background-color:#faf5ff;-fx-border-color:#e9d5ff;
+                                         -fx-border-radius:10;-fx-background-radius:10;-fx-padding:14 16;">
+                                <Label text="STATUT" style="-fx-font-size:10;-fx-text-fill:#7c3aed;-fx-font-weight:bold;"/>
+                                <Label fx:id="statusCardLabel" text="Actif"
+                                       style="-fx-font-size:16;-fx-font-weight:bold;-fx-text-fill:#6d28d9;"/>
+                                <Label text="État du compte" style="-fx-font-size:11;-fx-text-fill:#64748b;"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Sécurité -->
+                    <VBox spacing="14" styleClass="section-card">
+                        <VBox spacing="3">
+                            <Label text="🔒  Sécurité du compte" styleClass="card-title"/>
+                            <Label text="Mettez à jour votre mot de passe régulièrement" styleClass="card-subtitle"/>
+                        </VBox>
+                        <HBox spacing="14">
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="Mot de passe actuel" styleClass="input-label"/>
+                                <PasswordField fx:id="oldPwdField" prefHeight="40"
+                                               promptText="Votre mot de passe actuel"
+                                               style="-fx-background-color: #f7f9fc; -fx-border-color: #e2e8f4;
+                                                      -fx-border-radius: 8; -fx-background-radius: 8;
+                                                      -fx-padding: 9 12; -fx-font-size: 13;"/>
+                            </VBox>
+                        </HBox>
+                        <HBox spacing="14">
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="Nouveau mot de passe" styleClass="input-label"/>
+                                <PasswordField fx:id="newPwdField" prefHeight="40"
+                                               promptText="Au moins 6 caractères"
+                                               style="-fx-background-color: #f7f9fc; -fx-border-color: #e2e8f4;
+                                                      -fx-border-radius: 8; -fx-background-radius: 8;
+                                                      -fx-padding: 9 12; -fx-font-size: 13;"/>
+                            </VBox>
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="Confirmer le mot de passe" styleClass="input-label"/>
+                                <PasswordField fx:id="confirmPwdField" prefHeight="40"
+                                               promptText="Répéter le nouveau mot de passe"
+                                               style="-fx-background-color: #f7f9fc; -fx-border-color: #e2e8f4;
+                                                      -fx-border-radius: 8; -fx-background-radius: 8;
+                                                      -fx-padding: 9 12; -fx-font-size: 13;"/>
+                            </VBox>
+                        </HBox>
+                        <HBox alignment="CENTER_RIGHT" spacing="12">
+                            <Button text="🔑  Mettre à jour" onAction="#changePassword"
+                                    style="-fx-background-color: #10b981; -fx-text-fill: white;
+                                           -fx-font-size: 13; -fx-font-weight: bold;
+                                           -fx-padding: 9 20; -fx-background-radius: 8; -fx-cursor: hand;"/>
+                        </HBox>
+                    </VBox>
+
+                </VBox>
+            </HBox>
+        </VBox>
+    </content>
+</ScrollPane>

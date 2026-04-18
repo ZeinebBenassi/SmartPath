@@ -22,6 +22,7 @@ public class DashboardEtudiantController {
     @FXML private Button btnQuiz;
     @FXML private Button btnStages;
     @FXML private Button btnRetourDashboard;
+    @FXML private Button btnProfil;
     @FXML private StackPane contentArea;
     @FXML private ScrollPane homeView;
     @FXML private ScrollPane aboutContactView;
@@ -56,6 +57,12 @@ public class DashboardEtudiantController {
 
     @FXML public void showAccueil()      { setActiveButton(btnAccueil); showHomeView(); }
     @FXML public void showAboutContact() { setActiveButton(btnAboutContact); showAboutContactView(); }
+
+    @FXML public void showProfil() {
+        setActiveButton(btnProfil);
+        ProfilEtudiantController.setCurrentUser(currentUser);
+        navigate("/tn/esprit/interfaces/ProfilEtudiant.fxml");
+    }
     @FXML public void showCours()        { setActiveButton(btnCours); navigate("/tn/esprit/interfaces/Cours.fxml"); }
     @FXML public void showStages()       { setActiveButton(btnStages); navigate("/tn/esprit/interfaces/Stages.fxml"); }
 
@@ -109,7 +116,7 @@ public class DashboardEtudiantController {
     }
 
     private void setActiveButton(Button active) {
-        Button[] all = {btnAccueil, btnAboutContact, btnCours, btnQuiz, btnStages};
+        Button[] all = {btnAccueil, btnAboutContact, btnCours, btnQuiz, btnStages, btnProfil};
         for (Button b : all) {
             if (b == null) continue;
             if (b == active) b.setStyle("-fx-background-color: #eff6ff; -fx-text-fill: #2563eb; -fx-font-weight: bold; -fx-font-size: 13; -fx-padding: 10 16; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT; -fx-border-color: #bfdbfe; -fx-border-radius: 8;");

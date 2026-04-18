@@ -1,14 +1,14 @@
 package tn.esprit.controllers;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
+import tn.esprit.entity.Etudiant;
 import tn.esprit.entity.User;
+import tn.esprit.services.AdminEtudiantService;
 import tn.esprit.services.UserService;
 import tn.esprit.utils.FormValidator;
 
@@ -21,22 +21,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Profil utilisateur — affiché selon le rôle (admin / prof).
+ * Profil dédié aux étudiants — chargé dans le contentArea du DashboardEtudiant.
+ * Affiche niveau, filière et statut en plus des infos communes.
  * Supporte l'upload de photo de profil.
  */
-public class ProfilController {
+public class ProfilEtudiantController {
 
+    // Carte identité gauche
     @FXML private StackPane  avatarPane;
     @FXML private Label      avatarLabel;
     @FXML private ImageView  photoView;
     @FXML private Label      nomCompletLabel;
-    @FXML private Label      roleLabel;
+    @FXML private Label      niveauBadge;
     @FXML private Label      emailLabel;
     @FXML private Label      telephoneLabel;
     @FXML private Label      adresseLabel;
     @FXML private Label      cinLabel;
+    @FXML private Label      niveauLabel;
+    @FXML private Label      filiereLabel;
     @FXML private Label      dateNaissanceLabel;
     @FXML private Label      membreDepuisLabel;
+
+    // Cartes académiques
+    @FXML private Label niveauCardLabel;
+    @FXML private Label filiereCardLabel;
+    @FXML private Label statusCardLabel;
 
     // Champs éditables
     @FXML private TextField     nomField;
@@ -44,15 +53,15 @@ public class ProfilController {
     @FXML private TextField     telephoneField;
     @FXML private TextField     adresseField;
 
-    // Changement de mot de passe
+    // Mot de passe
     @FXML private PasswordField oldPwdField;
     @FXML private PasswordField newPwdField;
     @FXML private PasswordField confirmPwdField;
-
-    @FXML private Label statusLabel;
+    @FXML private Label         statusLabel;
 
     private static User currentUser;
-    private final UserService userService = new UserService();
+    private final UserService          userService     = new UserService();
+    private final AdminEtudiantService etudiantService = new AdminEtudiantService();
 
     public static void setCurrentUser(User u) { currentUser = u; }
 
@@ -61,29 +70,50 @@ public class ProfilController {
         if (currentUser == null) return;
 
         String initiale = (currentUser.getPrenom() != null && !currentUser.getPrenom().isEmpty())
-            ? String.valueOf(currentUser.getPrenom().charAt(0)).toUpperCase() : "?";
-        set(avatarLabel,        initiale);
-        set(nomCompletLabel,    currentUser.getPrenom() + " " + currentUser.getNom());
-        set(roleLabel,          roleDisplay(currentUser.getType()));
-        set(emailLabel,         currentUser.getEmail());
-        set(telephoneLabel,     nvl(currentUser.getTelephone(),  "Non renseigné"));
-        set(adresseLabel,       nvl(currentUser.getAdresse(),    "Non renseignée"));
-        set(cinLabel,           nvl(currentUser.getCin(),        "Non renseigné"));
-        set(membreDepuisLabel,  currentUser.getCreatedAt() != null
-            ? new SimpleDateFormat("dd/MM/yyyy").format(currentUser.getCreatedAt()) : "—");
+                ? String.valueOf(currentUser.getPrenom().charAt(0)).toUpperCase() : "E";
+        set(avatarLabel,       initiale);
+        set(nomCompletLabel,   currentUser.getPrenom() + " " + currentUser.getNom());
+        set(emailLabel,        currentUser.getEmail());
+        set(telephoneLabel,    nvl(currentUser.getTelephone(), "Non renseigné"));
+        set(adresseLabel,      nvl(currentUser.getAdresse(),   "Non renseignée"));
+        set(cinLabel,          nvl(currentUser.getCin(),       "Non renseigné"));
+        set(membreDepuisLabel, currentUser.getCreatedAt() != null
+                ? new SimpleDateFormat("dd/MM/yyyy").format(currentUser.getCreatedAt()) : "—");
         set(dateNaissanceLabel, currentUser.getDateNaissance() != null
-            ? new SimpleDateFormat("dd/MM/yyyy").format(currentUser.getDateNaissance()) : "Non renseignée");
+                ? new SimpleDateFormat("dd/MM/yyyy").format(currentUser.getDateNaissance()) : "Non renseignée");
 
         // Afficher la photo si disponible
         loadPhoto(currentUser.getPhoto());
 
-        // Champs édition
-        setText(nomField,        currentUser.getNom());
-        setText(prenomField,     currentUser.getPrenom());
-        setText(telephoneField,  currentUser.getTelephone());
-        setText(adresseField,    currentUser.getAdresse());
+        // Infos étudiant (niveau / filière / statut)
+        String niveau  = "—";
+        String filiere = "—";
+        String statut  = "actif";
+        try {
+            List<Etudiant> tous = etudiantService.getAll();
+            for (Etudiant e : tous) {
+                if (e.getId() == currentUser.getId()) {
+                    niveau = nvl(e.getNiveau(), "—");
+                    statut = nvl(e.getStatus(), "actif");
+                    break;
+                }
+            }
+        } catch (Exception ignored) {}
 
-        hideStatus();
+        set(niveauBadge,      "Niveau " + niveau);
+        set(niveauLabel,      niveau);
+        set(filiereLabel,     filiere);
+        set(niveauCardLabel,  niveau);
+        set(filiereCardLabel, filiere);
+        set(statusCardLabel,  "ban".equalsIgnoreCase(statut) ? "🚫 Banni" : "✅ Actif");
+
+        // Champs édition
+        setText(nomField,       currentUser.getNom());
+        setText(prenomField,    currentUser.getPrenom());
+        setText(telephoneField, currentUser.getTelephone());
+        setText(adresseField,   currentUser.getAdresse());
+
+        if (statusLabel != null) { statusLabel.setText(""); statusLabel.setVisible(false); }
     }
 
     @FXML
@@ -110,22 +140,21 @@ public class ProfilController {
             showStatus("✅ Profil mis à jour avec succès.", true);
             initialize();
         } else {
-            showStatus("❌ Erreur lors de la sauvegarde. Vérifiez votre connexion.", false);
+            showStatus("❌ Erreur lors de la sauvegarde.", false);
         }
     }
 
     @FXML
     public void changePassword() {
         if (oldPwdField == null || newPwdField == null || confirmPwdField == null) return;
-
-        String oldPwd     = oldPwdField.getText().trim();
-        String newPwd     = newPwdField.getText();
-        String confirmPwd = confirmPwdField.getText();
+        String oldPwd  = oldPwdField.getText().trim();
+        String newPwd  = newPwdField.getText();
+        String confirm = confirmPwdField.getText();
 
         if (oldPwd.isEmpty())        { showStatus("❌ Saisissez votre mot de passe actuel.", false); return; }
         if (newPwd.isEmpty())        { showStatus("❌ Saisissez un nouveau mot de passe.", false); return; }
         if (newPwd.length() < 6)     { showStatus("❌ Le mot de passe doit contenir au moins 6 caractères.", false); return; }
-        if (!newPwd.equals(confirmPwd)) { showStatus("❌ Les mots de passe ne correspondent pas.", false); return; }
+        if (!newPwd.equals(confirm)) { showStatus("❌ Les mots de passe ne correspondent pas.", false); return; }
 
         currentUser.setPassword(newPwd);
         boolean saved = userService.update(currentUser);
@@ -143,10 +172,11 @@ public class ProfilController {
 
         FileChooser chooser = new FileChooser();
         chooser.setTitle("Choisir une photo de profil");
-        chooser.getExtensionFilters().add(
+        chooser.getExtensionFilters().addAll(
                 new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp")
         );
 
+        // Ouvrir sur le bureau par défaut
         File desktop = new File(System.getProperty("user.home"), "Desktop");
         if (desktop.exists()) chooser.setInitialDirectory(desktop);
 
@@ -157,35 +187,23 @@ public class ProfilController {
         if (chosen == null) return;
 
         try {
+            // Copier vers un dossier photos dans le répertoire utilisateur
             File photosDir = new File(System.getProperty("user.home"), "SmartPathPhotos");
             photosDir.mkdirs();
             String ext = chosen.getName().substring(chosen.getName().lastIndexOf('.'));
             File dest = new File(photosDir, "user_" + currentUser.getId() + ext);
             Files.copy(chosen.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
+            // Sauvegarder le chemin en base
             currentUser.setPhoto(dest.getAbsolutePath());
             userService.update(currentUser);
 
+            // Afficher immédiatement
             loadPhoto(dest.getAbsolutePath());
             showStatus("✅ Photo mise à jour avec succès.", true);
         } catch (IOException e) {
             showStatus("❌ Impossible de copier la photo : " + e.getMessage(), false);
         }
-    }
-
-    @FXML
-    public void goBack() {
-        if (currentUser == null) return;
-        String dest = switch (currentUser.getType()) {
-            case "admin"    -> "/tn/esprit/interfaces/DashboardAdmin.fxml";
-            case "prof"     -> "/tn/esprit/interfaces/DashboardProf.fxml";
-            default         -> "/tn/esprit/interfaces/DashboardEtudiant.fxml";
-        };
-        try {
-            Parent root = FXMLLoader.load(getClass().getResource(dest));
-            javafx.scene.Node ref = (nomField != null) ? nomField : emailLabel;
-            if (ref != null) ref.getScene().setRoot(root);
-        } catch (Exception e) { e.printStackTrace(); }
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
@@ -198,6 +216,7 @@ public class ProfilController {
                 if (f.exists()) {
                     Image img = new Image(f.toURI().toString(), 88, 88, false, true);
                     photoView.setImage(img);
+                    // Appliquer un clip circulaire
                     javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(44, 44, 44);
                     photoView.setClip(clip);
                     photoView.setVisible(true);
@@ -208,35 +227,22 @@ public class ProfilController {
                 }
             } catch (Exception ignored) {}
         }
+        // Pas de photo : afficher l'initiale
         photoView.setVisible(false);
         photoView.setManaged(false);
         avatarLabel.setVisible(true);
         avatarLabel.setManaged(true);
     }
 
-    private String roleDisplay(String type) {
-        if (type == null) return "Utilisateur";
-        return switch (type) {
-            case "admin"    -> "Administrateur";
-            case "prof"     -> "Professeur";
-            case "etudiant" -> "Étudiant";
-            default         -> type;
-        };
-    }
-
-    private void set(Label l, String v)            { if (l != null) l.setText(v != null ? v : "—"); }
-    private void setText(TextField f, String v)    { if (f != null && v != null) f.setText(v); }
-    private String nvl(String s, String def)       { return (s != null && !s.isBlank()) ? s : def; }
+    private void set(Label l, String v)          { if (l != null) l.setText(v != null ? v : "—"); }
+    private void setText(TextField f, String v)  { if (f != null && v != null) f.setText(v); }
+    private String nvl(String s, String def)     { return (s != null && !s.isBlank()) ? s : def; }
 
     private void showStatus(String msg, boolean success) {
         if (statusLabel == null) return;
         statusLabel.setText(msg);
         statusLabel.setStyle("-fx-text-fill: " + (success ? "#10b981" : "#dc2626")
-            + "; -fx-font-size: 12; -fx-font-weight: bold;");
+                + "; -fx-font-size: 12; -fx-font-weight: bold;");
         statusLabel.setVisible(true);
-    }
-
-    private void hideStatus() {
-        if (statusLabel != null) { statusLabel.setText(""); statusLabel.setVisible(false); }
     }
 }
