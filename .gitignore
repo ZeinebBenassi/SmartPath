@@ -14,3 +14,7 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Secrets — ne jamais committer
+config.properties
+*.env

@@ -27,9 +27,30 @@ public class ReleveAnalyserService {
     private static final String GROQ_MODEL_TEXT = "llama-3.3-70b-versatile";
     private static final String GROQ_MODEL_VIS  = "meta-llama/llama-4-scout-17b-16e-instruct";
 
-    // ⚠️  Clé API Groq — obtenez la gratuitement sur https://console.groq.com
-    private static final String GROQ_API_KEY = System.getenv().getOrDefault(
-            "GROQ_API_KEY", "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");  // ← remplacez cette valeur
+    // Clé lue depuis config.properties (jamais dans le code source)
+    private static final String GROQ_API_KEY = loadGroqKey();
+
+    private static String loadGroqKey() {
+        // 1. Variable d'environnement (priorité haute)
+        String envKey = System.getenv("GROQ_API_KEY");
+        if (envKey != null && !envKey.isBlank()) return envKey;
+        // 2. Fichier config.properties à la racine du projet
+        String[] paths = {
+            "config.properties",
+            System.getProperty("user.dir") + "/config.properties"
+        };
+        for (String path : paths) {
+            try (java.io.FileInputStream fis = new java.io.FileInputStream(path)) {
+                java.util.Properties props = new java.util.Properties();
+                props.load(fis);
+                String key = props.getProperty("GROQ_API_KEY", "").trim();
+                if (!key.isBlank() && !key.startsWith("METTEZ")) return key;
+            } catch (Exception ignored) {}
+        }
+        throw new RuntimeException(
+            "Clé GROQ_API_KEY introuvable !\n" +
+            "Ajoutez GROQ_API_KEY=gsk_... dans config.properties à la racine du projet.");
+    }
 
     private final HttpClient http       = HttpClient.newHttpClient();
     private final Connection connection = MyDatabase.getInstance().getConnection();
