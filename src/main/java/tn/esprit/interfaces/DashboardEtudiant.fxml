@@ -26,6 +26,7 @@
                 <Button fx:id="btnCours"        text="Mes cours"           onAction="#showCours"        maxWidth="Infinity" styleClass="nav-btn"/>
                 <Button fx:id="btnQuiz"         text="🧠  Quiz orientation"    onAction="#showQuiz"         maxWidth="Infinity" styleClass="nav-btn"/>
                 <Button fx:id="btnStages"       text="Stages &amp; Offres" onAction="#showStages"       maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnReleve"       text="📄  Relevé de notes"     onAction="#showReleve"       maxWidth="Infinity" styleClass="nav-btn"/>
                 <Button fx:id="btnAboutContact" text="ℹ  À propos"            onAction="#showAboutContact" maxWidth="Infinity" styleClass="nav-btn"/>
                 <Button fx:id="btnProfil"       text="👤  Mon profil"           onAction="#showProfil"       maxWidth="Infinity" styleClass="nav-btn"/>
             </VBox>
