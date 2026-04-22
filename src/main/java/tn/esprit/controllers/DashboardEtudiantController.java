@@ -2,9 +2,11 @@ package tn.esprit.controllers;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Bounds;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.stage.Popup;
 import tn.esprit.entity.User;
 
 public class DashboardEtudiantController {
@@ -24,6 +26,7 @@ public class DashboardEtudiantController {
     @FXML private Button btnReleve;
     @FXML private Button btnRetourDashboard;
     @FXML private Button btnProfil;
+    @FXML private Button btnChatbot;          // ← NEW: floating chatbot FAB
     @FXML private StackPane contentArea;
     @FXML private ScrollPane homeView;
     @FXML private ScrollPane aboutContactView;
@@ -32,6 +35,9 @@ public class DashboardEtudiantController {
 
     private static User currentUser;
     private static String sourceDashboardType;
+
+    /** Popup that holds the Chatbot.fxml pane */
+    private Popup chatbotPopup;
 
     public static void setCurrentUser(User u) { currentUser = u; }
     public static void setSourceDashboardType(String role) { sourceDashboardType = role; }
@@ -56,6 +62,59 @@ public class DashboardEtudiantController {
         }
     }
 
+    /* ─────────────── Chatbot FAB ─────────────── */
+
+    /**
+     * Toggles the chatbot popup open/closed.
+     * The popup appears just above the FAB button, anchored to screen coordinates.
+     */
+    @FXML
+    public void toggleChatbot() {
+        if (chatbotPopup == null) {
+            chatbotPopup = buildChatbotPopup();
+        }
+
+        if (chatbotPopup.isShowing()) {
+            chatbotPopup.hide();
+            btnChatbot.setText("🤖");
+        } else {
+            // Compute screen position: show popup above-left of the FAB button
+            Bounds btnBounds = btnChatbot.localToScreen(btnChatbot.getBoundsInLocal());
+            double popupWidth  = 380;
+            double popupHeight = 520;
+            double x = btnBounds.getMaxX() - popupWidth - 8;
+            double y = btnBounds.getMinY() - popupHeight - 8;
+            chatbotPopup.show(btnChatbot.getScene().getWindow(), x, y);
+            btnChatbot.setText("✕");
+        }
+    }
+
+    private Popup buildChatbotPopup() {
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/tn/esprit/interfaces/Chatbot.fxml"));
+            Parent root = loader.load();
+
+            Popup popup = new Popup();
+            popup.setAutoHide(false);   // user closes via ✕ button or FAB
+            popup.setHideOnEscape(true);
+            popup.getContent().add(root);
+
+            // Reset FAB icon when popup is hidden via Escape or OS
+            popup.setOnHidden(e -> {
+                if (btnChatbot != null) btnChatbot.setText("🤖");
+            });
+
+            return popup;
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Chatbot error: " + e.getMessage());
+            return new Popup();
+        }
+    }
+
+    /* ─────────────── Navigation ─────────────── */
+
     @FXML public void showAccueil()      { setActiveButton(btnAccueil); showHomeView(); }
     @FXML public void showAboutContact() { setActiveButton(btnAboutContact); showAboutContactView(); }
 
@@ -64,8 +123,8 @@ public class DashboardEtudiantController {
         ProfilEtudiantController.setCurrentUser(currentUser);
         navigate("/tn/esprit/interfaces/ProfilEtudiant.fxml");
     }
-    @FXML public void showCours()        { setActiveButton(btnCours); navigate("/tn/esprit/interfaces/Cours.fxml"); }
-    @FXML public void showStages()       { setActiveButton(btnStages); navigate("/tn/esprit/interfaces/Stages.fxml"); }
+    @FXML public void showCours()  { setActiveButton(btnCours);  navigate("/tn/esprit/interfaces/Cours.fxml"); }
+    @FXML public void showStages() { setActiveButton(btnStages); navigate("/tn/esprit/interfaces/Stages.fxml"); }
     @FXML public void showReleve() {
         setActiveButton(btnReleve);
         ReleveController.setCurrentUser(currentUser);
@@ -95,6 +154,8 @@ public class DashboardEtudiantController {
         try { Parent root = FXMLLoader.load(getClass().getResource("/tn/esprit/interfaces/Login.fxml")); btnAccueil.getScene().setRoot(root); }
         catch (Exception e) { e.printStackTrace(); }
     }
+
+    /* ─────────────── Helpers ─────────────── */
 
     private void navigate(String fxml) {
         try {
@@ -128,5 +189,9 @@ public class DashboardEtudiantController {
             if (b == active) b.setStyle("-fx-background-color: #eff6ff; -fx-text-fill: #2563eb; -fx-font-weight: bold; -fx-font-size: 13; -fx-padding: 10 16; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT; -fx-border-color: #bfdbfe; -fx-border-radius: 8;");
             else             b.setStyle("-fx-background-color: transparent; -fx-text-fill: #5a6a8a; -fx-font-size: 13; -fx-padding: 10 16; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT;");
         }
+    }
+
+    private void showAlert(String msg) {
+        new javafx.scene.control.Alert(javafx.scene.control.Alert.AlertType.ERROR, msg).showAndWait();
     }
 }

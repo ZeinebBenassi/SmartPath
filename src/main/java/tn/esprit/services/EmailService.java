@@ -248,14 +248,14 @@ public class EmailService {
         }
 
         private static SendGridSettings load(Properties p) {
-            String apiKey = firstNonBlank(System.getenv(ENV_SENDGRID_API_KEY), p.getProperty("mail.sendgrid.apiKey"));
+            String apiKey = System.getenv(ENV_SENDGRID_API_KEY);
             String from = firstNonBlank(System.getenv(ENV_EMAIL_FROM), p.getProperty("mail.from"));
             String fromName = firstNonBlank(System.getenv(ENV_EMAIL_FROM_NAME), p.getProperty("mail.fromName"), "SmartPath");
 
             if (isBlank(apiKey)) {
                 throw new IllegalStateException(
                         "Clé API SendGrid manquante. Configurez la variable d'environnement "
-                                + ENV_SENDGRID_API_KEY + " ou remplissez mail.sendgrid.apiKey dans src/main/resources/mail.properties.");
+                                + ENV_SENDGRID_API_KEY + ".");
             }
             if (isBlank(from)) {
                 throw new IllegalStateException(

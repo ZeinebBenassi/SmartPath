@@ -35,23 +35,9 @@ public class ReleveAnalyserService {
         // 1. Variable d'environnement (priorité haute)
         String envKey = System.getenv("GROQ_API_KEY");
         if (envKey != null && !envKey.isBlank()) { groqApiKey = envKey; return groqApiKey; }
-        // 2. Fichier config.properties à la racine du projet
-        String[] paths = {
-            "config.properties",
-            System.getProperty("user.dir") + "/config.properties",
-            System.getProperty("user.dir") + "\\config.properties"
-        };
-        for (String path : paths) {
-            try (java.io.FileInputStream fis = new java.io.FileInputStream(path)) {
-                java.util.Properties props = new java.util.Properties();
-                props.load(fis);
-                String key = props.getProperty("GROQ_API_KEY", "").trim();
-                if (!key.isBlank() && !key.startsWith("METTEZ")) { groqApiKey = key; return groqApiKey; }
-            } catch (Exception ignored) {}
-        }
         throw new RuntimeException(
             "Clé GROQ_API_KEY introuvable !\n" +
-            "Ajoutez GROQ_API_KEY=gsk_... dans config.properties à la racine du projet.");
+            "Définissez la variable d'environnement GROQ_API_KEY (gsk_...).");
     }
 
     private final HttpClient http       = HttpClient.newHttpClient();
