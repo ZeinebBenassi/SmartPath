@@ -27,24 +27,26 @@ public class ReleveAnalyserService {
     private static final String GROQ_MODEL_TEXT = "llama-3.3-70b-versatile";
     private static final String GROQ_MODEL_VIS  = "meta-llama/llama-4-scout-17b-16e-instruct";
 
-    // Clé lue depuis config.properties (jamais dans le code source)
-    private static final String GROQ_API_KEY = loadGroqKey();
+    // Clé chargée de façon lazy (évite le crash au démarrage si config absente)
+    private String groqApiKey = null;
 
-    private static String loadGroqKey() {
+    private String getGroqApiKey() {
+        if (groqApiKey != null) return groqApiKey;
         // 1. Variable d'environnement (priorité haute)
         String envKey = System.getenv("GROQ_API_KEY");
-        if (envKey != null && !envKey.isBlank()) return envKey;
+        if (envKey != null && !envKey.isBlank()) { groqApiKey = envKey; return groqApiKey; }
         // 2. Fichier config.properties à la racine du projet
         String[] paths = {
             "config.properties",
-            System.getProperty("user.dir") + "/config.properties"
+            System.getProperty("user.dir") + "/config.properties",
+            System.getProperty("user.dir") + "\\config.properties"
         };
         for (String path : paths) {
             try (java.io.FileInputStream fis = new java.io.FileInputStream(path)) {
                 java.util.Properties props = new java.util.Properties();
                 props.load(fis);
                 String key = props.getProperty("GROQ_API_KEY", "").trim();
-                if (!key.isBlank() && !key.startsWith("METTEZ")) return key;
+                if (!key.isBlank() && !key.startsWith("METTEZ")) { groqApiKey = key; return groqApiKey; }
             } catch (Exception ignored) {}
         }
         throw new RuntimeException(
@@ -251,7 +253,7 @@ Retourne STRICTEMENT ce format JSON et rien d'autre :
         HttpRequest req = HttpRequest.newBuilder()
                 .uri(URI.create(GROQ_URL))
                 .header("Content-Type", "application/json")
-                .header("Authorization", "Bearer " + GROQ_API_KEY)
+                .header("Authorization", "Bearer " + getGroqApiKey())
                 .POST(HttpRequest.BodyPublishers.ofString(jsonBody))
                 .build();
 

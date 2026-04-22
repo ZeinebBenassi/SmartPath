@@ -149,6 +149,7 @@ public class ReleveController {
     @FXML
     public void lancerAnalyse() {
         if (selectedFile == null) { showAlert("Veuillez d'abord choisir un fichier."); return; }
+        if (currentUser == null)  { showAlert("Erreur : aucun utilisateur connecté. Veuillez vous reconnecter."); return; }
 
         if (loadingBox  != null) { loadingBox.setVisible(true);  loadingBox.setManaged(true);  }
         if (btnAnalyser != null)   btnAnalyser.setDisable(true);
@@ -202,7 +203,10 @@ public class ReleveController {
         try {
             DashboardEtudiantController.setCurrentUser(currentUser);
             Parent root = FXMLLoader.load(getClass().getResource("/tn/esprit/interfaces/DashboardEtudiant.fxml"));
-            uploadView.getScene().setRoot(root);
+            javafx.scene.Scene scene = uploadView != null ? uploadView.getScene() : null;
+            if (scene == null && resultView != null) scene = resultView.getScene();
+            if (scene == null && historiqueView != null) scene = historiqueView.getScene();
+            if (scene != null) scene.setRoot(root);
         } catch (Exception e) { e.printStackTrace(); }
     }
 

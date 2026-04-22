@@ -14,7 +14,10 @@ import org.mindrot.jbcrypt.BCrypt;
 public class UserService {
 
     private final Connection connection;
-    private final Map<String, String> resetTokensByEmail = new ConcurrentHashMap<>();
+    // token → [email, expiry timestamp]
+    private final Map<String, long[]>   resetTokenExpiry = new ConcurrentHashMap<>();
+    private final Map<String, String>   resetTokensByEmail = new ConcurrentHashMap<>();
+    private static final long TOKEN_TTL_MS = 10 * 60 * 1000L; // 10 minutes
     private static Boolean statusColumnExists = null;
 
     public UserService() {
@@ -289,17 +292,31 @@ public class UserService {
 
     public String generateResetToken(String email) {
         if (!emailExists(email)) return null;
-        String token = UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+        String token = String.format("%06d", new java.util.Random().nextInt(1_000_000));
         resetTokensByEmail.put(email, token);
+        resetTokenExpiry.put(email, new long[]{System.currentTimeMillis() + TOKEN_TTL_MS});
         return token;
     }
 
     public boolean resetPassword(String email, String token, String newPassword) {
         String expected = resetTokensByEmail.get(email);
         if (expected == null || !expected.equalsIgnoreCase(token)) return false;
+        // Vérifier TTL
+        long[] expiry = resetTokenExpiry.get(email);
+        if (expiry == null || System.currentTimeMillis() > expiry[0]) {
+            resetTokensByEmail.remove(email);
+            resetTokenExpiry.remove(email);
+            return false;
+        }
+        // Hasher le nouveau mot de passe avec BCrypt
+        String hashed = BCrypt.hashpw(newPassword, BCrypt.gensalt());
         try (PreparedStatement ps = connection.prepareStatement("UPDATE `user` SET password=? WHERE email=?")) {
-            ps.setString(1, newPassword); ps.setString(2, email);
-            if (ps.executeUpdate() > 0) { resetTokensByEmail.remove(email); return true; }
+            ps.setString(1, hashed); ps.setString(2, email);
+            if (ps.executeUpdate() > 0) {
+                resetTokensByEmail.remove(email);
+                resetTokenExpiry.remove(email);
+                return true;
+            }
         } catch (Exception e) { System.out.println("Erreur resetPassword: " + e.getMessage()); }
         return false;
     }

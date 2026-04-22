@@ -127,9 +127,11 @@
                     </VBox>
 
                     <!-- Lien historique bas de page -->
-                    <Label text="📋 Voir mes analyses précédentes →"
-                           style="-fx-text-fill:#60a5fa; -fx-font-size:13; -fx-cursor:hand;"
-                           onMouseClicked="#goToHistorique"/>
+                    <Button text="📋 Voir mes analyses précédentes →"
+                            onAction="#goToHistorique"
+                            style="-fx-background-color:transparent; -fx-text-fill:#60a5fa;
+                                   -fx-font-size:13; -fx-cursor:hand; -fx-border-color:transparent;
+                                   -fx-underline:true;"/>
 
                 </VBox>
             </ScrollPane>
