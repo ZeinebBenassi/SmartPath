@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+    QuizHistorique.fxml — Backoffice admin : historique des résultats quiz
+    Équivalent de admin/quiz/results.html.twig Symfony
+-->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.esprit.controllers.QuizHistoriqueController"
+      spacing="0"
+      style="-fx-background-color:#f8fafc;">
+
+    <!-- ═══ EN-TÊTE PAGE ═══ -->
+    <HBox alignment="CENTER_LEFT" spacing="16"
+          style="-fx-background-color:white; -fx-padding:18 28;
+                 -fx-border-color:transparent transparent #e2e8f0 transparent;
+                 -fx-border-width:0 0 1 0;">
+        <VBox spacing="3">
+            <Label text="📋  Historique du Quiz de Personnalité"
+                   style="-fx-font-size:20px; -fx-font-weight:900; -fx-text-fill:#1e293b;"/>
+            <Label text="Historique complet des passages du quiz par les étudiants"
+                   style="-fx-font-size:12px; -fx-text-fill:#64748b;"/>
+        </VBox>
+        <Pane HBox.hgrow="ALWAYS"/>
+        <!-- Bouton Vider l'historique (rouge) — équivalent Symfony -->
+        <Button fx:id="btnVider" text="🗑️  Vider l'historique"
+                onAction="#handleViderHistorique"
+                style="-fx-background-color:#ef4444; -fx-text-fill:white;
+                       -fx-font-weight:700; -fx-font-size:12px;
+                       -fx-background-radius:10; -fx-padding:8 16; -fx-cursor:hand;"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color:#f8fafc; -fx-background:#f8fafc; -fx-border-width:0;">
+        <VBox spacing="18" style="-fx-padding:22 28;">
+
+            <!-- ═══ STATS RAPIDES (4 cartes) — identique au Symfony ═══ -->
+            <HBox spacing="14">
+                <!-- Total -->
+                <VBox spacing="6" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color:white; -fx-background-radius:16;
+                             -fx-border-color:#e2e8f0; -fx-border-radius:16; -fx-border-width:1;
+                             -fx-padding:16 20;
+                             -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.04),6,0,0,2);">
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label text="📋" style="-fx-font-size:28px;"/>
+                        <VBox spacing="2">
+                            <Label fx:id="lblTotal" text="—"
+                                   style="-fx-font-size:26px; -fx-font-weight:900; -fx-text-fill:#1e293b;"/>
+                            <Label text="Quiz passés"
+                                   style="-fx-font-size:11px; -fx-text-fill:#64748b;"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+                <!-- Identifiés -->
+                <VBox spacing="6" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color:white; -fx-background-radius:16;
+                             -fx-border-color:#e2e8f0; -fx-border-radius:16; -fx-border-width:1;
+                             -fx-padding:16 20;
+                             -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.04),6,0,0,2);">
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label text="👨‍🎓" style="-fx-font-size:28px;"/>
+                        <VBox spacing="2">
+                            <Label fx:id="lblIdentifies" text="—"
+                                   style="-fx-font-size:26px; -fx-font-weight:900; -fx-text-fill:#3b82f6;"/>
+                            <Label text="Étudiants identifiés"
+                                   style="-fx-font-size:11px; -fx-text-fill:#64748b;"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+                <!-- Anonymes -->
+                <VBox spacing="6" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color:white; -fx-background-radius:16;
+                             -fx-border-color:#e2e8f0; -fx-border-radius:16; -fx-border-width:1;
+                             -fx-padding:16 20;
+                             -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.04),6,0,0,2);">
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label text="🕵️" style="-fx-font-size:28px;"/>
+                        <VBox spacing="2">
+                            <Label fx:id="lblAnonymes" text="—"
+                                   style="-fx-font-size:26px; -fx-font-weight:900; -fx-text-fill:#f59e0b;"/>
+                            <Label text="Anonymes"
+                                   style="-fx-font-size:11px; -fx-text-fill:#64748b;"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+                <!-- Profils distincts -->
+                <VBox spacing="6" HBox.hgrow="ALWAYS"
+                      style="-fx-background-color:white; -fx-background-radius:16;
+                             -fx-border-color:#e2e8f0; -fx-border-radius:16; -fx-border-width:1;
+                             -fx-padding:16 20;
+                             -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.04),6,0,0,2);">
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <Label text="🎭" style="-fx-font-size:28px;"/>
+                        <VBox spacing="2">
+                            <Label fx:id="lblProfilsDistincts" text="—"
+                                   style="-fx-font-size:26px; -fx-font-weight:900; -fx-text-fill:#8b5cf6;"/>
+                            <Label text="Profils distincts"
+                                   style="-fx-font-size:11px; -fx-text-fill:#64748b;"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+            </HBox>
+
+            <!-- ═══ BARRE DE RECHERCHE ═══ -->
+            <HBox spacing="14" alignment="CENTER_LEFT">
+                <TextField fx:id="txtSearch"
+                           promptText="🔍  Rechercher par étudiant ou profil..."
+                           style="-fx-background-color:white; -fx-border-color:#e2e8f0;
+                                  -fx-border-radius:10; -fx-background-radius:10;
+                                  -fx-padding:8 14; -fx-font-size:13px;"
+                           prefWidth="300"/>
+                <Label fx:id="lblCount" text="0 résultats"
+                       style="-fx-text-fill:#64748b; -fx-font-size:12px;"/>
+            </HBox>
+
+            <!-- ═══ TABLEAU DES RÉSULTATS ═══ -->
+            <VBox style="-fx-background-color:white; -fx-background-radius:18;
+                         -fx-border-color:#e2e8f0; -fx-border-radius:18; -fx-border-width:1;
+                         -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.05),8,0,0,2);">
+
+                <!-- En-tête carte -->
+                <HBox alignment="CENTER_LEFT" spacing="10"
+                      style="-fx-padding:14 20; -fx-background-color:#f8fafc;
+                             -fx-background-radius:18 18 0 0;
+                             -fx-border-color:transparent transparent #e2e8f0 transparent;
+                             -fx-border-width:0 0 1 0;">
+                    <Label text="🎯  Historique des résultats"
+                           style="-fx-font-weight:700; -fx-text-fill:#1e293b; -fx-font-size:13px;"/>
+                    <Pane HBox.hgrow="ALWAYS"/>
+                </HBox>
+
+                <!-- TableView -->
+                <TableView fx:id="table" VBox.vgrow="ALWAYS"
+                           style="-fx-background-color:transparent; -fx-border-width:0;"
+                           prefHeight="500">
+                    <columns>
+                        <TableColumn fx:id="colIndex"    text="#"
+                                     prefWidth="45" minWidth="45" maxWidth="45"
+                                     style="-fx-alignment:CENTER;"/>
+                        <TableColumn fx:id="colDate"     text="Date"
+                                     prefWidth="110"/>
+                        <TableColumn fx:id="colEtudiant" text="Étudiant"
+                                     prefWidth="160"/>
+                        <TableColumn fx:id="colProfil"   text="Profil Type"
+                                     prefWidth="180"/>
+                        <TableColumn fx:id="colFilieres" text="Filières Recommandées"
+                                     prefWidth="310"/>
+                        <TableColumn fx:id="colActions"  text="Actions"
+                                     prefWidth="130" minWidth="130"
+                                     style="-fx-alignment:CENTER;"/>
+                    </columns>
+                    <placeholder>
+                        <VBox alignment="CENTER" spacing="12" style="-fx-padding:60;">
+                            <Label text="📋" style="-fx-font-size:40px;"/>
+                            <Label text="Aucun résultat enregistré pour l'instant"
+                                   style="-fx-font-size:14px; -fx-text-fill:#64748b;"/>
+                        </VBox>
+                    </placeholder>
+                </TableView>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+</VBox>

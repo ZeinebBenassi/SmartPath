@@ -33,6 +33,7 @@ public class DashboardAdminController {
     @FXML private Button     btnFilieres;
     @FXML private Button     btnOffres;
     @FXML private Button     btnQuizAdmin;
+    @FXML private Button     btnQuizHistorique;   // ← nouveau bouton
     @FXML private Button     btnProfil;
     @FXML private Button     btnVueEtudiant;
     @FXML private TableView<?>          usersTable;
@@ -77,7 +78,6 @@ public class DashboardAdminController {
         if (pageTitle != null) pageTitle.setText("Dashboard");
         setActiveButton(btnDashboard);
         showOnly(dashboardView);
-        // Fermer le sous-menu si ouvert
         if (usersSubMenu != null) {
             usersSubMenu.setVisible(false);
             usersSubMenu.setManaged(false);
@@ -85,16 +85,11 @@ public class DashboardAdminController {
         usersMenuOpen = false;
     }
 
-    /**
-     * Toggle le sous-menu Gestion utilisateurs (Profs / Étudiants).
-     * Ne navigue plus directement vers GestionUsers.
-     */
     @FXML public void toggleUsersMenu() {
         if (usersSubMenu == null) return;
         usersMenuOpen = !usersMenuOpen;
         usersSubMenu.setVisible(usersMenuOpen);
         usersSubMenu.setManaged(usersMenuOpen);
-
         if (usersMenuOpen) {
             btnUsers.getStyleClass().remove("nav-btn");
             if (!btnUsers.getStyleClass().contains("nav-btn-active"))
@@ -106,13 +101,11 @@ public class DashboardAdminController {
         }
     }
 
-    /** Appelé par le sous-bouton "Gestion profs" */
     @FXML public void showProfsFromMenu() {
         setActiveButton(btnUsers);
         navigate("/tn/esprit/interfaces/GestionProfs.fxml", "Gestion des professeurs");
     }
 
-    /** Appelé par le sous-bouton "Gestion étudiants" */
     @FXML public void showEtudiantsFromMenu() {
         setActiveButton(btnUsers);
         navigate("/tn/esprit/interfaces/GestionEtudiants.fxml", "Gestion des étudiants");
@@ -144,6 +137,12 @@ public class DashboardAdminController {
     @FXML public void showQuizAdmin() {
         setActiveButton(btnQuizAdmin);
         navigate("/tn/esprit/interfaces/QuestionContent.fxml", "Quiz - Gestion des questions");
+    }
+
+    /** ← NOUVEAU : Historique des résultats quiz — équivalent admin_quiz_results Symfony */
+    @FXML public void showQuizHistorique() {
+        setActiveButton(btnQuizHistorique);
+        navigate("/tn/esprit/interfaces/QuizHistorique.fxml", "📋 Historique du Quiz");
     }
 
     @FXML public void switchToVueEtudiant() {
@@ -182,7 +181,8 @@ public class DashboardAdminController {
     }
 
     private void setActiveButton(Button active) {
-        Button[] all = {btnDashboard, btnUsers, btnFilieres, btnOffres, btnQuizAdmin, btnProfil};
+        Button[] all = {btnDashboard, btnUsers, btnFilieres, btnOffres,
+                        btnQuizAdmin, btnQuizHistorique, btnProfil};
         for (Button b : all) {
             if (b == null) continue;
             if (b == active) {
