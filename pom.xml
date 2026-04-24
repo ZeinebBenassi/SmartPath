@@ -42,6 +42,20 @@
             <version>${javafx.version}</version>
         </dependency>
 
+        <!-- JavaFX Web (WebView pour Google Maps) -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+
+        <!-- JavaFX Media (requis par javafx-web) -->
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-media</artifactId>
+            <version>${javafx.version}</version>
+        </dependency>
+
         <!-- BCrypt pour les mots de passe -->
         <dependency>
             <groupId>org.mindrot</groupId>
