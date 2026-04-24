@@ -36,7 +36,7 @@ Candidature aux stages
 ---
 
 ## 🛠️ Tech Stack
-Java 17
+Java 17 (JDK)
 JavaFX
 MySQL
 Maven
@@ -65,9 +65,16 @@ Gestion des rôles (Admin / Prof / Étudiant)
 ## ⚙️ Installation
 git clone <repo-url>
 cd SmartPath
+
+Installer un **JDK 17** (pas seulement un JRE) et verifier que `JAVA_HOME` pointe vers le JDK.
+
 mvn clean install
 
 Configurer la base de données dans les fichiers .properties.
+
+Configurer le chatbot (fichier ignore par git) :
+- `hf.api_key=hf_...`
+- (optionnel) `hf.model=mistralai/Mistral-7B-Instruct-v0.3`
 
 ---
 

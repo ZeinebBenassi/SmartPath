@@ -1,5 +1,9 @@
 package tn.esprit.services;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.json.JSONTokener;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -26,15 +30,18 @@ import java.util.logging.Logger;
  *  - Specialise CS uniquement (redirige les hors-sujets)
  *  - Bilingue FR / EN, adaptatif au niveau de l'utilisateur
  *
- * Modele : mistralai/Mistral-7B-Instruct-v0.2 (gratuit, stable, FR+EN)
+ * Modele : mistralai/Mistral-7B-Instruct-v0.2 (Inference Providers)
  * Auth   : config.properties -> hf.api_key=hf_...
  */
 public class ChatbotService {
 
     private static final Logger LOG = Logger.getLogger(ChatbotService.class.getName());
 
-    private static final String HF_API_URL =
-            "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.2";
+    // Endpoint OpenAI-compatible (selection provider "auto" cote serveur)
+    private static final String HF_API_URL = "https://router.huggingface.co/v1/chat/completions";
+
+    // Override possible via config.properties: hf.model=... (ou env: HF_MODEL)
+    private static final String DEFAULT_MODEL = "Qwen/Qwen2.5-72B-Instruct";
 
     private static final int MAX_TURNS = 6;
 
@@ -126,9 +133,7 @@ public class ChatbotService {
                                : trimmed;
 
         LOG.info("Message effectif -> " + effectiveMsg);
-        String prompt = buildPrompt(effectiveMsg);
-
-        return callHuggingFace(prompt, apiKey)
+        return callHuggingFace(effectiveMsg, apiKey)
                 .thenApply(answer -> {
                     remember(trimmed, answer);
                     if (!isClarif) lastTopic = trimmed;
@@ -176,9 +181,8 @@ public class ChatbotService {
 
     // ── Construction du prompt ───────────────────────────────────────────────
 
-    private synchronized String buildPrompt(String userMessage) {
-
-        String system =
+    private static String systemPrompt() {
+        return
             "Tu es SmartPath AI, un assistant intelligent et pedagogique integre dans une application " +
             "pour etudiants en informatique a Esprit School of Engineering (Tunisie).\n\n" +
 
@@ -209,47 +213,63 @@ public class ChatbotService {
             "- Concis et clair, pas de blabla\n" +
             "- Exemples concrets\n" +
             "- Structure avec points ou etapes si necessaire\n" +
-            "- Maximum 300 mots sauf si demande approfondie\n" +
+            "- Maximum 80 mots. Sois ultra-concis et direct.\n" +
+            "- Pas d'introduction, pas de conclusion, pas de blabla.\n" +
+            "- Va droit au but : reponds uniquement a ce qui est demande.\n" +
             "- Naturel, comme un tuteur humain";
+    }
 
-        StringBuilder sb = new StringBuilder();
+        private synchronized String buildMessagesJson(String userMessage) {
+                StringBuilder sb = new StringBuilder(1024);
+                sb.append('[');
 
-        if (turns.isEmpty()) {
-            sb.append("<s>[INST] ").append(system)
-              .append("\n\n").append(userMessage).append(" [/INST]");
-        } else {
-            sb.append("<s>[INST] ").append(system).append(" [/INST] ")
-              .append("Compris ! Je suis SmartPath AI. Je garde le contexte et continue")
-              .append(" toujours le meme sujet si tu demandes plus d'explications.</s>\n");
+                // system
+                sb.append("{\"role\":\"system\",\"content\":")
+                    .append(jsonString(systemPrompt()))
+                    .append('}');
 
-            for (Turn t : turns) {
-                sb.append("[INST] ").append(t.user).append(" [/INST] ")
-                  .append(t.assistant).append("</s>\n");
-            }
-            sb.append("[INST] ").append(userMessage).append(" [/INST]");
+                // history (user/assistant)
+                for (Turn t : turns) {
+                        sb.append(',')
+                            .append("{\"role\":\"user\",\"content\":")
+                            .append(jsonString(t.user))
+                            .append('}');
+                        sb.append(',')
+                            .append("{\"role\":\"assistant\",\"content\":")
+                            .append(jsonString(t.assistant))
+                            .append('}');
+                }
+
+                // current user
+                sb.append(',')
+                    .append("{\"role\":\"user\",\"content\":")
+                    .append(jsonString(userMessage))
+                    .append('}');
+
+                sb.append(']');
+                return sb.toString();
         }
 
-        return sb.toString();
-    }
+        private synchronized String resolveModelId() {
+                String model = ConfigLoader.get("hf.model");
+                if (model == null || model.isBlank()) model = System.getenv("HF_MODEL");
+                if (model == null || model.isBlank()) model = DEFAULT_MODEL;
+                return model.trim();
+        }
 
     // ── Appel HTTP ───────────────────────────────────────────────────────────
 
-    private CompletableFuture<String> callHuggingFace(String prompt, String apiKey) {
+    private CompletableFuture<String> callHuggingFace(String userMessage, String apiKey) {
 
+        String model = resolveModelId();
         String jsonBody = "{"
-                + "\"inputs\":" + jsonString(prompt) + ","
-                + "\"parameters\":{"
-                + "\"max_new_tokens\":512,"
-                + "\"temperature\":0.6,"
-                + "\"top_p\":0.9,"
-                + "\"do_sample\":true,"
-                + "\"return_full_text\":false"
-                + "},"
-                + "\"options\":{"
-                + "\"wait_for_model\":true,"
-                + "\"use_cache\":false"
-                + "}"
-                + "}";
+            + "\"model\":" + jsonString(model) + ","
+            + "\"stream\":false,"
+            + "\"temperature\":0.6,"
+            + "\"top_p\":0.9,"
+            + "\"max_tokens\":256,"
+            + "\"messages\":" + buildMessagesJson(userMessage)
+            + "}";
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(HF_API_URL))
@@ -264,10 +284,19 @@ public class ChatbotService {
                 .thenApply(response -> {
                     int status = response.statusCode();
                     LOG.info("HF status: " + status);
-                    LOG.fine("HF body: " + response.body());
+                    if (status != 200) {
+                        String body = response.body();
+                        if (body != null && !body.isBlank()) {
+                            String snippet = body.replaceAll("\\s+", " ").trim();
+                            if (snippet.length() > 350) snippet = snippet.substring(0, 350) + "…";
+                            LOG.info("HF body (snippet): " + snippet);
+                        }
+                    }
                     return switch (status) {
                         case 401 -> "Cle API invalide. Verifie hf.api_key dans config.properties.";
-                        case 403 -> "Acces refuse. Va sur huggingface.co/mistralai/Mistral-7B-Instruct-v0.2 et accepte les conditions.";
+                        case 403 -> "Acces refuse. Verifie ton token et/ou les conditions du modele sur Hugging Face.";
+                        case 400 -> "Requete invalide (400). " + extractBadRequestMessage(response.body());
+                        case 404 -> "Endpoint/model introuvable (404). Verifie l'URL d'inference et le nom du modele.";
                         case 429 -> "Trop de requetes. Attends quelques secondes et reessaie.";
                         default  -> status >= 500
                                 ? "Serveur Hugging Face indisponible (" + status + "). Reessaie dans un moment."
@@ -280,34 +309,83 @@ public class ChatbotService {
                 });
     }
 
+    private String extractBadRequestMessage(String raw) {
+        if (raw == null || raw.isBlank()) return "Aucun detail fourni par l'API.";
+        try {
+            Object parsed = new JSONTokener(raw).nextValue();
+            if (parsed instanceof JSONObject obj) {
+                if (obj.has("error")) {
+                    Object err = obj.get("error");
+                    if (err instanceof JSONObject eObj) {
+                        String msg = eObj.optString("message", "");
+                        if (msg != null && !msg.isBlank()) return msg;
+                    }
+                    String msg = String.valueOf(err);
+                    if (msg != null && !msg.isBlank()) return msg;
+                }
+                if (obj.has("message")) {
+                    String msg = obj.optString("message", "");
+                    if (msg != null && !msg.isBlank()) return msg;
+                }
+            }
+        } catch (Exception ignored) {}
+
+        String snippet = raw.replaceAll("\\s+", " ").trim();
+        if (snippet.length() > 180) snippet = snippet.substring(0, 180) + "…";
+        return snippet;
+    }
+
     // ── Parsing reponse ──────────────────────────────────────────────────────
 
     private String parseResponse(String raw) {
         if (raw == null || raw.isBlank()) return "Reponse vide de l'API.";
 
         try {
-            if (raw.contains("\"error\"")) {
-                String error = extractJsonString(raw, "error");
-                if (error.toLowerCase().contains("loading") || raw.contains("estimated_time"))
-                    return "Le modele demarre (cold start). Reessaie dans ~20 secondes.";
-                return "Erreur API : " + error;
+            Object parsed = new JSONTokener(raw).nextValue();
+
+            if (parsed instanceof JSONObject obj) {
+                if (obj.has("error")) {
+                    Object err = obj.get("error");
+                    String msg = (err instanceof JSONObject eObj)
+                            ? eObj.optString("message", eObj.toString())
+                            : String.valueOf(err);
+                    if (msg.toLowerCase().contains("loading") || raw.contains("estimated_time"))
+                        return "Le modele demarre (cold start). Reessaie dans ~20 secondes.";
+                    return "Erreur API : " + msg;
+                }
+
+                // OpenAI-compatible chat completions
+                JSONArray choices = obj.optJSONArray("choices");
+                if (choices != null && choices.length() > 0) {
+                    JSONObject c0 = choices.optJSONObject(0);
+                    if (c0 != null) {
+                        JSONObject message = c0.optJSONObject("message");
+                        if (message != null) {
+                            String content = message.optString("content", "").trim();
+                            if (!content.isEmpty()) return content;
+                        }
+                        // fallback (some providers may return a flat "text")
+                        String text = c0.optString("text", "").trim();
+                        if (!text.isEmpty()) return text;
+                    }
+                }
+
+                // Text-generation style (generated_text)
+                String gen = obj.optString("generated_text", "").trim();
+                if (!gen.isEmpty()) return gen;
             }
 
-            int keyIdx = raw.indexOf("\"generated_text\"");
-            if (keyIdx == -1) {
-                LOG.warning("Pas de generated_text dans: " + raw);
-                return "Format de reponse inattendu.";
+            // HF legacy: array response
+            if (parsed instanceof JSONArray arr && arr.length() > 0) {
+                JSONObject first = arr.optJSONObject(0);
+                if (first != null) {
+                    String gen = first.optString("generated_text", "").trim();
+                    if (!gen.isEmpty()) return gen;
+                }
             }
 
-            int colonIdx = raw.indexOf(':', keyIdx);
-            int qStart   = raw.indexOf('"', colonIdx + 1) + 1;
-            int qEnd     = findClosingQuote(raw, qStart);
-            String text  = unescapeJson(raw.substring(qStart, qEnd)).trim();
-
-            // Nettoyer les artefacts Mistral residuels
-            text = text.replaceAll("(?s)<s>|</s>|\\[INST]|\\[/INST]", "").trim();
-
-            return text.isEmpty() ? "Le modele a retourne une reponse vide. Reessaie." : text;
+            LOG.warning("Format de reponse inattendu: " + raw);
+            return "Format de reponse inattendu.";
 
         } catch (Exception e) {
             LOG.log(Level.WARNING, "Echec parsing: " + raw, e);
