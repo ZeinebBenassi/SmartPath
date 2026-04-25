@@ -4,6 +4,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
@@ -28,6 +29,10 @@ public class FormValidator {
     private static final String STYLE_OK =
             "-fx-background-color: #F8FAFC; -fx-background-radius: 8; " +
                     "-fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1; -fx-padding: 8 12;";
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Validations existantes
+    // ─────────────────────────────────────────────────────────────────────────
 
     public static boolean validateRequired(TextField field, String labelName, List<String> errors) {
         if (field == null) return true;
@@ -58,6 +63,11 @@ public class FormValidator {
         return true;
     }
 
+    /**
+     * Validation basique du mot de passe (obligatoire + longueur min 6).
+     * N'effectue PAS la classification force — utiliser validatePasswordStrength()
+     * pour l'affichage en temps réel.
+     */
     public static boolean validatePassword(PasswordField field, boolean required, List<String> errors) {
         if (field == null) return true;
         String val = field.getText() == null ? "" : field.getText();
@@ -71,6 +81,17 @@ public class FormValidator {
             errors.add("Le mot de passe doit contenir au moins 6 caractères.");
             return false;
         }
+
+        // Vérification niveau minimum : refuser les mots de passe LOW
+        if (!val.isEmpty()) {
+            PasswordStrengthUtil.Result r = PasswordStrengthUtil.analyze(val);
+            if (r.level == PasswordStrengthUtil.Level.LOW) {
+                markError(field);
+                errors.add("Mot de passe trop faible : " + r.explication);
+                return false;
+            }
+        }
+
         markOk(field);
         return true;
     }
@@ -139,8 +160,72 @@ public class FormValidator {
         }
     }
 
-    private static void markError(TextField field) { field.setStyle(STYLE_ERROR); }
-    private static void markOk(TextField field) { field.setStyle(STYLE_OK); }
+    // ─────────────────────────────────────────────────────────────────────────
+    // 🔐 NOUVEAU – Affichage force du mot de passe en temps réel
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Met à jour la barre de progression et les labels de feedback en temps réel.
+     *
+     * @param field         le PasswordField observé
+     * @param strengthBar   ProgressBar (0.0 à 1.0) à coloriser
+     * @param levelLabel    Label affichant le niveau (ex : "🟢 FORT")
+     * @param adviceLabel   Label affichant l'explication + conseil
+     */
+    public static void updatePasswordStrengthUI(
+            PasswordField field,
+            ProgressBar   strengthBar,
+            Label         levelLabel,
+            Label         adviceLabel) {
+
+        if (field == null) return;
+        String pwd = field.getText();
+
+        if (pwd == null || pwd.isEmpty()) {
+            if (strengthBar != null) {
+                strengthBar.setProgress(0);
+                strengthBar.setStyle("");
+            }
+            if (levelLabel  != null) levelLabel.setText("");
+            if (adviceLabel != null) adviceLabel.setText("");
+            return;
+        }
+
+        PasswordStrengthUtil.Result result = PasswordStrengthUtil.analyze(pwd);
+        String color = result.getColor();
+
+        // Barre de progression
+        if (strengthBar != null) {
+            double progress = result.score / 100.0;
+            strengthBar.setProgress(progress);
+            strengthBar.setStyle(
+                "-fx-accent: " + color + "; " +
+                "-fx-background-color: #e2e8f0; " +
+                "-fx-background-radius: 4; " +
+                "-fx-pref-height: 8;"
+            );
+        }
+
+        // Label niveau
+        if (levelLabel != null) {
+            levelLabel.setText(result.getLevelLabel());
+            levelLabel.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 11; -fx-font-weight: bold;");
+        }
+
+        // Label conseil
+        if (adviceLabel != null) {
+            adviceLabel.setText(result.explication + "  ➜  " + result.conseil);
+            adviceLabel.setStyle("-fx-text-fill: #5a6a8a; -fx-font-size: 10;");
+            adviceLabel.setWrapText(true);
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // Helpers internes
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private static void markError(TextField   field) { field.setStyle(STYLE_ERROR); }
+    private static void markOk   (TextField   field) { field.setStyle(STYLE_OK);    }
     private static void markError(PasswordField field) { field.setStyle(STYLE_ERROR); }
-    private static void markOk(PasswordField field) { field.setStyle(STYLE_OK); }
+    private static void markOk   (PasswordField field) { field.setStyle(STYLE_OK);    }
 }
