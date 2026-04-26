@@ -354,3 +354,113 @@
 }
 .toggle-button:selected:hover { -fx-background-color: #1d4ed8; }
 .toggle-button:hover          { -fx-background-color: #94a3b8; }
+
+/* ══════════════════════════════════════════════════════════════
+   DASHBOARD ADMIN — Nouveaux styles uniformisés
+   ══════════════════════════════════════════════════════════════ */
+
+/*
+  nav-sub-btn : Gestion Professeurs / Gestion Étudiants
+  — même style visuel que nav-btn (Offres de stage) mais
+    légèrement indenté pour marquer la hiérarchie du sous-menu.
+*/
+.nav-sub-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: #64748B;
+    -fx-font-size: 13px;
+    -fx-font-weight: normal;
+    -fx-padding: 10 14;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-alignment: CENTER_LEFT;
+    -fx-max-width: Infinity;
+    -fx-border-color: transparent;
+    -fx-border-radius: 8;
+}
+.nav-sub-btn:hover {
+    -fx-background-color: #F0F5FF;
+    -fx-text-fill: #2563EB;
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+}
+
+/*
+  nav-stat-btn-indigo : Statistiques Users
+  — Placé juste sous Offres de stage.
+    Couleur indigo douce, identique en forme/taille/police
+    aux boutons nav principaux.
+*/
+.nav-stat-btn-indigo {
+    -fx-background-color: #EEF2FF;
+    -fx-text-fill: #4338CA;
+    -fx-font-size: 13px;
+    -fx-font-weight: normal;
+    -fx-padding: 10 14;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-alignment: CENTER_LEFT;
+    -fx-max-width: Infinity;
+    -fx-border-color: #C7D2FE;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+.nav-stat-btn-indigo:hover {
+    -fx-background-color: #E0E7FF;
+    -fx-text-fill: #3730A3;
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+    -fx-effect: dropshadow(gaussian, rgba(67,56,202,0.15), 8, 0, 0, 2);
+}
+
+/*
+  nav-stat-btn-green : Statistiques Quiz
+  — Placé juste sous Historique Quiz.
+    Couleur émeraude douce, même gabarit que nav-stat-btn-indigo.
+*/
+.nav-stat-btn-green {
+    -fx-background-color: #ECFDF5;
+    -fx-text-fill: #065F46;
+    -fx-font-size: 13px;
+    -fx-font-weight: normal;
+    -fx-padding: 10 14;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+    -fx-alignment: CENTER_LEFT;
+    -fx-max-width: Infinity;
+    -fx-border-color: #A7F3D0;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+.nav-stat-btn-green:hover {
+    -fx-background-color: #D1FAE5;
+    -fx-text-fill: #047857;
+    -fx-scale-x: 1.02;
+    -fx-scale-y: 1.02;
+    -fx-effect: dropshadow(gaussian, rgba(6,95,70,0.15), 8, 0, 0, 2);
+}
+
+/*
+  quick-action-btn : Boutons "Actions rapides" du Dashboard
+  — Design uniforme pour tous (Étudiants, Profs, Offres,
+    Statistiques Users, Statistiques Quiz).
+    Remplace l'ancien mix de chip-btn / chip-btn-success / chip-btn-warn.
+*/
+.quick-action-btn {
+    -fx-background-color: #EFF6FF;
+    -fx-text-fill: #1D4ED8;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 10;
+    -fx-cursor: hand;
+    -fx-border-color: #BFDBFE;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+}
+.quick-action-btn:hover {
+    -fx-background-color: #DBEAFE;
+    -fx-text-fill: #1E3A8A;
+    -fx-scale-x: 1.04;
+    -fx-scale-y: 1.04;
+    -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.20), 10, 0, 0, 3);
+}

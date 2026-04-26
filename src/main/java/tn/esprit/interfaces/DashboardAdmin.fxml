@@ -9,11 +9,6 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<!--
-    ⚠️  xmlns="http://javafx.com/javafx/21"  ← version corrigée (était 25)
-    Cela supprime le warning :
-      "Loading FXML document with JavaFX API of version 25 by JavaFX runtime of version 21"
--->
 <BorderPane prefHeight="700" prefWidth="1200" styleClass="app-bg" stylesheets="@smartpath.css"
             xmlns:fx="http://javafx.com/fxml/1"
             xmlns="http://javafx.com/javafx/21"
@@ -21,7 +16,7 @@
 
     <!-- ══════════════════════════════ SIDEBAR ══════════════════════════════ -->
     <left>
-        <VBox prefWidth="248" styleClass="sidebar-modern">
+        <VBox prefWidth="256" styleClass="sidebar-modern">
 
             <!-- Logo -->
             <VBox alignment="CENTER_LEFT" spacing="3" styleClass="sidebar-logo-zone">
@@ -30,6 +25,8 @@
             </VBox>
 
             <VBox spacing="2" style="-fx-padding: 16 10 0 10;">
+
+                <!-- ── SECTION : MENU ── -->
                 <Label styleClass="sidebar-section-label" text="MENU"/>
 
                 <!-- Dashboard -->
@@ -41,78 +38,57 @@
                 <Button fx:id="btnUsers" maxWidth="Infinity"
                         onAction="#toggleUsersMenu"
                         styleClass="nav-btn" text="👥  Utilisateurs  ▾"/>
-                <VBox fx:id="usersSubMenu" managed="false" visible="false" spacing="2"
-                      style="-fx-padding: 0 0 0 18;">
+                <VBox fx:id="usersSubMenu" managed="false" visible="false" spacing="4"
+                      style="-fx-padding: 4 0 4 14;">
                     <Button fx:id="btnGestionProfs" maxWidth="Infinity"
                             onAction="#showProfsFromMenu"
-                            text="👨‍🏫  Gestion profs"
-                            style="-fx-font-size:12;-fx-background-color:#f1f5fe;-fx-text-fill:#4f46e5;
-                                   -fx-background-radius:7;-fx-padding:7 14;-fx-cursor:hand;
-                                   -fx-border-color:#c7d2fe;-fx-border-radius:7;-fx-border-width:1;"/>
+                            text="👨‍🏫  Gestion Professeurs"
+                            styleClass="nav-sub-btn"/>
                     <Button fx:id="btnGestionEtudiants" maxWidth="Infinity"
                             onAction="#showEtudiantsFromMenu"
-                            text="👨‍🎓  Gestion étudiants"
-                            style="-fx-font-size:12;-fx-background-color:#f1f5fe;-fx-text-fill:#4f46e5;
-                                   -fx-background-radius:7;-fx-padding:7 14;-fx-cursor:hand;
-                                   -fx-border-color:#c7d2fe;-fx-border-radius:7;-fx-border-width:1;"/>
+                            text="👨‍🎓  Gestion Étudiants"
+                            styleClass="nav-sub-btn"/>
                 </VBox>
 
+                <!-- Filières -->
                 <Button fx:id="btnFilieres" maxWidth="Infinity"
                         onAction="#showFilieres"
                         styleClass="nav-btn" text="📚  Filières"/>
+
+                <!-- Offres de stage -->
                 <Button fx:id="btnOffres" maxWidth="Infinity"
                         onAction="#showOffres"
                         styleClass="nav-btn" text="💼  Offres de stage"/>
 
-                <!-- ── Statistiques (sous-menu User / Quiz) ── -->
-                <Label text="STATISTIQUES" styleClass="sidebar-section-label"
-                       style="-fx-padding:12 0 4 8;"/>
+                <!-- Statistiques Users : positionné juste sous Offres de stage -->
+                <Button fx:id="btnStatistiquesUsers" maxWidth="Infinity"
+                        onAction="#showStatistiquesUsers"
+                        text="📈  Statistiques Users"
+                        styleClass="nav-stat-btn-indigo"/>
 
-                <!--
-                    Bouton parent : un seul bouton "Statistiques"
-                    Le ▾ indique qu'il y a un sous-menu
-                -->
-                <Button fx:id="btnStatistiques" maxWidth="Infinity"
-                        onAction="#toggleStatsMenu"
-                        styleClass="nav-btn" text="📊  Statistiques  ▾"/>
-
-                <!--
-                    Sous-menu caché par défaut.
-                    Devient visible quand l'utilisateur clique sur "Statistiques".
-                -->
-                <VBox fx:id="statsSubMenu" managed="false" visible="false" spacing="2"
-                      style="-fx-padding: 0 0 0 18;">
-
-                    <!-- Bouton 1 : Statistiques Utilisateurs -->
-                    <Button fx:id="btnStatistiquesUsers" maxWidth="Infinity"
-                            onAction="#showStatistiquesUsers"
-                            text="📈  Utilisateurs"
-                            style="-fx-font-size:12;-fx-background-color:#ede9fe;-fx-text-fill:#6d28d9;
-                                   -fx-background-radius:7;-fx-padding:7 14;-fx-cursor:hand;
-                                   -fx-border-color:#ddd6fe;-fx-border-radius:7;-fx-border-width:1;"/>
-
-                    <!-- Bouton 2 : Statistiques Quiz -->
-                    <Button fx:id="btnStatistiquesQuiz" maxWidth="Infinity"
-                            onAction="#showStatistiquesQuiz"
-                            text="🧩  Quiz"
-                            style="-fx-font-size:12;-fx-background-color:#d1fae5;-fx-text-fill:#065f46;
-                                   -fx-background-radius:7;-fx-padding:7 14;-fx-cursor:hand;
-                                   -fx-border-color:#a7f3d0;-fx-border-radius:7;-fx-border-width:1;"/>
-                </VBox>
-
-                <!-- ── Quiz ── -->
+                <!-- ── SECTION : QUIZ ── -->
                 <Label text="QUIZ" styleClass="sidebar-section-label"
-                       style="-fx-padding:12 0 4 8;"/>
+                       style="-fx-padding:14 0 4 8;"/>
+
                 <Button fx:id="btnQuizAdmin" maxWidth="Infinity"
                         onAction="#showQuizAdmin"
                         styleClass="nav-btn" text="🧠  Questions du Quiz"/>
+
                 <Button fx:id="btnQuizHistorique" maxWidth="Infinity"
                         onAction="#showQuizHistorique"
                         styleClass="nav-btn" text="📋  Historique Quiz"/>
 
+                <!-- Statistiques Quiz : positionné juste sous Historique Quiz -->
+                <Button fx:id="btnStatistiquesQuiz" maxWidth="Infinity"
+                        onAction="#showStatistiquesQuiz"
+                        text="🧩  Statistiques Quiz"
+                        styleClass="nav-stat-btn-green"/>
+
+                <!-- Profil -->
                 <Button fx:id="btnProfil" maxWidth="Infinity"
                         onAction="#showProfil"
                         styleClass="nav-btn" text="👤  Mon profil"/>
+
             </VBox>
 
             <Pane VBox.vgrow="ALWAYS"/>
@@ -201,18 +177,16 @@
                                    text="Gérez rapidement les ressources de la plateforme"/>
                         </VBox>
                         <HBox spacing="12">
-                            <Button onAction="#showEtudiants" styleClass="chip-btn"
-                                    text="👨‍🎓  Gérer les étudiants"/>
-                            <Button onAction="#showProfs" styleClass="chip-btn-success"
-                                    text="👨‍🏫  Gérer les professeurs"/>
-                            <Button onAction="#showFilieres" styleClass="chip-btn-warn"
-                                    text="📚  Gérer les filières"/>
-                            <Button onAction="#showStatistiquesUsers" styleClass="chip-btn"
-                                    text="📈  Stats Utilisateurs"
-                                    style="-fx-background-color:#ede9fe;-fx-text-fill:#6d28d9;"/>
-                            <Button onAction="#showStatistiquesQuiz" styleClass="chip-btn"
-                                    text="🧩  Stats Quiz"
-                                    style="-fx-background-color:#d1fae5;-fx-text-fill:#065f46;"/>
+                            <Button onAction="#showEtudiants" styleClass="quick-action-btn"
+                                    text="👨‍🎓  Gestion Étudiants"/>
+                            <Button onAction="#showProfs" styleClass="quick-action-btn"
+                                    text="👨‍🏫  Gestion Professeurs"/>
+                            <Button onAction="#showOffres" styleClass="quick-action-btn"
+                                    text="💼  Offres de stage"/>
+                            <Button onAction="#showStatistiquesUsers" styleClass="quick-action-btn"
+                                    text="📈  Statistiques Users"/>
+                            <Button onAction="#showStatistiquesQuiz" styleClass="quick-action-btn"
+                                    text="🧩  Statistiques Quiz"/>
                         </HBox>
                     </VBox>
 
