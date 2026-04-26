@@ -42,6 +42,7 @@ public class RegisterController {
     @FXML private Label dateError;
     @FXML private Label passwordError;
     @FXML private Label confirmError;
+    @FXML private Label niveauError;   // ✅ nouveau
 
     // ── 🔐 Widgets de force mot de passe ──────────────────────────────────────
     @FXML private ProgressBar strengthBar;
@@ -52,6 +53,9 @@ public class RegisterController {
     @FXML private ImageView photoPreview;
     @FXML private Label     photoLabel;
     private File selectedPhotoFile = null;
+
+    // ── Niveau ────────────────────────────────────────────────────────────────
+    @FXML private ComboBox<String> niveauCombo;   // ✅ nouveau
 
     // ── Services ──────────────────────────────────────────────────────────────
     private final UserService      userService = new UserService();
@@ -73,6 +77,11 @@ public class RegisterController {
             passwordField.textProperty().addListener((obs, oldVal, newVal) ->
                 FormValidator.updatePasswordStrengthUI(
                     passwordField, strengthBar, strengthLevel, strengthAdvice));
+        }
+        // ✅ Remplir la ComboBox Niveau
+        if (niveauCombo != null) {
+            niveauCombo.getItems().addAll("L1", "L2", "L3", "M1", "M2", "Doctorat");
+            niveauCombo.setValue("L1"); // valeur par défaut
         }
     }
 
@@ -203,7 +212,7 @@ public class RegisterController {
         if (dateNaissancePicker.getValue() != null) {
             etudiant.setDateNaissance(java.sql.Date.valueOf(dateNaissancePicker.getValue()));
         }
-        etudiant.setNiveau("L1");
+        etudiant.setNiveau(niveauCombo != null && niveauCombo.getValue() != null ? niveauCombo.getValue() : "L1"); // ✅ depuis ComboBox
         etudiant.setStatus("actif");
 
         // ── Désactiver le bouton pour éviter double-clic ──────────────────────
@@ -273,6 +282,7 @@ public class RegisterController {
         dateError.setText("");
         passwordError.setText("");
         confirmError.setText("");
+        if (niveauError != null) niveauError.setText("");
         messageLabel.setText("");
     }
 

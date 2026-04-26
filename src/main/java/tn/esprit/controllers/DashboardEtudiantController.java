@@ -120,8 +120,8 @@ public class DashboardEtudiantController {
 
     @FXML public void showProfil() {
         setActiveButton(btnProfil);
-        ProfilEtudiantController.setCurrentUser(currentUser);
-        navigate("/tn/esprit/interfaces/ProfilEtudiant.fxml");
+        ProfilController.setCurrentUser(currentUser);  // ✅ Fix: passer user au bon controller
+        navigate("/tn/esprit/interfaces/Profil.fxml");
     }
     @FXML public void showCours()  { setActiveButton(btnCours);  navigate("/tn/esprit/interfaces/Cours.fxml"); }
     @FXML public void showStages() { setActiveButton(btnStages); navigate("/tn/esprit/interfaces/Stages.fxml"); }

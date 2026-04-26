@@ -182,7 +182,7 @@ public class ProfilController {
                 if (newUrl != null) {
                     currentUser.setPhoto(newUrl);  // ← URL Cloudinary en base
                     userService.update(currentUser);
-                    loadPhoto(newUrl);
+                    loadPhoto(newUrl);             // ← passe par HttpURLConnection désormais
                     showStatus("✅ Photo mise à jour avec succès.", true);
                 } else {
                     showStatus("❌ Échec de l'upload. Vérifiez votre connexion et vos credentials Cloudinary.", false);
@@ -229,17 +229,35 @@ public class ProfilController {
                 Image img;
 
                 if (photoPath.startsWith("http")) {
-                    // ✅ URL Cloudinary — JavaFX charge directement depuis le réseau
-                    img = new Image(photoPath, 256, 256, true, true, true);
+                    // ✅ JavaFX ne sait pas charger HTTPS directement sur toutes les JVM.
+                    // On télécharge les bytes via HttpURLConnection puis on crée l'Image depuis InputStream.
+                    java.net.URL url = new java.net.URL(photoPath);
+                    java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+                    conn.setRequestProperty("User-Agent", "Mozilla/5.0");
+                    conn.setConnectTimeout(8000);
+                    conn.setReadTimeout(15000);
+                    conn.connect();
+                    try (java.io.InputStream is = conn.getInputStream()) {
+                        img = new Image(is);
+                    } finally {
+                        conn.disconnect();
+                    }
                 } else {
-                    // Legacy : chemin local
+                    // Chemin local
                     File f = new File(photoPath);
-                    if (!f.exists()) throw new IOException("Fichier introuvable : " + photoPath);
-                    img = new Image(f.toURI().toString(), 256, 256, true, true, true);
+                    if (!f.exists()) throw new java.io.IOException("Fichier introuvable : " + photoPath);
+                    try (java.io.InputStream is = new java.io.FileInputStream(f)) {
+                        img = new Image(is);
+                    }
                 }
 
-                final Image finalImg = img;
-                Platform.runLater(() -> applyPhoto(finalImg));
+                if (img.isError()) {
+                    System.err.println("⚠️ Image en erreur : " + img.getException().getMessage());
+                    Platform.runLater(this::showAvatar);
+                } else {
+                    final Image finalImg = img;
+                    Platform.runLater(() -> applyPhoto(finalImg));
+                }
 
             } catch (Exception e) {
                 System.err.println("⚠️ Impossible de charger la photo : " + e.getMessage());

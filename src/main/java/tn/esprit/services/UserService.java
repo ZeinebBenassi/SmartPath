@@ -254,9 +254,11 @@ public class UserService {
     public boolean registerEtudiant(Etudiant e) {
         String ins = "INSERT INTO `user`(nom,prenom,email,password,CIN,telephone,adresse,date_naissance,photo,roles,type,created_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
         try {
+            // ✅ Fix: hasher le mot de passe avant insertion
+            String hashedPassword = org.mindrot.jbcrypt.BCrypt.hashpw(e.getPassword(), org.mindrot.jbcrypt.BCrypt.gensalt());
             connection.setAutoCommit(false); int userId;
             try (PreparedStatement ps = connection.prepareStatement(ins, Statement.RETURN_GENERATED_KEYS)) {
-                ps.setString(1,e.getNom()); ps.setString(2,e.getPrenom()); ps.setString(3,e.getEmail()); ps.setString(4,e.getPassword());
+                ps.setString(1,e.getNom()); ps.setString(2,e.getPrenom()); ps.setString(3,e.getEmail()); ps.setString(4,hashedPassword);
                 ps.setString(5,e.getCin()); ps.setString(6,e.getTelephone()); ps.setString(7,e.getAdresse());
                 ps.setTimestamp(8, e.getDateNaissance()!=null ? new Timestamp(e.getDateNaissance().getTime()) : null);
                 ps.setString(9, e.getPhoto()); // URL Cloudinary ou null
