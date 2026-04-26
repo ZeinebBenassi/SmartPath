@@ -54,9 +54,12 @@
                 <Button fx:id="btnQuizAdmin" maxWidth="Infinity" onAction="#showQuizAdmin"
                         styleClass="nav-btn" text="🧠  Questions du Quiz"/>
 
-                <!-- ← NOUVEAU : Historique Quiz — équivalent admin_quiz_results Symfony -->
                 <Button fx:id="btnQuizHistorique" maxWidth="Infinity" onAction="#showQuizHistorique"
                         styleClass="nav-btn" text="📋  Historique Quiz"/>
+
+                <!-- ← NOUVEAU : Statistiques Quiz — équivalent admin_quiz_statistics Symfony -->
+                <Button fx:id="btnQuizStatistiques" maxWidth="Infinity" onAction="#showQuizStatistiques"
+                        styleClass="nav-btn" text="📊  Statistiques Quiz"/>
 
                 <Button fx:id="btnProfil"    maxWidth="Infinity" onAction="#showProfil"
                         styleClass="nav-btn" text="👤  Mon profil"/>
@@ -136,15 +139,18 @@
                                    text="Gérez rapidement les ressources de la plateforme"/>
                         </VBox>
                         <HBox spacing="12">
-                            <Button onAction="#showEtudiants"     styleClass="chip-btn"
+                            <Button onAction="#showEtudiants"        styleClass="chip-btn"
                                     text="👨‍🎓  Gérer les étudiants"/>
-                            <Button onAction="#showProfs"         styleClass="chip-btn-success"
+                            <Button onAction="#showProfs"            styleClass="chip-btn-success"
                                     text="👨‍🏫  Gérer les professeurs"/>
-                            <Button onAction="#showFilieres"      styleClass="chip-btn-warn"
+                            <Button onAction="#showFilieres"         styleClass="chip-btn-warn"
                                     text="📚  Gérer les filières"/>
-                            <Button onAction="#showQuizHistorique" styleClass="chip-btn"
+                            <Button onAction="#showQuizHistorique"   styleClass="chip-btn"
                                     text="📋  Historique Quiz"
                                     style="-fx-background-color:#ede9fe; -fx-text-fill:#6d28d9;"/>
+                            <Button onAction="#showQuizStatistiques" styleClass="chip-btn"
+                                    text="📊  Statistiques Quiz"
+                                    style="-fx-background-color:#d1fae5; -fx-text-fill:#065f46;"/>
                         </HBox>
                     </VBox>
                     <!-- TableView caché pour compatibilité -->

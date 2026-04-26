@@ -33,7 +33,8 @@ public class DashboardAdminController {
     @FXML private Button     btnFilieres;
     @FXML private Button     btnOffres;
     @FXML private Button     btnQuizAdmin;
-    @FXML private Button     btnQuizHistorique;   // ← nouveau bouton
+    @FXML private Button     btnQuizHistorique;
+    @FXML private Button     btnQuizStatistiques;   // ← NOUVEAU
     @FXML private Button     btnProfil;
     @FXML private Button     btnVueEtudiant;
     @FXML private TableView<?>          usersTable;
@@ -139,10 +140,16 @@ public class DashboardAdminController {
         navigate("/tn/esprit/interfaces/QuestionContent.fxml", "Quiz - Gestion des questions");
     }
 
-    /** ← NOUVEAU : Historique des résultats quiz — équivalent admin_quiz_results Symfony */
+    /** Historique des résultats quiz — équivalent admin_quiz_results Symfony */
     @FXML public void showQuizHistorique() {
         setActiveButton(btnQuizHistorique);
         navigate("/tn/esprit/interfaces/QuizHistorique.fxml", "📋 Historique du Quiz");
+    }
+
+    /** Statistiques quiz — équivalent admin_quiz_statistics Symfony */
+    @FXML public void showQuizStatistiques() {
+        setActiveButton(btnQuizStatistiques);
+        navigate("/tn/esprit/interfaces/QuizStatistiques.fxml", "📊 Statistiques du Quiz");
     }
 
     @FXML public void switchToVueEtudiant() {
@@ -182,7 +189,7 @@ public class DashboardAdminController {
 
     private void setActiveButton(Button active) {
         Button[] all = {btnDashboard, btnUsers, btnFilieres, btnOffres,
-                        btnQuizAdmin, btnQuizHistorique, btnProfil};
+                        btnQuizAdmin, btnQuizHistorique, btnQuizStatistiques, btnProfil};
         for (Button b : all) {
             if (b == null) continue;
             if (b == active) {
