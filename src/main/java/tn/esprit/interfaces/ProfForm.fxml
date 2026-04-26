@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
@@ -89,7 +90,31 @@
                 </HBox>
             </VBox>
 
-            <!-- Section 3 : Sécurité -->
+            <!-- Section 3 : Photo -->
+            <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-padding:0 0 5 0;">
+                <Label text="📷" style="-fx-font-size:13;-fx-text-fill:#2563EB;"/>
+                <Label text="Photo de profil (optionnel)"
+                       style="-fx-font-size:12px;-fx-font-weight:bold;-fx-text-fill:#2563EB;"/>
+            </HBox>
+            <Separator/>
+            <VBox spacing="10" style="-fx-padding:10 0 16 0;">
+                <HBox spacing="14" alignment="CENTER_LEFT">
+                    <ImageView fx:id="photoPreview" fitWidth="64" fitHeight="64"
+                               preserveRatio="true" smooth="true"
+                               style="-fx-background-radius:32;"/>
+                    <VBox spacing="6">
+                        <Button fx:id="btnChoosePhoto" text="📷 Choisir une photo"
+                                onAction="#handleChoosePhoto"
+                                style="-fx-background-color:#2563EB;-fx-text-fill:white;-fx-font-size:11px;-fx-font-weight:bold;-fx-background-radius:7;-fx-padding:7 14;-fx-cursor:hand;"/>
+                        <Label fx:id="photoFileLabel" text="Aucune image sélectionnée"
+                               style="-fx-font-size:10px;-fx-text-fill:#9CA3AF;"/>
+                        <Label text="Formats acceptés : PNG, JPG, JPEG, WEBP"
+                               style="-fx-font-size:9px;-fx-text-fill:#D1D5DB;-fx-font-style:italic;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- Section 4 : Sécurité -->
             <HBox alignment="CENTER_LEFT" spacing="8" style="-fx-padding:0 0 5 0;">
                 <Label text="🔒" style="-fx-font-size:13;-fx-text-fill:#1E293B;"/>
                 <Label text="Sécurité du compte"

@@ -1,13 +1,19 @@
 package tn.esprit.controllers;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.stage.FileChooser;
 import tn.esprit.entity.Etudiant;
+import tn.esprit.services.CloudinaryService;
 import tn.esprit.services.UserService;
 import tn.esprit.utils.FormValidator;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.regex.Pattern;
@@ -38,12 +44,18 @@ public class RegisterController {
     @FXML private Label confirmError;
 
     // ── 🔐 Widgets de force mot de passe ──────────────────────────────────────
-    @FXML private ProgressBar strengthBar;   // barre colorée
-    @FXML private Label       strengthLevel; // "🟢 FORT" / "🟠 MOYEN" / "🔴 FAIBLE"
-    @FXML private Label       strengthAdvice;// explication + conseil
+    @FXML private ProgressBar strengthBar;
+    @FXML private Label       strengthLevel;
+    @FXML private Label       strengthAdvice;
 
-    // ── Service ───────────────────────────────────────────────────────────────
-    private final UserService userService = new UserService();
+    // ── 📷 Photo de profil ────────────────────────────────────────────────────
+    @FXML private ImageView photoPreview;
+    @FXML private Label     photoLabel;
+    private File selectedPhotoFile = null;
+
+    // ── Services ──────────────────────────────────────────────────────────────
+    private final UserService      userService = new UserService();
+    private final CloudinaryService cloudinary  = new CloudinaryService();
 
     // ── Regex ─────────────────────────────────────────────────────────────────
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
@@ -194,13 +206,59 @@ public class RegisterController {
         etudiant.setNiveau("L1");
         etudiant.setStatus("actif");
 
-        boolean success = userService.registerEtudiant(etudiant);
-        if (success) {
-            setMessageLabel("✅ Compte créé avec succès !", "green");
-            clearAllFields();
-        } else {
-            setMessageLabel("Erreur lors de l'inscription. Consultez la console.", "red");
-        }
+        // ── Désactiver le bouton pour éviter double-clic ──────────────────────
+        // On lance tout dans un thread pour ne pas bloquer l'UI
+        setMessageLabel(selectedPhotoFile != null ? "⏳ Upload photo en cours..." : "⏳ Création du compte...", "blue");
+
+        final Etudiant etudiantFinal = etudiant;
+        final File photoFile = selectedPhotoFile;
+        final String emailFinal = email;
+
+        Thread worker = new Thread(() -> {
+            // ── 1. Upload photo (hors UI thread) ─────────────────────────────
+            if (photoFile != null) {
+                System.out.println("[Register] Upload photo : " + photoFile.getAbsolutePath());
+                try {
+                    if (!photoFile.exists()) {
+                        System.err.println("[Register] ❌ Fichier introuvable : " + photoFile.getAbsolutePath());
+                    } else if (photoFile.length() == 0) {
+                        System.err.println("[Register] ❌ Fichier vide : " + photoFile.getName());
+                    } else {
+                        String photoUrl = cloudinary.uploadImage(
+                                photoFile,
+                                "etudiant_" + emailFinal.replaceAll("[^a-zA-Z0-9]", "_")
+                        );
+                        if (photoUrl != null && !photoUrl.isBlank()) {
+                            etudiantFinal.setPhoto(photoUrl);
+                            System.out.println("[Register] ✅ Photo uploadée : " + photoUrl);
+                        } else {
+                            System.err.println("[Register] ⚠️ Upload échoué, compte créé sans photo.");
+                        }
+                    }
+                } catch (Exception ex) {
+                    System.err.println("[Register] ❌ Exception upload : " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+            }
+
+            // ── 2. Créer le compte en base (hors UI thread) ───────────────────
+            boolean success = userService.registerEtudiant(etudiantFinal);
+
+            // ── 3. Retour sur le thread UI ────────────────────────────────────
+            Platform.runLater(() -> {
+                if (success) {
+                    setMessageLabel("✅ Compte créé avec succès ! Redirection...", "green");
+                    new Thread(() -> {
+                        try { Thread.sleep(1500); } catch (InterruptedException ignored) {}
+                        Platform.runLater(this::goToLogin);
+                    }).start();
+                } else {
+                    setMessageLabel("❌ Erreur lors de l'inscription. Vérifiez la console.", "red");
+                }
+            });
+        });
+        worker.setDaemon(true);
+        worker.start();
     }
 
     // ── Utilitaires ───────────────────────────────────────────────────────────
@@ -237,9 +295,29 @@ public class RegisterController {
     private void setMessageLabel(String msg, String color) {
         if (messageLabel == null) return;
         messageLabel.setText(msg);
-        messageLabel.setStyle("red".equals(color)
-            ? "-fx-text-fill: #e94560; -fx-font-weight: bold;"
-            : "-fx-text-fill: #00c896; -fx-font-weight: bold;");
+        String style;
+        switch (color) {
+            case "red"   -> style = "-fx-text-fill: #e94560; -fx-font-weight: bold;";
+            case "green" -> style = "-fx-text-fill: #00c896; -fx-font-weight: bold;";
+            case "blue"  -> style = "-fx-text-fill: #2563eb; -fx-font-weight: bold;";
+            default      -> style = "-fx-text-fill: #5a6a8a; -fx-font-weight: bold;";
+        }
+        messageLabel.setStyle(style);
+    }
+
+    // ── Choix de la photo ──────────────────────────────────────────────────────────
+    @FXML
+    public void handleChoosePhoto() {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle("Choisir une photo de profil");
+        chooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Images", "*.png", "*.jpg", "*.jpeg", "*.webp"));
+        File file = chooser.showOpenDialog(nomField.getScene().getWindow());
+        if (file != null) {
+            selectedPhotoFile = file;
+            photoLabel.setText(file.getName());
+            photoPreview.setImage(new Image(file.toURI().toString()));
+        }
     }
 
     @FXML

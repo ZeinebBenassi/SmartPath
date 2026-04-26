@@ -259,7 +259,8 @@ public class UserService {
                 ps.setString(1,e.getNom()); ps.setString(2,e.getPrenom()); ps.setString(3,e.getEmail()); ps.setString(4,e.getPassword());
                 ps.setString(5,e.getCin()); ps.setString(6,e.getTelephone()); ps.setString(7,e.getAdresse());
                 ps.setTimestamp(8, e.getDateNaissance()!=null ? new Timestamp(e.getDateNaissance().getTime()) : null);
-                ps.setString(9,null); ps.setString(10,"[\"ROLE_ETUDIANT\"]"); ps.setString(11,"etudiant"); ps.setTimestamp(12,new Timestamp(System.currentTimeMillis()));
+                ps.setString(9, e.getPhoto()); // URL Cloudinary ou null
+                ps.setString(10,"[\"ROLE_ETUDIANT\"]"); ps.setString(11,"etudiant"); ps.setTimestamp(12,new Timestamp(System.currentTimeMillis()));
                 ps.executeUpdate();
                 try (ResultSet k=ps.getGeneratedKeys()) { if(!k.next()){connection.rollback();return false;} userId=k.getInt(1); }
             }
