@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 
 <!--
     QuizStatistiques.fxml — IDENTIQUE à admin/quiz/statistics.html.twig Symfony
@@ -9,81 +13,48 @@
       filiere_stats  → vboxFilieres  (stat.filiere.nom, stat.filiere.icon, stat.recommendations)
       profile_stats  → vboxProfils   (profile, count)
 -->
-<VBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="tn.esprit.controllers.QuizStatisticsController"
-      spacing="0"
-      style="-fx-background-color:#f8fafc;">
+
+<VBox spacing="0" style="-fx-background-color:#f8fafc;" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/25" fx:controller="tn.esprit.controllers.QuizStatisticsController">
 
     <!-- ══ EN-TÊTE ══ -->
-    <HBox alignment="CENTER_LEFT" spacing="16"
-          style="-fx-background-color:white; -fx-padding:18 28;
-                 -fx-border-color:transparent transparent #e2e8f0 transparent;
-                 -fx-border-width:0 0 1 0;
-                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.04),4,0,0,1);">
-        <VBox spacing="3">
-            <Label text="📊  Statistiques du Quiz"
-                   style="-fx-font-size:20px; -fx-font-weight:900; -fx-text-fill:#1e293b;"/>
-            <Label text="Analyse des résultats · profils types · recommandations de filières"
-                   style="-fx-font-size:12px; -fx-text-fill:#64748b;"/>
-        </VBox>
-        <Pane HBox.hgrow="ALWAYS"/>
+    <HBox alignment="CENTER_LEFT" spacing="16" style="-fx-background-color:white; -fx-padding:18 28;                  -fx-border-color:transparent transparent #e2e8f0 transparent;                  -fx-border-width:0 0 1 0;                  -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.04),4,0,0,1);">
+        <VBox spacing="3" />
+        <Pane HBox.hgrow="ALWAYS" />
     </HBox>
 
-    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                style="-fx-background-color:#f8fafc; -fx-background:#f8fafc; -fx-border-width:0;">
+    <ScrollPane fitToWidth="true" style="-fx-background-color:#f8fafc; -fx-background:#f8fafc; -fx-border-width:0;" VBox.vgrow="ALWAYS">
         <VBox spacing="18" style="-fx-padding:22 28 28 28;">
 
             <!-- ══ BANNER TOTAL — gradient identique Symfony ══ -->
-            <HBox alignment="CENTER_LEFT" spacing="20"
-                  style="-fx-background-color:linear-gradient(to right,#6366f1,#0ea5e9);
-                         -fx-background-radius:24px; -fx-padding:24 32;
-                         -fx-effect:dropshadow(gaussian,rgba(99,102,241,0.35),20,0,0,6);">
-                <Label text="🎯" style="-fx-font-size:42px;"/>
+            <HBox alignment="CENTER_LEFT" spacing="20" style="-fx-background-color:linear-gradient(to right,#6366f1,#0ea5e9);                          -fx-background-radius:24px; -fx-padding:24 32;                          -fx-effect:dropshadow(gaussian,rgba(99,102,241,0.35),20,0,0,6);">
+                <Label style="-fx-font-size:42px;" text="🎯" />
                 <VBox spacing="4">
                     <!-- total_results -->
-                    <Label fx:id="lblBannerTotal" text="0"
-                           style="-fx-font-size:52px; -fx-font-weight:900; -fx-text-fill:white;"/>
-                    <Label text="Quiz passés au total"
-                           style="-fx-font-size:14px; -fx-text-fill:#ddd6fe;"/>
+                    <Label fx:id="lblBannerTotal" style="-fx-font-size:52px; -fx-font-weight:900; -fx-text-fill:white;" text="0" />
+                    <Label style="-fx-font-size:14px; -fx-text-fill:#ddd6fe;" text="Quiz passés au total" />
                     <!-- "X filières · Y profils distincts" -->
-                    <Label fx:id="lblBannerMiniStats" text="0 filières · 0 profils distincts"
-                           style="-fx-font-size:11px; -fx-text-fill:#c7d2fe;"/>
+                    <Label fx:id="lblBannerMiniStats" style="-fx-font-size:11px; -fx-text-fill:#c7d2fe;" text="0 filières · 0 profils distincts" />
                 </VBox>
-                <Pane HBox.hgrow="ALWAYS"/>
+                <Pane HBox.hgrow="ALWAYS" />
 
                 <!-- Mini-stat : Filières analysées — filiere_stats|length -->
-                <VBox spacing="6" alignment="CENTER"
-                      style="-fx-background-color:rgba(255,255,255,0.15); -fx-background-radius:16;
-                             -fx-padding:14 22;">
-                    <Label fx:id="lblInsightFilieres" text="—"
-                           style="-fx-font-size:24px; -fx-font-weight:900; -fx-text-fill:white;"/>
-                    <Label text="Filières analysées"
-                           style="-fx-font-size:10px; -fx-text-fill:#ddd6fe;"/>
+                <VBox alignment="CENTER" spacing="6" style="-fx-background-color:rgba(255,255,255,0.15); -fx-background-radius:16;                              -fx-padding:14 22;">
+                    <Label fx:id="lblInsightFilieres" style="-fx-font-size:24px; -fx-font-weight:900; -fx-text-fill:white;" text="—" />
+                    <Label style="-fx-font-size:10px; -fx-text-fill:#ddd6fe;" text="Filières analysées" />
                 </VBox>
 
                 <!-- Mini-stat : Profils distincts — profile_stats|length -->
-                <VBox spacing="6" alignment="CENTER"
-                      style="-fx-background-color:rgba(255,255,255,0.15); -fx-background-radius:16;
-                             -fx-padding:14 22;">
-                    <Label fx:id="lblInsightProfils" text="—"
-                           style="-fx-font-size:24px; -fx-font-weight:900; -fx-text-fill:white;"/>
-                    <Label text="Profils distincts"
-                           style="-fx-font-size:10px; -fx-text-fill:#ddd6fe;"/>
+                <VBox alignment="CENTER" spacing="6" style="-fx-background-color:rgba(255,255,255,0.15); -fx-background-radius:16;                              -fx-padding:14 22;">
+                    <Label fx:id="lblInsightProfils" style="-fx-font-size:24px; -fx-font-weight:900; -fx-text-fill:white;" text="—" />
+                    <Label style="-fx-font-size:10px; -fx-text-fill:#ddd6fe;" text="Profils distincts" />
                 </VBox>
             </HBox>
 
             <!-- ══ ÉTAT VIDE — identique {% if total_results == 0 %} Symfony ══ -->
-            <VBox fx:id="vboxEmpty" alignment="CENTER" spacing="14"
-                  managed="false" visible="false"
-                  style="-fx-background-color:white; -fx-background-radius:18;
-                         -fx-border-color:#e2e8f0; -fx-border-radius:18; -fx-border-width:1;
-                         -fx-padding:60;
-                         -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.04),8,0,0,2);">
-                <Label text="📊" style="-fx-font-size:52px;"/>
-                <Label text="Aucune statistique disponible"
-                       style="-fx-font-size:16px; -fx-font-weight:700; -fx-text-fill:#475569;"/>
-                <Label text="Les statistiques apparaîtront après le premier passage de quiz."
-                       style="-fx-font-size:12px; -fx-text-fill:#94a3b8;"/>
+            <VBox fx:id="vboxEmpty" alignment="CENTER" managed="false" spacing="14" style="-fx-background-color:white; -fx-background-radius:18;                          -fx-border-color:#e2e8f0; -fx-border-radius:18; -fx-border-width:1;                          -fx-padding:60;                          -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.04),8,0,0,2);" visible="false">
+                <Label style="-fx-font-size:52px;" text="📊" />
+                <Label style="-fx-font-size:16px; -fx-font-weight:700; -fx-text-fill:#475569;" text="Aucune statistique disponible" />
+                <Label style="-fx-font-size:12px; -fx-text-fill:#94a3b8;" text="Les statistiques apparaîtront après le premier passage de quiz." />
             </VBox>
 
             <!-- ══ CONTENU PRINCIPAL ══ -->
@@ -93,78 +64,50 @@
                 <HBox spacing="14">
 
                     <!-- Filière #1 — filiere_stats[0].filiere.nom + filiere_stats[0].recommendations -->
-                    <VBox spacing="6" HBox.hgrow="ALWAYS"
-                          style="-fx-background-color:white; -fx-background-radius:16;
-                                 -fx-border-color:#e2e8f0; -fx-border-radius:16; -fx-border-width:1;
-                                 -fx-padding:16 20;
-                                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.04),6,0,0,2);">
-                        <HBox spacing="12" alignment="CENTER_LEFT">
-                            <Label text="🏆" style="-fx-font-size:30px;"/>
+                    <VBox spacing="6" style="-fx-background-color:white; -fx-background-radius:16;                                  -fx-border-color:#e2e8f0; -fx-border-radius:16; -fx-border-width:1;                                  -fx-padding:16 20;                                  -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.04),6,0,0,2);" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <Label style="-fx-font-size:30px;" text="🏆" />
                             <VBox spacing="3">
-                                <Label text="FILIÈRE #1"
-                                       style="-fx-font-size:10px; -fx-text-fill:#64748b; -fx-font-weight:700;"/>
-                                <Label fx:id="lblTopFiliereName" text="—"
-                                       style="-fx-font-size:13px; -fx-font-weight:900; -fx-text-fill:#1e293b; -fx-wrap-text:true;"/>
-                                <Label fx:id="lblTopFiliereCount" text="0 recommandation"
-                                       style="-fx-font-size:10px; -fx-text-fill:#94a3b8;"/>
+                                <Label style="-fx-font-size:10px; -fx-text-fill:#64748b; -fx-font-weight:700;" text="FILIÈRE #1" />
+                                <Label fx:id="lblTopFiliereName" style="-fx-font-size:13px; -fx-font-weight:900; -fx-text-fill:#1e293b; -fx-wrap-text:true;" text="—" />
+                                <Label fx:id="lblTopFiliereCount" style="-fx-font-size:10px; -fx-text-fill:#94a3b8;" text="0 recommandation" />
                             </VBox>
                         </HBox>
                     </VBox>
 
                     <!-- Profil dominant — profile_stats|keys|first + profile_stats|first -->
-                    <VBox spacing="6" HBox.hgrow="ALWAYS"
-                          style="-fx-background-color:white; -fx-background-radius:16;
-                                 -fx-border-color:#e2e8f0; -fx-border-radius:16; -fx-border-width:1;
-                                 -fx-padding:16 20;
-                                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.04),6,0,0,2);">
-                        <HBox spacing="12" alignment="CENTER_LEFT">
-                            <Label text="👑" style="-fx-font-size:30px;"/>
+                    <VBox spacing="6" style="-fx-background-color:white; -fx-background-radius:16;                                  -fx-border-color:#e2e8f0; -fx-border-radius:16; -fx-border-width:1;                                  -fx-padding:16 20;                                  -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.04),6,0,0,2);" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <Label style="-fx-font-size:30px;" text="👑" />
                             <VBox spacing="3">
-                                <Label text="PROFIL DOMINANT"
-                                       style="-fx-font-size:10px; -fx-text-fill:#64748b; -fx-font-weight:700;"/>
-                                <Label fx:id="lblTopProfilName" text="—"
-                                       style="-fx-font-size:13px; -fx-font-weight:900; -fx-text-fill:#1e293b; -fx-wrap-text:true;"/>
-                                <Label fx:id="lblTopProfilCount" text="0 étudiant"
-                                       style="-fx-font-size:10px; -fx-text-fill:#94a3b8;"/>
+                                <Label style="-fx-font-size:10px; -fx-text-fill:#64748b; -fx-font-weight:700;" text="PROFIL DOMINANT" />
+                                <Label fx:id="lblTopProfilName" style="-fx-font-size:13px; -fx-font-weight:900; -fx-text-fill:#1e293b; -fx-wrap-text:true;" text="—" />
+                                <Label fx:id="lblTopProfilCount" style="-fx-font-size:10px; -fx-text-fill:#94a3b8;" text="0 étudiant" />
                             </VBox>
                         </HBox>
                     </VBox>
 
                     <!-- Filières analysées — filiere_stats|length -->
-                    <VBox spacing="6" HBox.hgrow="ALWAYS"
-                          style="-fx-background-color:white; -fx-background-radius:16;
-                                 -fx-border-color:#e2e8f0; -fx-border-radius:16; -fx-border-width:1;
-                                 -fx-padding:16 20;
-                                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.04),6,0,0,2);">
-                        <HBox spacing="12" alignment="CENTER_LEFT">
-                            <Label text="📊" style="-fx-font-size:30px;"/>
+                    <VBox spacing="6" style="-fx-background-color:white; -fx-background-radius:16;                                  -fx-border-color:#e2e8f0; -fx-border-radius:16; -fx-border-width:1;                                  -fx-padding:16 20;                                  -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.04),6,0,0,2);" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <Label style="-fx-font-size:30px;" text="📊" />
                             <VBox spacing="3">
-                                <Label text="FILIÈRES ANALYSÉES"
-                                       style="-fx-font-size:10px; -fx-text-fill:#64748b; -fx-font-weight:700;"/>
-                                <Label fx:id="lblInsightFilieres2" text="—"
-                                       style="-fx-font-size:24px; -fx-font-weight:900; -fx-text-fill:#6366f1;"/>
-                                <Label text="filières recommandées"
-                                       style="-fx-font-size:10px; -fx-text-fill:#94a3b8;"/>
+                                <Label style="-fx-font-size:10px; -fx-text-fill:#64748b; -fx-font-weight:700;" text="FILIÈRES ANALYSÉES" />
+                                <Label fx:id="lblInsightFilieres2" style="-fx-font-size:24px; -fx-font-weight:900; -fx-text-fill:#6366f1;" text="—" />
+                                <Label style="-fx-font-size:10px; -fx-text-fill:#94a3b8;" text="filières recommandées" />
                             </VBox>
                         </HBox>
                     </VBox>
 
                     <!-- Profils distincts — profile_stats|length -->
-                    <VBox spacing="6" HBox.hgrow="ALWAYS"
-                          style="-fx-background-color:white; -fx-background-radius:16;
-                                 -fx-border-color:#e2e8f0; -fx-border-radius:16; -fx-border-width:1;
-                                 -fx-padding:16 20;
-                                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.04),6,0,0,2);">
-                        <HBox spacing="12" alignment="CENTER_LEFT">
-                            <Label text="🎓" style="-fx-font-size:30px;"/>
+                    <VBox spacing="6" style="-fx-background-color:white; -fx-background-radius:16;                                  -fx-border-color:#e2e8f0; -fx-border-radius:16; -fx-border-width:1;                                  -fx-padding:16 20;                                  -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.04),6,0,0,2);" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <Label style="-fx-font-size:30px;" text="🎓" />
                             <VBox spacing="3">
-                                <Label text="PROFILS DISTINCTS"
-                                       style="-fx-font-size:10px; -fx-text-fill:#64748b; -fx-font-weight:700;"/>
-                                <Label fx:id="lblInsightProfils2" text="—"
-                                       style="-fx-font-size:24px; -fx-font-weight:900; -fx-text-fill:#10b981;"/>
+                                <Label style="-fx-font-size:10px; -fx-text-fill:#64748b; -fx-font-weight:700;" text="PROFILS DISTINCTS" />
+                                <Label fx:id="lblInsightProfils2" style="-fx-font-size:24px; -fx-font-weight:900; -fx-text-fill:#10b981;" text="—" />
                                 <!-- "sur X quiz" -->
-                                <Label fx:id="lblInsightProfilsSub" text="sur 0 quiz"
-                                       style="-fx-font-size:10px; -fx-text-fill:#94a3b8;"/>
+                                <Label fx:id="lblInsightProfilsSub" style="-fx-font-size:10px; -fx-text-fill:#94a3b8;" text="sur 0 quiz" />
                             </VBox>
                         </HBox>
                     </VBox>
@@ -172,121 +115,69 @@
                 </HBox>
 
                 <!-- ─ Section 1 : Listes (proportions 3fr + 2fr comme Symfony .qa-grid-2) ─ -->
-                <HBox spacing="14" alignment="TOP_LEFT">
+                <HBox alignment="TOP_LEFT" spacing="14">
 
                     <!-- Recommandations par filière -->
-                    <VBox HBox.hgrow="ALWAYS"
-                          style="-fx-background-color:white; -fx-background-radius:18;
-                                 -fx-border-color:#e2e8f0; -fx-border-radius:18; -fx-border-width:1;
-                                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.05),8,0,0,2);">
+                    <VBox style="-fx-background-color:white; -fx-background-radius:18;                                  -fx-border-color:#e2e8f0; -fx-border-radius:18; -fx-border-width:1;                                  -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.05),8,0,0,2);" HBox.hgrow="ALWAYS">
 
                         <!-- En-tête section — identique .qa-section-header Symfony -->
-                        <HBox alignment="CENTER_LEFT" spacing="10"
-                              style="-fx-padding:14 20; -fx-background-color:#f8fafc;
-                                     -fx-background-radius:18 18 0 0;
-                                     -fx-border-color:transparent transparent #e2e8f0 transparent;
-                                     -fx-border-width:0 0 1 0;">
-                            <Label text="🏆  Recommandations par Filière"
-                                   style="-fx-font-weight:700; -fx-text-fill:#1e293b; -fx-font-size:13px;"/>
-                            <Pane HBox.hgrow="ALWAYS"/>
+                        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding:14 20; -fx-background-color:#f8fafc;                                      -fx-background-radius:18 18 0 0;                                      -fx-border-color:transparent transparent #e2e8f0 transparent;                                      -fx-border-width:0 0 1 0;">
+                            <Label style="-fx-font-weight:700; -fx-text-fill:#1e293b; -fx-font-size:13px;" text="🏆  Recommandations par Filière" />
+                            <Pane HBox.hgrow="ALWAYS" />
                             <!-- Badge "X filières" -->
-                            <Label fx:id="lblBadgeFilieres" text="0 filières"
-                                   style="-fx-background-color:#ddd6fe; -fx-text-fill:#6366f1;
-                                          -fx-background-radius:50px; -fx-padding:3 12;
-                                          -fx-font-size:11px; -fx-font-weight:700;"/>
+                            <Label fx:id="lblBadgeFilieres" style="-fx-background-color:#ddd6fe; -fx-text-fill:#6366f1;                                           -fx-background-radius:50px; -fx-padding:3 12;                                           -fx-font-size:11px; -fx-font-weight:700;" text="0 filières" />
                         </HBox>
 
                         <!-- Liste générée par buildFiliereList() -->
-                        <VBox fx:id="vboxFilieres" spacing="0"
-                              style="-fx-padding:10 20 16 20;"/>
+                        <VBox fx:id="vboxFilieres" spacing="0" style="-fx-padding:10 20 16 20;" />
                     </VBox>
 
                     <!-- Profils types -->
-                    <VBox prefWidth="310"
-                          style="-fx-background-color:white; -fx-background-radius:18;
-                                 -fx-border-color:#e2e8f0; -fx-border-radius:18; -fx-border-width:1;
-                                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.05),8,0,0,2);">
+                    <VBox prefWidth="310" style="-fx-background-color:white; -fx-background-radius:18;                                  -fx-border-color:#e2e8f0; -fx-border-radius:18; -fx-border-width:1;                                  -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.05),8,0,0,2);">
 
-                        <HBox alignment="CENTER_LEFT" spacing="10"
-                              style="-fx-padding:14 20; -fx-background-color:#f8fafc;
-                                     -fx-background-radius:18 18 0 0;
-                                     -fx-border-color:transparent transparent #e2e8f0 transparent;
-                                     -fx-border-width:0 0 1 0;">
-                            <Label text="👤  Profils Types"
-                                   style="-fx-font-weight:700; -fx-text-fill:#1e293b; -fx-font-size:13px;"/>
-                            <Pane HBox.hgrow="ALWAYS"/>
+                        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding:14 20; -fx-background-color:#f8fafc;                                      -fx-background-radius:18 18 0 0;                                      -fx-border-color:transparent transparent #e2e8f0 transparent;                                      -fx-border-width:0 0 1 0;">
+                            <Label style="-fx-font-weight:700; -fx-text-fill:#1e293b; -fx-font-size:13px;" text="👤  Profils Types" />
+                            <Pane HBox.hgrow="ALWAYS" />
                             <!-- Badge "X profils" -->
-                            <Label fx:id="lblBadgeProfils" text="0 profils"
-                                   style="-fx-background-color:#d1fae5; -fx-text-fill:#065f46;
-                                          -fx-background-radius:50px; -fx-padding:3 12;
-                                          -fx-font-size:11px; -fx-font-weight:700;"/>
+                            <Label fx:id="lblBadgeProfils" style="-fx-background-color:#d1fae5; -fx-text-fill:#065f46;                                           -fx-background-radius:50px; -fx-padding:3 12;                                           -fx-font-size:11px; -fx-font-weight:700;" text="0 profils" />
                         </HBox>
 
                         <!-- Liste générée par buildProfilList() -->
-                        <VBox fx:id="vboxProfils" spacing="0"
-                              style="-fx-padding:10 20 16 20;"/>
+                        <VBox fx:id="vboxProfils" spacing="0" style="-fx-padding:10 20 16 20;" />
                     </VBox>
 
                 </HBox>
 
                 <!-- ─ Section 2 : Charts côte à côte (.qa-grid-2-eq Symfony) ─ -->
-                <HBox spacing="14" alignment="TOP_LEFT">
+                <HBox alignment="TOP_LEFT" spacing="14">
 
                     <!-- Bar Chart filières — équivalent Chart.js "bar" -->
-                    <VBox HBox.hgrow="ALWAYS"
-                          style="-fx-background-color:white; -fx-background-radius:18;
-                                 -fx-border-color:#e2e8f0; -fx-border-radius:18; -fx-border-width:1;
-                                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.05),8,0,0,2);">
+                    <VBox style="-fx-background-color:white; -fx-background-radius:18;                                  -fx-border-color:#e2e8f0; -fx-border-radius:18; -fx-border-width:1;                                  -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.05),8,0,0,2);" HBox.hgrow="ALWAYS">
 
-                        <HBox alignment="CENTER_LEFT" spacing="10"
-                              style="-fx-padding:14 20; -fx-background-color:#f8fafc;
-                                     -fx-background-radius:18 18 0 0;
-                                     -fx-border-color:transparent transparent #e2e8f0 transparent;
-                                     -fx-border-width:0 0 1 0;">
-                            <Label text="📊  Diagramme — Filières recommandées"
-                                   style="-fx-font-weight:700; -fx-text-fill:#1e293b; -fx-font-size:13px;"/>
-                            <Pane HBox.hgrow="ALWAYS"/>
-                            <Label text="Bar Chart"
-                                   style="-fx-background-color:#ddd6fe; -fx-text-fill:#6366f1;
-                                          -fx-background-radius:50px; -fx-padding:3 12;
-                                          -fx-font-size:11px; -fx-font-weight:700;"/>
+                        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding:14 20; -fx-background-color:#f8fafc;                                      -fx-background-radius:18 18 0 0;                                      -fx-border-color:transparent transparent #e2e8f0 transparent;                                      -fx-border-width:0 0 1 0;">
+                            <Label style="-fx-font-weight:700; -fx-text-fill:#1e293b; -fx-font-size:13px;" text="📊  Diagramme — Filières recommandées" />
+                            <Pane HBox.hgrow="ALWAYS" />
+                            <Label style="-fx-background-color:#ddd6fe; -fx-text-fill:#6366f1;                                           -fx-background-radius:50px; -fx-padding:3 12;                                           -fx-font-size:11px; -fx-font-weight:700;" text="Bar Chart" />
                         </HBox>
 
-                        <ScrollPane fitToWidth="true"
-                                    style="-fx-background-color:transparent; -fx-border-width:0;"
-                                    prefHeight="330">
+                        <ScrollPane fitToWidth="true" prefHeight="330" style="-fx-background-color:transparent; -fx-border-width:0;">
                             <!-- Généré par buildBarChart() -->
-                            <VBox fx:id="vboxBarChart" spacing="6"
-                                  style="-fx-padding:16 20 12 20;"/>
+                            <VBox fx:id="vboxBarChart" spacing="6" style="-fx-padding:16 20 12 20;" />
                         </ScrollPane>
                     </VBox>
 
                     <!-- Donut Chart profils — équivalent Chart.js "doughnut" -->
-                    <VBox prefWidth="320"
-                          style="-fx-background-color:white; -fx-background-radius:18;
-                                 -fx-border-color:#e2e8f0; -fx-border-radius:18; -fx-border-width:1;
-                                 -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.05),8,0,0,2);">
+                    <VBox prefWidth="320" style="-fx-background-color:white; -fx-background-radius:18;                                  -fx-border-color:#e2e8f0; -fx-border-radius:18; -fx-border-width:1;                                  -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.05),8,0,0,2);">
 
-                        <HBox alignment="CENTER_LEFT" spacing="10"
-                              style="-fx-padding:14 20; -fx-background-color:#f8fafc;
-                                     -fx-background-radius:18 18 0 0;
-                                     -fx-border-color:transparent transparent #e2e8f0 transparent;
-                                     -fx-border-width:0 0 1 0;">
-                            <Label text="🍩  Répartition — Profils types"
-                                   style="-fx-font-weight:700; -fx-text-fill:#1e293b; -fx-font-size:13px;"/>
-                            <Pane HBox.hgrow="ALWAYS"/>
-                            <Label text="Donut Chart"
-                                   style="-fx-background-color:#d1fae5; -fx-text-fill:#065f46;
-                                          -fx-background-radius:50px; -fx-padding:3 12;
-                                          -fx-font-size:11px; -fx-font-weight:700;"/>
+                        <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding:14 20; -fx-background-color:#f8fafc;                                      -fx-background-radius:18 18 0 0;                                      -fx-border-color:transparent transparent #e2e8f0 transparent;                                      -fx-border-width:0 0 1 0;">
+                            <Label style="-fx-font-weight:700; -fx-text-fill:#1e293b; -fx-font-size:13px;" text="🍩  Répartition — Profils types" />
+                            <Pane HBox.hgrow="ALWAYS" />
+                            <Label style="-fx-background-color:#d1fae5; -fx-text-fill:#065f46;                                           -fx-background-radius:50px; -fx-padding:3 12;                                           -fx-font-size:11px; -fx-font-weight:700;" text="Donut Chart" />
                         </HBox>
 
-                        <ScrollPane fitToWidth="true"
-                                    style="-fx-background-color:transparent; -fx-border-width:0;"
-                                    prefHeight="330">
+                        <ScrollPane fitToWidth="true" prefHeight="330" style="-fx-background-color:transparent; -fx-border-width:0;">
                             <!-- Généré par buildDonutChart() : total + barre empilée + légende -->
-                            <VBox fx:id="vboxDonutChart" spacing="8" alignment="CENTER"
-                                  style="-fx-padding:20 20 16 20;"/>
+                            <VBox fx:id="vboxDonutChart" alignment="CENTER" spacing="8" style="-fx-padding:20 20 16 20;" />
                         </ScrollPane>
                     </VBox>
 
