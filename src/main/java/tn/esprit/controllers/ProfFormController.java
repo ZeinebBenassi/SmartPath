@@ -12,9 +12,10 @@ import tn.esprit.services.CloudinaryService;
 import tn.esprit.utils.FormValidator;
 
 import java.io.File;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class ProfFormController {
@@ -68,7 +69,7 @@ public class ProfFormController {
         set(txtSpecialite, p.getSpecialite()); set(txtCIN, p.getCin());
         set(txtTelephone, p.getTelephone()); set(txtAdresse, p.getAdresse());
         if (dpNaissance != null && p.getDateNaissance() != null)
-            dpNaissance.setValue(p.getDateNaissance().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            dpNaissance.setValue(toLocalDate(p.getDateNaissance()));
 
         // Charger photo existante
         currentPhotoUrl = p.getPhoto();
@@ -121,7 +122,7 @@ public class ProfFormController {
             p.setEmail(txtEmail.getText().trim()); p.setSpecialite(txt(txtSpecialite));
             p.setCin(txt(txtCIN)); p.setTelephone(txt(txtTelephone)); p.setAdresse(txt(txtAdresse));
             if (dpNaissance != null && dpNaissance.getValue() != null)
-                p.setDateNaissance(Date.from(dpNaissance.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                p.setDateNaissance(Date.valueOf(dpNaissance.getValue()));
             String pwd = tfPassword != null ? tfPassword.getText() : "";
             if (!pwd.isEmpty()) p.setPassword(pwd);
 
@@ -154,6 +155,11 @@ public class ProfFormController {
     private void close() {
         Stage s = btnCancel != null ? (Stage) btnCancel.getScene().getWindow() : (Stage) btnSave.getScene().getWindow();
         s.close();
+    }
+
+    private LocalDate toLocalDate(java.util.Date date) {
+        if (date instanceof Date sqlDate) return sqlDate.toLocalDate();
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
     private void set(TextField f, String v) { if (f != null) f.setText(v != null ? v : ""); }

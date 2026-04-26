@@ -12,13 +12,15 @@ import tn.esprit.services.CloudinaryService;
 import tn.esprit.utils.FormValidator;
 
 import java.io.File;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class EtudiantFormController {
 
+    @FXML private Label         lblTitle;
     @FXML private TextField     txtNom;
     @FXML private TextField     txtPrenom;
     @FXML private TextField     txtEmail;
@@ -50,11 +52,13 @@ public class EtudiantFormController {
 
     public void initCreate(GestionEtudiantsController parent) {
         this.parent = parent; this.isEditMode = false;
+        if (lblTitle != null) lblTitle.setText("Creer un nouvel etudiant");
         if (lblPasswordHint != null) lblPasswordHint.setText("Mot de passe");
     }
 
     public void initEdit(Etudiant etudiant, GestionEtudiantsController parent) {
         this.parent = parent; this.isEditMode = true; this.etudiantToEdit = etudiant;
+        if (lblTitle != null) lblTitle.setText("Modifier l'etudiant");
         if (lblPasswordHint != null) lblPasswordHint.setText("Mot de passe (laisser vide pour conserver)");
         populate(etudiant);
     }
@@ -65,7 +69,7 @@ public class EtudiantFormController {
         set(txtNiveau, e.getNiveau()); set(txtCIN, e.getCin());
         set(txtTelephone, e.getTelephone()); set(txtAdresse, e.getAdresse());
         if (dpNaissance != null && e.getDateNaissance() != null)
-            dpNaissance.setValue(e.getDateNaissance().toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            dpNaissance.setValue(toLocalDate(e.getDateNaissance()));
 
         // Charger photo existante
         currentPhotoUrl = e.getPhoto();
@@ -119,7 +123,7 @@ public class EtudiantFormController {
             e.setNiveau(txt(txtNiveau) != null ? txt(txtNiveau) : "L1");
             e.setCin(txt(txtCIN)); e.setTelephone(txt(txtTelephone)); e.setAdresse(txt(txtAdresse));
             if (dpNaissance != null && dpNaissance.getValue() != null)
-                e.setDateNaissance(Date.from(dpNaissance.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant()));
+                e.setDateNaissance(Date.valueOf(dpNaissance.getValue()));
             String pwd = tfPassword != null ? tfPassword.getText() : "";
             if (!pwd.isEmpty()) e.setPassword(pwd);
 
@@ -154,6 +158,11 @@ public class EtudiantFormController {
     private void close() {
         Stage s = btnCancel != null ? (Stage) btnCancel.getScene().getWindow() : (Stage) btnSave.getScene().getWindow();
         s.close();
+    }
+
+    private LocalDate toLocalDate(java.util.Date date) {
+        if (date instanceof Date sqlDate) return sqlDate.toLocalDate();
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 
     private void set(TextField f, String v) { if (f != null) f.setText(v != null ? v : ""); }
