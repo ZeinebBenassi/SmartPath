@@ -174,7 +174,7 @@ public class EmailService {
 
     private static Properties loadMailProperties() {
         Properties p = new Properties();
-        try (InputStream is = EmailService.class.getClassLoader().getResourceAsStream("mail.properties")) {
+        try (InputStream is = EmailService.class.getClassLoader().getResourceAsStream("config.properties")) {
             if (is != null) p.load(is);
         } catch (Exception ignored) {}
         return p;
@@ -222,7 +222,7 @@ public class EmailService {
                 throw new IllegalStateException(
                         "Identifiants Gmail manquants. Configurez les variables d'environnement "
                                 + ENV_GMAIL_USER + " et " + ENV_GMAIL_APP_PASSWORD
-                                + " (App Password), ou remplissez src/main/resources/mail.properties.");
+                                + " (App Password), ou remplissez src/main/resources/config.properties.");
             }
 
             String normalizedPwd = appPwd.trim().replaceAll("\\s+", "");
@@ -260,7 +260,7 @@ public class EmailService {
             if (isBlank(from)) {
                 throw new IllegalStateException(
                         "Adresse 'from' manquante. Configurez la variable d'environnement "
-                                + ENV_EMAIL_FROM + " (adresse expéditeur validée SendGrid), ou remplissez mail.from dans src/main/resources/mail.properties.");
+                                + ENV_EMAIL_FROM + " (adresse expéditeur validée SendGrid), ou remplissez mail.from dans src/main/resources/config.properties.");
             }
 
             return new SendGridSettings(apiKey.trim(), from.trim(), isBlank(fromName) ? null : fromName.trim());
