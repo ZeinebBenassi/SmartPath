@@ -10,28 +10,17 @@ import java.util.*;
 /**
  * QuizStatisticsService — IDENTIQUE à AdminQuizController Symfony.
  *
- * Symfony statistics() :
- *   foreach ($filiereRepo->findAll() as $filiere)
- *       $filiereStats[] = ['filiere' => $filiere,
- *                          'recommendations' => $this->countRecommendations($filiere, $resultRepo)];
- *   usort($filiereStats, fn($a,$b) => $b['recommendations'] <=> $a['recommendations']);
+ * IMPORTANT — Format JSON sauvegardé par QuizAnalyzer.recommendationsToJson() :
+ *   [{"filiereNom":"Big Data & Analytics","score":70,"percentage":70}, ...]
  *
- *   private function countRecommendations(Filiere $filiere, QuizResultRepository $resultRepo): int
- *       foreach ($resultRepo->findAll() as $result)
- *           foreach ($result->getRecommendations() as $rec)
- *               $id = extractFiliereId($rec['filiere'])
- *               if ($id === $filiere->getId()) { $count++; break; }
- *
- *   private function getProfileTypeStats(): array
- *       foreach ($results as $result)
- *           $stats[$result->getProfileType()]++
- *       arsort($stats); return $stats;
+ * Le champ clé est "filiereNom" (String), pas "filiere" (int/objet).
+ * countRecommendations() fait donc le match par NOM de filière.
  */
 public class QuizStatisticsService {
 
     private final Connection cnx = MyDatabase.getInstance().getConnection();
 
-    // ── Données brutes ────────────────────────────────────────────────── //
+    // ── Données brutes ────────────────────────────────────────────────────
 
     public List<QuizResult> findAllResults() {
         List<QuizResult> list = new ArrayList<>();
@@ -65,19 +54,23 @@ public class QuizStatisticsService {
         return 0;
     }
 
-    // ── statistics() — logique IDENTIQUE Symfony ─────────────────────── //
+    // ── statistics() — logique IDENTIQUE Symfony ──────────────────────────
 
     /**
-     * Équivalent exact de Symfony statistics() :
+     * Équivalent Symfony statistics() :
      *   foreach ($filiereRepo->findAll() as $filiere)
      *       $filiereStats[] = ['filiere'=>$filiere, 'recommendations'=>countRecommendations(...)]
-     *   usort DESC par recommendations
-     *
-     * Retourne une liste de FiliereStatEntry triée par count DESC.
+     *   usort DESC
      */
     public List<FiliereStatEntry> getFiliereStats() {
         List<Filiere>    filieres = findAllFilieres();
         List<QuizResult> results  = findAllResults();
+
+        // Si la table filière BDD est vide, on reconstruit les filières
+        // depuis les noms trouvés dans les recommandations JSON
+        if (filieres.isEmpty()) {
+            filieres = buildFilieresFromResults(results);
+        }
 
         List<FiliereStatEntry> stats = new ArrayList<>();
         for (Filiere filiere : filieres) {
@@ -85,13 +78,13 @@ public class QuizStatisticsService {
             stats.add(new FiliereStatEntry(filiere, count));
         }
 
-        // usort($a,$b) => $b['recommendations'] <=> $a['recommendations']
+        // usort DESC par recommendations
         stats.sort((a, b) -> Integer.compare(b.recommendations, a.recommendations));
         return stats;
     }
 
     /**
-     * Équivalent exact de Symfony getProfileTypeStats() :
+     * Équivalent Symfony getProfileTypeStats() :
      *   foreach ($results as $result) $stats[$result->getProfileType()]++
      *   arsort($stats)
      */
@@ -114,69 +107,131 @@ public class QuizStatisticsService {
         return sorted;
     }
 
-    // ── countRecommendations — IDENTIQUE Symfony ──────────────────────── //
+    // ── countRecommendations ───────────────────────────────────────────────
 
     /**
-     * Équivalent exact de Symfony countRecommendations(Filiere $filiere, ...) :
-     *   foreach ($resultRepo->findAll() as $result)
-     *       foreach ($result->getRecommendations() as $rec)
-     *           $id = extractFiliereId($rec['filiere'])
-     *           if ($id === $filiere->getId()) { $count++; break; }
+     * Compte combien de résultats quiz recommandent cette filière.
+     *
+     * Le JSON Java a le format : {"filiereNom":"X","score":70,"percentage":70}
+     * → on extrait "filiereNom" et on compare avec filiere.getNom()
+     *
+     * Fallback : si le JSON contient "filiere" (int ou objet), on compare par ID.
      */
     private int countRecommendations(Filiere filiere, List<QuizResult> results) {
         int count = 0;
         for (QuizResult result : results) {
-            List<Integer> ids = extractFiliereIds(result.getRecommendations());
-            for (int id : ids) {
-                if (id == filiere.getId()) {
-                    count++;
-                    break; // break inner comme en Symfony
-                }
+            if (resultRecommendsFiliere(result.getRecommendations(), filiere)) {
+                count++;
             }
         }
         return count;
     }
 
-    // ── extractFiliereId — IDENTIQUE Symfony ─────────────────────────── //
-
     /**
-     * Équivalent de Symfony extractFiliereId(mixed $filiere) :
-     *   if is_int($filiere) → $filiere
-     *   if is_string && is_numeric → (int)
-     *   if is_array && isset(['id']) → (int)$filiere['id']
-     *   if instanceof Filiere → getId()
-     *
-     * En Java, le JSON stocké en BDD peut avoir :
-     *   {"filiereNom":"X","score":70,"percentage":70}  → pas d'id → on ignore
-     *   {"filiere":5,"score":70}                        → id = 5
-     *   {"filiere":{"id":5,"nom":"X"},"score":70}       → id = 5
+     * Retourne true si le JSON de recommandations mentionne cette filière.
+     * Gère les 3 formats possibles :
+     *   Format Java  : {"filiereNom":"Big Data & Analytics","score":70,...}
+     *   Format Symfony id : {"filiere":5,"score":70,...}
+     *   Format Symfony obj: {"filiere":{"id":5,"nom":"..."},"score":70,...}
      */
-    private List<Integer> extractFiliereIds(String json) {
-        List<Integer> ids = new ArrayList<>();
-        if (json == null || json.isBlank() || json.equals("[]")) return ids;
+    private boolean resultRecommendsFiliere(String json, Filiere filiere) {
+        if (json == null || json.isBlank() || json.equals("[]")) return false;
 
-        String[] objects = json.split("\\{");
-        for (String obj : objects) {
-            if (obj.isBlank()) continue;
+        // Découper le JSON en objets individuels
+        // Chaque objet commence par { et finit par }
+        String[] parts = json.split("\\},\\s*\\{");
+        for (String part : parts) {
+            // Nettoyer les crochets et accolades
+            String obj = part.replaceAll("^\\[?\\{?", "").replaceAll("\\}?\\]?$", "");
 
-            // Cas 1 : "filiere":5  (entier direct)
-            Integer id = extractJsonInt(obj, "filiere");
-            if (id != null) { ids.add(id); continue; }
-
-            // Cas 2 : "filiere":{"id":5,...}  (objet imbriqué)
-            // On cherche "id": à l'intérieur du fragment
-            if (obj.contains("\"filiere\"") && obj.contains("\"id\"")) {
-                Integer nestedId = extractJsonInt(obj, "id");
-                if (nestedId != null) { ids.add(nestedId); continue; }
+            // ── Format Java : "filiereNom":"NomDeLaFiliere" ──
+            String nomFromJson = extractJsonString(obj, "filiereNom");
+            if (nomFromJson != null) {
+                if (nomFromJson.trim().equalsIgnoreCase(filiere.getNom().trim())) {
+                    return true;
+                }
+                // Correspondance partielle (ex : nom BDD légèrement différent)
+                if (normalizeNom(nomFromJson).equals(normalizeNom(filiere.getNom()))) {
+                    return true;
+                }
+                continue; // Format identifié → pas besoin de chercher "filiere"
             }
 
-            // Cas 3 : pas d'id explicite → recommandation par nom uniquement
-            // (format JavaFX {"filiereNom":"X",...}) — on skip, pas de filière BDD liée
+            // ── Format Symfony : "filiere":5 (entier direct) ──
+            Integer filiereId = extractJsonInt(obj, "filiere");
+            if (filiereId != null) {
+                if (filiereId == filiere.getId()) return true;
+                continue;
+            }
+
+            // ── Format Symfony : "filiere":{"id":5,...} (objet imbriqué) ──
+            if (obj.contains("\"filiere\"") && obj.contains("\"id\"")) {
+                // Extraire la sous-partie après "filiere":{
+                int fIdx = obj.indexOf("\"filiere\"");
+                if (fIdx >= 0) {
+                    String sub = obj.substring(fIdx);
+                    Integer nestedId = extractJsonInt(sub, "id");
+                    if (nestedId != null && nestedId == filiere.getId()) return true;
+                }
+            }
         }
-        return ids;
+        return false;
     }
 
-    // ── Extraction JSON minimale ──────────────────────────────────────── //
+    /**
+     * Normalise un nom de filière pour la comparaison :
+     * minuscules, sans accents courants, sans espaces multiples.
+     */
+    private String normalizeNom(String nom) {
+        if (nom == null) return "";
+        return nom.trim().toLowerCase()
+            .replace("é","e").replace("è","e").replace("ê","e")
+            .replace("à","a").replace("â","a")
+            .replace("î","i").replace("ï","i")
+            .replace("ô","o").replace("ù","u").replace("û","u")
+            .replace("ç","c")
+            .replaceAll("\\s+", " ");
+    }
+
+    /**
+     * Construit une liste de filières synthétiques à partir des noms
+     * trouvés dans les recommandations JSON — utilisé si la table filiere est vide.
+     */
+    private List<Filiere> buildFilieresFromResults(List<QuizResult> results) {
+        Map<String, Filiere> byNom = new LinkedHashMap<>();
+        int fakeId = 1;
+        for (QuizResult r : results) {
+            String json = r.getRecommendations();
+            if (json == null || json.isBlank()) continue;
+            String[] parts = json.split("\\},\\s*\\{");
+            for (String part : parts) {
+                String obj = part.replaceAll("^\\[?\\{?", "").replaceAll("\\}?\\]?$", "");
+                String nom = extractJsonString(obj, "filiereNom");
+                if (nom != null && !nom.isBlank() && !byNom.containsKey(nom.trim())) {
+                    Filiere f = new Filiere(fakeId++, nom.trim(), null, null, null, null, null, iconForNom(nom.trim()));
+                    byNom.put(nom.trim(), f);
+                }
+            }
+        }
+        return new ArrayList<>(byNom.values());
+    }
+
+    /** Emoji par défaut selon le nom de filière */
+    private String iconForNom(String nom) {
+        String n = nom.toLowerCase();
+        if (n.contains("data") || n.contains("big"))    return "📊";
+        if (n.contains("ia") || n.contains("intellig")) return "🤖";
+        if (n.contains("securit") || n.contains("cyber")) return "🔒";
+        if (n.contains("reseau") || n.contains("réseau") || n.contains("telecom")) return "🌐";
+        if (n.contains("cloud"))    return "☁️";
+        if (n.contains("mobile"))   return "📱";
+        if (n.contains("design") || n.contains("ux")) return "🎨";
+        if (n.contains("systeme") || n.contains("système")) return "⚙️";
+        if (n.contains("logiciel") || n.contains("génie")) return "💻";
+        return "🎓";
+    }
+
+    // ── Extraction JSON minimale ──────────────────────────────────────────
 
     /** Extrait la valeur entière d'une clé JSON dans un fragment. */
     private Integer extractJsonInt(String fragment, String key) {
@@ -187,13 +242,11 @@ public class QuizStatisticsService {
         while (start < fragment.length() && fragment.charAt(start) == ' ') start++;
         if (start >= fragment.length()) return null;
         char first = fragment.charAt(start);
-        // Si la valeur commence par un chiffre → entier
         if (Character.isDigit(first)) {
             int end = start;
             while (end < fragment.length() && Character.isDigit(fragment.charAt(end))) end++;
             try { return Integer.parseInt(fragment.substring(start, end)); } catch (NumberFormatException ignored) {}
         }
-        // Si la valeur est une chaîne numérique ("5")
         if (first == '"') {
             int end = fragment.indexOf('"', start + 1);
             if (end > 0) {
@@ -214,16 +267,31 @@ public class QuizStatisticsService {
         if (start >= fragment.length()) return null;
         char first = fragment.charAt(start);
         if (first == '"') {
-            int end = fragment.indexOf('"', start + 1);
-            return end > 0 ? fragment.substring(start + 1, end) : null;
-        } else {
+            // Valeur string — gérer les caractères échappés
+            StringBuilder sb = new StringBuilder();
+            int i = start + 1;
+            while (i < fragment.length()) {
+                char c = fragment.charAt(i);
+                if (c == '\\' && i + 1 < fragment.length()) {
+                    char next = fragment.charAt(i + 1);
+                    if (next == '"' || next == '\\') { sb.append(next); i += 2; continue; }
+                }
+                if (c == '"') break;
+                sb.append(c);
+                i++;
+            }
+            return sb.toString();
+        } else if (first != '{' && first != '[') {
+            // Valeur non-string (null, nombre…)
             int end = start;
             while (end < fragment.length() && fragment.charAt(end) != ',' && fragment.charAt(end) != '}') end++;
-            return fragment.substring(start, end).trim();
+            String val = fragment.substring(start, end).trim();
+            return val.equals("null") ? null : val;
         }
+        return null;
     }
 
-    // ── Nom étudiant ─────────────────────────────────────────────────── //
+    // ── Nom étudiant ──────────────────────────────────────────────────────
 
     public String getNomEtudiant(int etudiantId) {
         if (etudiantId <= 0) return null;
@@ -238,8 +306,8 @@ public class QuizStatisticsService {
                 return full.isEmpty() ? null : full;
             }
         } catch (SQLException e) {
-            try {
-                PreparedStatement ps2 = cnx.prepareStatement("SELECT name FROM user WHERE id=? LIMIT 1");
+            // Tentative avec colonne "name"
+            try (PreparedStatement ps2 = cnx.prepareStatement("SELECT name FROM user WHERE id=? LIMIT 1")) {
                 ps2.setInt(1, etudiantId);
                 ResultSet rs2 = ps2.executeQuery();
                 if (rs2.next()) return rs2.getString("name");
@@ -248,7 +316,7 @@ public class QuizStatisticsService {
         return null;
     }
 
-    // ── Mapping ──────────────────────────────────────────────────────── //
+    // ── Mapping ───────────────────────────────────────────────────────────
 
     private QuizResult mapResult(ResultSet rs) throws SQLException {
         return new QuizResult(
@@ -268,16 +336,12 @@ public class QuizStatisticsService {
             rs.getString("niveau"), rs.getString("description"),
             rs.getString("debouches"), rs.getString("competences"), rs.getString("icon")
         );
-        f.setImage(rs.getString("image"));
+        try { f.setImage(rs.getString("image")); } catch (SQLException ignored) {}
         return f;
     }
 
-    // ── DTO interne ───────────────────────────────────────────────────── //
+    // ── DTO ───────────────────────────────────────────────────────────────
 
-    /**
-     * Équivalent de ['filiere' => $filiere, 'recommendations' => $count] Symfony.
-     * Porte l'objet Filiere complet (avec id, nom, icon) + le compteur.
-     */
     public static class FiliereStatEntry {
         public final Filiere filiere;
         public final int     recommendations;

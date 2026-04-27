@@ -20,13 +20,12 @@
 
             <!-- Logo -->
             <VBox alignment="CENTER_LEFT" spacing="3" styleClass="sidebar-logo-zone">
-                <Label text="SmartPath"    styleClass="sidebar-logo-title"/>
+                <Label text="SmartPath"      styleClass="sidebar-logo-title"/>
                 <Label text="Administration" styleClass="sidebar-logo-subtitle"/>
             </VBox>
 
-            <VBox spacing="2" style="-fx-padding: 16 10 0 10;">
+            <VBox spacing="2" style="-fx-padding:16 10 0 10;">
 
-                <!-- ── SECTION : MENU ── -->
                 <Label styleClass="sidebar-section-label" text="MENU"/>
 
                 <!-- Dashboard -->
@@ -34,20 +33,20 @@
                         onAction="#showDashboard"
                         styleClass="nav-btn-active" text="🏠  Dashboard"/>
 
-                <!-- ── Utilisateurs (avec sous-menu) ── -->
+                <!-- ── Utilisateurs (sous-menu) ── -->
                 <Button fx:id="btnUsers" maxWidth="Infinity"
                         onAction="#toggleUsersMenu"
                         styleClass="nav-btn" text="👥  Utilisateurs  ▾"/>
                 <VBox fx:id="usersSubMenu" managed="false" visible="false" spacing="4"
-                      style="-fx-padding: 4 0 4 14;">
+                      style="-fx-padding:4 0 4 14;">
                     <Button fx:id="btnGestionProfs" maxWidth="Infinity"
                             onAction="#showProfsFromMenu"
-                            text="👨‍🏫  Gestion Professeurs"
-                            styleClass="nav-sub-btn"/>
+                            styleClass="nav-sub-btn"
+                            text="👨‍🏫  Gestion Professeurs"/>
                     <Button fx:id="btnGestionEtudiants" maxWidth="Infinity"
                             onAction="#showEtudiantsFromMenu"
-                            text="👨‍🎓  Gestion Étudiants"
-                            styleClass="nav-sub-btn"/>
+                            styleClass="nav-sub-btn"
+                            text="👨‍🎓  Gestion Étudiants"/>
                 </VBox>
 
                 <!-- Filières -->
@@ -60,11 +59,21 @@
                         onAction="#showOffres"
                         styleClass="nav-btn" text="💼  Offres de stage"/>
 
-                <!-- Statistiques Users : positionné juste sous Offres de stage -->
-                <Button fx:id="btnStatistiquesUsers" maxWidth="Infinity"
-                        onAction="#showStatistiquesUsers"
-                        text="📈  Statistiques Users"
-                        styleClass="nav-stat-btn-indigo"/>
+                <!-- ── Statistiques (sous-menu toggle) ── -->
+                <Button fx:id="btnStatistiques" maxWidth="Infinity"
+                        onAction="#toggleStatsMenu"
+                        styleClass="nav-btn" text="📊  Statistiques  ▾"/>
+                <VBox fx:id="statsSubMenu" managed="false" visible="false" spacing="4"
+                      style="-fx-padding:4 0 4 14;">
+                    <Button fx:id="btnStatistiquesUsers" maxWidth="Infinity"
+                            onAction="#showStatistiquesUsers"
+                            styleClass="nav-sub-btn"
+                            text="📈  Statistiques Users"/>
+                    <Button fx:id="btnStatistiquesQuiz" maxWidth="Infinity"
+                            onAction="#showStatistiquesQuiz"
+                            styleClass="nav-sub-btn"
+                            text="🧩  Statistiques Quiz"/>
+                </VBox>
 
                 <!-- ── SECTION : QUIZ ── -->
                 <Label text="QUIZ" styleClass="sidebar-section-label"
@@ -78,12 +87,6 @@
                         onAction="#showQuizHistorique"
                         styleClass="nav-btn" text="📋  Historique Quiz"/>
 
-                <!-- Statistiques Quiz : positionné juste sous Historique Quiz -->
-                <Button fx:id="btnStatistiquesQuiz" maxWidth="Infinity"
-                        onAction="#showStatistiquesQuiz"
-                        text="🧩  Statistiques Quiz"
-                        styleClass="nav-stat-btn-green"/>
-
                 <!-- Profil -->
                 <Button fx:id="btnProfil" maxWidth="Infinity"
                         onAction="#showProfil"
@@ -93,7 +96,7 @@
 
             <Pane VBox.vgrow="ALWAYS"/>
 
-            <VBox style="-fx-padding: 0 10 12 10;">
+            <VBox style="-fx-padding:0 10 12 10;">
                 <Button fx:id="btnVueEtudiant" maxWidth="Infinity"
                         onAction="#switchToVueEtudiant"
                         styleClass="chip-btn" text="👁  Vue Étudiant"/>
@@ -122,7 +125,7 @@
                 <Label fx:id="dateLabel" styleClass="topbar-date" text=""/>
             </HBox>
 
-            <StackPane fx:id="contentArea" style="-fx-padding: 24 28;" VBox.vgrow="ALWAYS">
+            <StackPane fx:id="contentArea" style="-fx-padding:24 28;" VBox.vgrow="ALWAYS">
 
                 <!-- Vue Dashboard par défaut -->
                 <VBox fx:id="dashboardView" spacing="22">
@@ -177,20 +180,15 @@
                                    text="Gérez rapidement les ressources de la plateforme"/>
                         </VBox>
                         <HBox spacing="12">
-                            <Button onAction="#showEtudiants" styleClass="quick-action-btn"
-                                    text="👨‍🎓  Gestion Étudiants"/>
-                            <Button onAction="#showProfs" styleClass="quick-action-btn"
-                                    text="👨‍🏫  Gestion Professeurs"/>
-                            <Button onAction="#showOffres" styleClass="quick-action-btn"
-                                    text="💼  Offres de stage"/>
-                            <Button onAction="#showStatistiquesUsers" styleClass="quick-action-btn"
-                                    text="📈  Statistiques Users"/>
-                            <Button onAction="#showStatistiquesQuiz" styleClass="quick-action-btn"
-                                    text="🧩  Statistiques Quiz"/>
+                            <Button onAction="#showEtudiants"       styleClass="quick-action-btn" text="👨‍🎓  Gestion Étudiants"/>
+                            <Button onAction="#showProfs"           styleClass="quick-action-btn" text="👨‍🏫  Gestion Professeurs"/>
+                            <Button onAction="#showOffres"          styleClass="quick-action-btn" text="💼  Offres de stage"/>
+                            <Button onAction="#showStatistiquesUsers" styleClass="quick-action-btn" text="📈  Stats Users"/>
+                            <Button onAction="#showStatistiquesQuiz"  styleClass="quick-action-btn" text="🧩  Stats Quiz"/>
                         </HBox>
                     </VBox>
 
-                    <!-- TableView caché pour compatibilité -->
+                    <!-- TableView caché pour compatibilité FXML -->
                     <VBox managed="false" visible="false">
                         <TableView fx:id="usersTable">
                             <columns>
@@ -204,6 +202,7 @@
                         </TableView>
                     </VBox>
                 </VBox>
+
             </StackPane>
         </VBox>
     </center>

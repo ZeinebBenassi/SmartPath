@@ -16,20 +16,20 @@ import java.util.Locale;
 
 public class DashboardAdminController {
 
-    // ── Labels / zones principales ───────────────────────────────────────────
+    // ── Labels / zones principales ───────────────────────────────────────
     @FXML private Label     adminNameLabel;
     @FXML private Label     pageTitle;
     @FXML private Label     dateLabel;
     @FXML private StackPane contentArea;
     @FXML private VBox      dashboardView;
 
-    // ── Cartes du dashboard ──────────────────────────────────────────────────
+    // ── Cartes du dashboard ──────────────────────────────────────────────
     @FXML private Label totalUsers;
     @FXML private Label totalEtudiants;
     @FXML private Label totalProfs;
     @FXML private Label totalOffres;
 
-    // ── Boutons sidebar ──────────────────────────────────────────────────────
+    // ── Boutons sidebar ──────────────────────────────────────────────────
     @FXML private Button btnDashboard;
     @FXML private Button btnUsers;
     @FXML private VBox   usersSubMenu;
@@ -38,41 +38,41 @@ public class DashboardAdminController {
     @FXML private Button btnFilieres;
     @FXML private Button btnOffres;
 
-    // ── Bouton parent "Statistiques" + sous-menu ─────────────────────────────
-    @FXML private Button btnStatistiques;          // bouton parent (toggle)
-    @FXML private VBox   statsSubMenu;             // VBox caché/visible
-    @FXML private Button btnStatistiquesUsers;     // → Statistiques Utilisateurs
-    @FXML private Button btnStatistiquesQuiz;      // → Statistiques Quiz
+    // ── Statistiques (bouton toggle + sous-menu) ─────────────────────────
+    @FXML private Button btnStatistiques;       // bouton "📊 Statistiques ▾"
+    @FXML private VBox   statsSubMenu;          // sous-menu caché/visible
+    @FXML private Button btnStatistiquesUsers;  // → Stats Users
+    @FXML private Button btnStatistiquesQuiz;   // → Stats Quiz  ← correspond au FXML
 
-    // ── Quiz ─────────────────────────────────────────────────────────────────
+    // ── Quiz ─────────────────────────────────────────────────────────────
     @FXML private Button btnQuizAdmin;
     @FXML private Button btnQuizHistorique;
 
-    // ── Autres ───────────────────────────────────────────────────────────────
+    // ── Autres ───────────────────────────────────────────────────────────
     @FXML private Button btnProfil;
     @FXML private Button btnVueEtudiant;
 
-    // ── TableView (caché, compatibilité) ─────────────────────────────────────
+    // ── TableView (caché, compatibilité FXML) ────────────────────────────
     @FXML private TableView<?>      usersTable;
     @FXML private TableColumn<?,?> colNom, colPrenom, colEmail, colType, colStatus, colActions;
 
-    // ── État ─────────────────────────────────────────────────────────────────
+    // ── État ─────────────────────────────────────────────────────────────
     private static User currentUser;
     private final UserService userService = new UserService();
     private boolean usersMenuOpen = false;
-    private boolean statsMenuOpen = false;     // ← état sous-menu stats
+    private boolean statsMenuOpen = false;
 
     public static void setCurrentUser(User user) { currentUser = user; }
 
-    // ─────────────────────────────────────────────────────────────────────────
+    // ─────────────────────────────────────────────────────────────────────
     @FXML
     public void initialize() {
-        LocalDate today = LocalDate.now();
-        String dayName  = today.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRENCH);
-        String formatted = dayName.substring(0,1).toUpperCase() + dayName.substring(1)
+        LocalDate today   = LocalDate.now();
+        String dayName    = today.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRENCH);
+        String formatted  = dayName.substring(0,1).toUpperCase() + dayName.substring(1)
                 + " " + today.format(DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.FRENCH));
-        if (dateLabel    != null) dateLabel.setText(formatted);
-        if (currentUser  != null && adminNameLabel != null)
+        if (dateLabel   != null) dateLabel.setText(formatted);
+        if (currentUser != null && adminNameLabel != null)
             adminNameLabel.setText(currentUser.getPrenom() + " " + currentUser.getNom());
         loadStats();
         setActiveButton(btnDashboard);
@@ -86,7 +86,7 @@ public class DashboardAdminController {
             if (totalEtudiants != null) totalEtudiants.setText(String.valueOf(userService.countByType("etudiant")));
             if (totalProfs     != null) totalProfs.setText(String.valueOf(userService.countByType("prof")));
             if (totalOffres    != null) totalOffres.setText("0");
-        } catch (Exception e) { System.out.println("Stats : " + e.getMessage()); }
+        } catch (Exception e) { System.out.println("Stats dashboard : " + e.getMessage()); }
     }
 
     // ── Navigation principale ─────────────────────────────────────────────
@@ -99,14 +99,15 @@ public class DashboardAdminController {
         closeStatsMenu();
     }
 
-    // ── Sous-menu Utilisateurs ────────────────────────────────────────────
+    // ── Sous-menu Utilisateurs ─────────────────────────────────────────────
 
     @FXML public void toggleUsersMenu() {
         if (usersSubMenu == null) return;
         usersMenuOpen = !usersMenuOpen;
         usersSubMenu.setVisible(usersMenuOpen);
         usersSubMenu.setManaged(usersMenuOpen);
-        styleToggleButton(btnUsers, usersMenuOpen);
+        styleToggle(btnUsers, usersMenuOpen);
+        if (usersMenuOpen) closeStatsMenu();
     }
 
     @FXML public void showProfsFromMenu()     { navigate("/tn/esprit/interfaces/GestionProfs.fxml",    "Gestion des professeurs"); }
@@ -124,35 +125,37 @@ public class DashboardAdminController {
         navigate("/tn/esprit/interfaces/GestionOffres.fxml", "Offres de stage");
     }
 
-    // ── Sous-menu Statistiques  ←  NOUVEAU ───────────────────────────────
+    // ── Sous-menu Statistiques ─────────────────────────────────────────────
 
-    /**
-     * Toggle le sous-menu "Statistiques".
-     * Appelé par le bouton "📊  Statistiques" de la sidebar.
-     */
+    /** Toggle le sous-menu Statistiques — appelé par btnStatistiques */
     @FXML public void toggleStatsMenu() {
         if (statsSubMenu == null) return;
         statsMenuOpen = !statsMenuOpen;
         statsSubMenu.setVisible(statsMenuOpen);
         statsSubMenu.setManaged(statsMenuOpen);
-        styleToggleButton(btnStatistiques, statsMenuOpen);
-        // Ferme l'autre sous-menu pour éviter l'encombrement
-        closeUsersMenu();
+        styleToggle(btnStatistiques, statsMenuOpen);
+        if (statsMenuOpen) closeUsersMenu();
     }
 
-    /** Affiche les statistiques des utilisateurs (LineChart + PieChart) */
+    /**
+     * Affiche les statistiques utilisateurs.
+     * Appelé par btnStatistiquesUsers (sidebar) et le bouton "Actions rapides".
+     */
     @FXML public void showStatistiquesUsers() {
         setActiveButton(btnStatistiques);
         navigate("/tn/esprit/interfaces/Statistiques.fxml", "📈 Statistiques Utilisateurs");
     }
 
-    /** Affiche les statistiques du Quiz */
+    /**
+     * Affiche les statistiques du Quiz — IDENTIQUE à admin_quiz_statistics Symfony.
+     * Appelé par btnStatistiquesQuiz (sidebar) et le bouton "Actions rapides".
+     */
     @FXML public void showStatistiquesQuiz() {
         setActiveButton(btnStatistiques);
         navigate("/tn/esprit/interfaces/QuizStatistiques.fxml", "📊 Statistiques Quiz");
     }
 
-    // ── Quiz ─────────────────────────────────────────────────────────────
+    // ── Quiz ──────────────────────────────────────────────────────────────
 
     @FXML public void showQuizAdmin() {
         setActiveButton(btnQuizAdmin);
@@ -164,7 +167,7 @@ public class DashboardAdminController {
         navigate("/tn/esprit/interfaces/QuizHistorique.fxml", "📋 Historique du Quiz");
     }
 
-    // ── Profil / logout ───────────────────────────────────────────────────
+    // ── Profil / logout ────────────────────────────────────────────────────
 
     @FXML public void showProfil() {
         setActiveButton(btnProfil);
@@ -188,7 +191,7 @@ public class DashboardAdminController {
         } catch (Exception e) { e.printStackTrace(); }
     }
 
-    // ── Utilitaires privés ────────────────────────────────────────────────
+    // ── Utilitaires privés ─────────────────────────────────────────────────
 
     private void navigate(String fxml, String title) {
         try {
@@ -215,7 +218,7 @@ public class DashboardAdminController {
         usersMenuOpen = false;
         usersSubMenu.setVisible(false);
         usersSubMenu.setManaged(false);
-        styleToggleButton(btnUsers, false);
+        styleToggle(btnUsers, false);
     }
 
     private void closeStatsMenu() {
@@ -223,13 +226,12 @@ public class DashboardAdminController {
         statsMenuOpen = false;
         statsSubMenu.setVisible(false);
         statsSubMenu.setManaged(false);
-        styleToggleButton(btnStatistiques, false);
+        styleToggle(btnStatistiques, false);
     }
 
-    /** Met en évidence le bouton toggle selon son état ouvert/fermé. */
-    private void styleToggleButton(Button btn, boolean open) {
+    private void styleToggle(Button btn, boolean active) {
         if (btn == null) return;
-        if (open) {
+        if (active) {
             btn.getStyleClass().remove("nav-btn");
             if (!btn.getStyleClass().contains("nav-btn-active")) btn.getStyleClass().add("nav-btn-active");
         } else {
