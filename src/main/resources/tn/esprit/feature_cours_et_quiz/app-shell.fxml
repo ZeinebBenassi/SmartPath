@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="tn.esprit.controllers.feature_cours_et_quiz.AppShellController"
+           prefWidth="1100.0" prefHeight="700.0"
+           stylesheets="@app.css,@app-shell.css"
+           styleClass="sp-bg">
+
+    <BorderPane styleClass="app-shell">
+        <top>
+            <HBox styleClass="navbar" spacing="14">
+                <Label text="SmartPath" styleClass="navbar-title"/>
+
+                <HBox spacing="8" HBox.hgrow="ALWAYS">
+                    <Button text="Accueil" onAction="#showHome" styleClass="nav-btn"/>
+                    <Button fx:id="matieresBtn" text="Matieres" onAction="#showMatieres" styleClass="nav-btn"/>
+                    <Button fx:id="quizBtn" text="Quiz" onAction="#showQuiz" styleClass="nav-btn"/>
+                </HBox>
+
+                <HBox spacing="10">
+                    <Label fx:id="userLabel" text="" styleClass="user-pill"/>
+                    <Label fx:id="roleBadge" text="" styleClass="role-badge"/>
+                    <Button text="Deconnexion" onAction="#handleLogout" styleClass="sp-btn sp-btn-danger"/>
+                </HBox>
+            </HBox>
+        </top>
+
+        <center>
+            <StackPane fx:id="contentHost" styleClass="content-host"/>
+        </center>
+    </BorderPane>
+</StackPane>

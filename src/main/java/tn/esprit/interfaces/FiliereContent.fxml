@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<!--
+    FiliereContent.fxml — Version SANS sidebar pour chargement dans contentArea du DashboardAdmin
+    Controller : FiliereController (même controller, même logique)
+-->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.esprit.controllers.FiliereController"
+      spacing="0"
+      style="-fx-background-color: #F4F7FB;">
+
+    <!-- BARRE DE CONTRÔLES -->
+    <HBox alignment="CENTER_LEFT" spacing="14"
+          style="-fx-background-color: white; -fx-padding: 14 20;
+                 -fx-border-color: transparent transparent #E2E8F0 transparent;
+                 -fx-border-width: 0 0 1 0;">
+
+        <HBox alignment="CENTER_LEFT" spacing="0" prefWidth="200"
+              style="-fx-background-color: #F8FAFC; -fx-background-radius: 20;
+                     -fx-border-color: #E2E8F0; -fx-border-radius: 20;
+                     -fx-border-width: 1; -fx-padding: 6 12;">
+            <Label text="🔍 " style="-fx-text-fill: #CBD5E1; -fx-font-size: 13px;"/>
+            <TextField fx:id="txtSearch" promptText="Rechercher..." prefWidth="160"
+                       style="-fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 13px;"/>
+        </HBox>
+
+        <ComboBox fx:id="cbFilterCategorie" promptText="Tous" prefWidth="140" onAction="#handleFilter"
+                  style="-fx-background-color: white; -fx-border-color: #E2E8F0;
+                         -fx-border-radius: 8; -fx-background-radius: 8;
+                         -fx-padding: 5 10; -fx-font-size: 12px;"/>
+
+        <ComboBox fx:id="cbSort" promptText="Trier par..." prefWidth="150" onAction="#handleSort"
+                  style="-fx-background-color: white; -fx-border-color: #E2E8F0;
+                         -fx-border-radius: 8; -fx-background-radius: 8;
+                         -fx-padding: 5 10; -fx-font-size: 12px;"/>
+
+        <Pane HBox.hgrow="ALWAYS"/>
+
+        <Label fx:id="lblCount" text="0 filières"
+               style="-fx-font-size: 12px; -fx-text-fill: #64748B;"/>
+        <!-- lblStats retiré ici pour éviter le doublon avec lblCount -->
+
+        <Button text="➕  Ajouter" onAction="#handleAdd"
+                style="-fx-background-color: #2563eb; -fx-text-fill: white;
+                       -fx-font-weight: bold; -fx-font-size: 13px;
+                       -fx-background-radius: 8; -fx-padding: 8 18; -fx-cursor: hand;
+                       -fx-effect: dropshadow(gaussian,rgba(99,102,241,0.35),8,0,0,3);"/>
+    </HBox>
+
+    <!-- CARTES FILIÈRES -->
+    <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
+                style="-fx-background-color: transparent; -fx-background: #F4F7FB; -fx-border-width: 0;">
+        <VBox style="-fx-padding: 18;">
+            <FlowPane fx:id="flowCards" hgap="16" vgap="16"
+                      prefWrapLength="9999"
+                      style="-fx-background-color: transparent; -fx-pref-wrap-length: 9999;"/>
+
+            <VBox fx:id="vboxEmpty" alignment="CENTER" spacing="12"
+                  style="-fx-padding: 60 0;" visible="false" managed="false">
+                <Label text="🎓" style="-fx-font-size: 48px;"/>
+                <Label text="Aucune filière trouvée"
+                       style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #94A3B8;"/>
+                <Label text="Cliquez sur « Ajouter » pour commencer"
+                       style="-fx-font-size: 12px; -fx-text-fill: #CBD5E1;"/>
+            </VBox>
+        </VBox>
+    </ScrollPane>
+
+</VBox>

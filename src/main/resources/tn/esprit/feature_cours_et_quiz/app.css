@@ -1,0 +1,254 @@
+/* Global SmartPath theme */
+
+.sp-bg {
+    -fx-background-color: linear-gradient(to bottom right, #0a1628 0%, #1e3a5f 55%, #2563eb 100%);
+}
+
+.label {
+    -fx-text-fill: rgba(226, 232, 240, 0.92);
+}
+
+.auth-container {
+    -fx-alignment: center;
+    -fx-padding: 40;
+}
+
+.auth-box {
+    -fx-max-width: 420;
+    -fx-spacing: 14;
+    -fx-padding: 28;
+    -fx-background-color: rgba(10, 22, 40, 0.86);
+    -fx-background-radius: 22;
+    -fx-border-color: rgba(96, 165, 250, 0.35);
+    -fx-border-radius: 22;
+}
+
+.brand-title {
+    -fx-font-size: 30px;
+    -fx-font-weight: 800;
+}
+
+.auth-subtitle {
+    -fx-font-size: 14px;
+}
+
+.auth-error {
+    -fx-text-fill: #fecaca;
+    -fx-wrap-text: true;
+}
+
+.text-field, .password-field, .text-area {
+    -fx-background-color: rgba(255, 255, 255, 0.06);
+    -fx-background-radius: 14;
+    -fx-border-color: rgba(96, 165, 250, 0.25);
+    -fx-border-radius: 14;
+    -fx-text-fill: #e2e8f0;
+    -fx-prompt-text-fill: rgba(191, 219, 254, 0.55);
+    -fx-padding: 10 12;
+}
+
+.text-field:focused, .password-field:focused, .text-area:focused {
+    -fx-border-color: rgba(147, 197, 253, 0.75);
+}
+
+.app-shell {
+    -fx-padding: 18;
+}
+
+.navbar {
+    -fx-padding: 14 18;
+    -fx-background-color: rgba(10, 22, 40, 0.92);
+    -fx-background-radius: 18;
+    -fx-border-color: rgba(96, 165, 250, 0.25);
+    -fx-border-radius: 18;
+}
+
+.navbar-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: 800;
+}
+
+.nav-btn {
+    -fx-background-color: transparent;
+    -fx-text-fill: rgba(191, 219, 254, 0.95);
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-padding: 8 14;
+    -fx-background-radius: 12;
+    -fx-cursor: hand;
+}
+
+.nav-btn:hover {
+    -fx-background-color: rgba(37, 99, 235, 0.18);
+}
+
+.user-pill {
+    -fx-padding: 6 12;
+    -fx-background-radius: 999;
+    -fx-background-color: rgba(37, 99, 235, 0.20);
+}
+
+.role-badge {
+    -fx-padding: 6 12;
+    -fx-background-radius: 999;
+    -fx-font-weight: 800;
+    -fx-text-fill: white;
+}
+
+.role-admin { -fx-background-color: #7c3aed; }
+.role-prof { -fx-background-color: #0891b2; }
+.role-etudiant { -fx-background-color: #1d4ed8; }
+
+.content-host {
+    -fx-padding: 18 0 0 0;
+}
+
+.page-root {
+    -fx-spacing: 14;
+    -fx-padding: 18;
+}
+
+.welcome-banner {
+    -fx-padding: 22;
+    -fx-spacing: 10;
+    -fx-background-color: rgba(10, 22, 40, 0.75);
+    -fx-background-radius: 22;
+    -fx-border-color: rgba(96, 165, 250, 0.30);
+    -fx-border-radius: 22;
+}
+
+.welcome-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: 800;
+}
+
+.welcome-desc {
+    -fx-text-fill: rgba(191, 219, 254, 0.85);
+    -fx-font-size: 13px;
+}
+
+.section-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: 700;
+}
+
+.cards-grid {
+    -fx-padding: 10;
+}
+
+.sp-card {
+    -fx-padding: 16;
+    -fx-spacing: 10;
+    -fx-pref-width: 320;
+    -fx-background-color: rgba(10, 22, 40, 0.82);
+    -fx-background-radius: 20;
+    -fx-border-color: rgba(96, 165, 250, 0.28);
+    -fx-border-radius: 20;
+}
+
+.sp-card-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: 800;
+}
+
+.sp-card-meta {
+    -fx-text-fill: rgba(191, 219, 254, 0.75);
+    -fx-font-size: 12px;
+}
+
+.sp-card-desc {
+    -fx-text-fill: rgba(191, 219, 254, 0.9);
+}
+
+.sp-card-actions {
+    -fx-padding: 4 0 0 0;
+}
+
+.sp-btn {
+    -fx-background-radius: 14;
+    -fx-font-size: 13px;
+    -fx-font-weight: 800;
+    -fx-padding: 11 16;
+    -fx-min-height: 40;
+    -fx-border-width: 1;
+    -fx-border-color: transparent;
+    -fx-cursor: hand;
+}
+
+.sp-btn:hover {
+    -fx-scale-x: 1.01;
+    -fx-scale-y: 1.01;
+}
+
+.sp-btn:pressed {
+    -fx-scale-x: 0.995;
+    -fx-scale-y: 0.995;
+}
+
+.sp-btn:focused {
+    -fx-border-color: rgba(147, 197, 253, 0.80);
+    -fx-border-radius: 14;
+}
+
+.sp-btn-primary {
+    -fx-background-color: linear-gradient(to bottom right, #2563eb, #1d4ed8);
+    -fx-text-fill: white;
+}
+
+.sp-btn-secondary {
+    -fx-background-color: rgba(148, 163, 184, 0.16);
+    -fx-text-fill: rgba(226, 232, 240, 0.95);
+    -fx-border-color: rgba(148, 163, 184, 0.35);
+    -fx-border-radius: 14;
+}
+
+.sp-btn-danger {
+    -fx-background-color: linear-gradient(to bottom right, #dc2626, #ef4444);
+    -fx-text-fill: white;
+}
+
+.error-inline {
+    -fx-text-fill: rgba(254, 202, 202, 0.95);
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.list-view {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-background-radius: 14;
+    -fx-border-color: rgba(96, 165, 250, 0.20);
+    -fx-border-radius: 14;
+    -fx-padding: 6;
+}
+
+.list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: rgba(226, 232, 240, 0.92);
+}
+
+.list-cell:filled:selected {
+    -fx-background-color: rgba(37, 99, 235, 0.22);
+    -fx-background-radius: 10;
+}
+
+.sp-dropzone {
+    -fx-padding: 14;
+    -fx-spacing: 6;
+    -fx-background-color: rgba(37, 99, 235, 0.08);
+    -fx-background-radius: 16;
+    -fx-border-color: rgba(96, 165, 250, 0.35);
+    -fx-border-radius: 16;
+    -fx-border-style: dashed;
+    -fx-border-width: 1.5;
+}
+
+.sp-dropzone.drag-over {
+    -fx-background-color: rgba(37, 99, 235, 0.16);
+    -fx-border-color: rgba(147, 197, 253, 0.70);
+}

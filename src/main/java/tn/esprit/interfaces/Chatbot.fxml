@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<!--
+  Chatbot.fxml  –  Floating popup (380 × 520)
+  Controller  : tn.esprit.controllers.ChatbotController
+-->
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="tn.esprit.controllers.ChatbotController"
+      prefWidth="380" prefHeight="520"
+      style="-fx-background-color: #ffffff;
+             -fx-background-radius: 16;
+             -fx-border-color: #e2e8f0;
+             -fx-border-radius: 16;
+             -fx-border-width: 1;
+             -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.18), 20, 0, 0, 6);">
+
+    <!-- ── HEADER ── -->
+    <HBox alignment="CENTER_LEFT" spacing="10"
+          style="-fx-background-color: #2563eb;
+                 -fx-background-radius: 16 16 0 0;
+                 -fx-padding: 14 16 14 16;">
+        <Label text="🤖" style="-fx-font-size: 22px;"/>
+        <VBox spacing="1" HBox.hgrow="ALWAYS">
+            <Label text="SmartPath Assistant"
+                   style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold; -fx-font-family: 'Segoe UI';"/>
+            <Label text="CS Expert · Always available"
+                   style="-fx-text-fill: #bfdbfe; -fx-font-size: 11px; -fx-font-family: 'Segoe UI';"/>
+        </VBox>
+        <Button fx:id="btnClose" text="✕" onAction="#handleClose"
+                style="-fx-background-color: transparent;
+                       -fx-text-fill: white;
+                       -fx-font-size: 15px;
+                       -fx-cursor: hand;
+                       -fx-padding: 2 6;"/>
+    </HBox>
+
+    <!-- ── MESSAGES SCROLL ── -->
+    <ScrollPane fx:id="scrollPane" VBox.vgrow="ALWAYS"
+                fitToWidth="true"
+                style="-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;">
+        <VBox fx:id="messagesContainer" spacing="6" fillWidth="true"
+              style="-fx-background-color: #f8fafc; -fx-padding: 10 0 10 0;"/>
+    </ScrollPane>
+
+    <!-- ── INPUT ROW ── -->
+    <HBox spacing="8" alignment="CENTER"
+          style="-fx-padding: 10 12 12 12;
+                 -fx-border-color: #e2e8f0 transparent transparent transparent;
+                 -fx-border-width: 1 0 0 0;
+                 -fx-background-color: #ffffff;
+                 -fx-background-radius: 0 0 16 16;">
+        <TextField fx:id="inputField" promptText="Ask a CS question…"
+                   HBox.hgrow="ALWAYS"
+                   style="-fx-background-radius: 20;
+                          -fx-border-radius: 20;
+                          -fx-border-color: #cbd5e1;
+                          -fx-border-width: 1;
+                          -fx-padding: 8 14;
+                          -fx-font-size: 13px;
+                          -fx-font-family: 'Segoe UI';
+                          -fx-background-color: #f8fafc;"/>
+        <Button fx:id="sendButton" text="➤" onAction="#handleSend"
+                style="-fx-background-color: #2563eb;
+                       -fx-text-fill: white;
+                       -fx-font-size: 15px;
+                       -fx-background-radius: 50%;
+                       -fx-min-width: 38;
+                       -fx-min-height: 38;
+                       -fx-max-width: 38;
+                       -fx-max-height: 38;
+                       -fx-cursor: hand;"/>
+    </HBox>
+</VBox>

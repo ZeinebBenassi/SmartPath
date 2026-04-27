@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="tn.esprit.controllers.DashboardEtudiantController"
+            prefWidth="1200" prefHeight="700"
+            stylesheets="@smartpath.css"
+            styleClass="app-bg">
+
+    <!-- ═══════ SIDEBAR ═══════ -->
+    <left>
+        <VBox prefWidth="248" styleClass="sidebar-modern">
+
+            <!-- Logo -->
+            <VBox alignment="CENTER_LEFT" spacing="3" styleClass="sidebar-logo-zone">
+                <Label text="SmartPath" styleClass="sidebar-logo-title"/>
+                <Label text="Espace Étudiant" styleClass="sidebar-logo-subtitle"/>
+            </VBox>
+
+            <!-- Navigation -->
+            <VBox spacing="2" style="-fx-padding: 16 10 0 10;">
+                <Label text="MENU" styleClass="sidebar-section-label"/>
+                <Button fx:id="btnAccueil"      text="Accueil"            onAction="#showAccueil"      maxWidth="Infinity" styleClass="nav-btn-active"/>
+                <Button fx:id="btnCours"        text="Mes cours"           onAction="#showCours"        maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnQuiz"         text="🧠  Quiz orientation"    onAction="#showQuiz"         maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnStages"       text="Stages &amp; Offres" onAction="#showStages"       maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnReleve"       text="📄  Relevé de notes"     onAction="#showReleve"       maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnAboutContact" text="ℹ  À propos"            onAction="#showAboutContact" maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnProfil"       text="👤  Mon profil"           onAction="#showProfil"       maxWidth="Infinity" styleClass="nav-btn"/>
+            </VBox>
+
+            <Pane VBox.vgrow="ALWAYS"/>
+
+            <!-- Retour dashboard source -->
+            <VBox spacing="4" style="-fx-padding: 0 10 12 10;">
+                <Button fx:id="btnRetourDashboard" text="← Retour Dashboard"
+                        onAction="#returnToSourceDashboard"
+                        visible="false" managed="false" maxWidth="Infinity" styleClass="chip-btn"/>
+            </VBox>
+
+            <!-- Footer -->
+            <VBox styleClass="sidebar-footer">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <Label text="E" styleClass="avatar-etudiant"/>
+                    <VBox spacing="1">
+                        <Label fx:id="etudiantNameLabel" text="Étudiant"  styleClass="user-name"/>
+                        <Label fx:id="etudiantNiveauLabel" text=""         styleClass="user-role"/>
+                    </VBox>
+                </HBox>
+                <Button text="Se déconnecter" onAction="#handleLogout"
+                        maxWidth="Infinity" styleClass="btn-logout"/>
+            </VBox>
+        </VBox>
+    </left>
+
+    <!-- ═══════ CENTRE ═══════ -->
+    <center>
+        <!-- StackPane wraps content + floating chatbot button -->
+        <StackPane>
+
+            <VBox styleClass="app-content">
+
+                <!-- Topbar -->
+                <HBox alignment="CENTER_LEFT" styleClass="topbar-modern">
+                    <Label fx:id="welcomeLabel" text="Bonjour !" styleClass="topbar-title"/>
+                    <Pane HBox.hgrow="ALWAYS"/>
+                </HBox>
+
+                <!-- Zone de contenu -->
+                <StackPane fx:id="contentArea" VBox.vgrow="ALWAYS">
+
+                    <!-- ── Vue Accueil ── -->
+                    <ScrollPane fx:id="homeView" fitToWidth="true" hbarPolicy="NEVER"
+                                style="-fx-background: transparent; -fx-background-color: transparent;">
+                        <content>
+                            <VBox spacing="20" style="-fx-padding: 24 28 32 28;">
+
+                                <!-- Hero -->
+                                <HBox spacing="20" styleClass="section-card" alignment="CENTER_LEFT">
+                                    <VBox spacing="14" HBox.hgrow="ALWAYS">
+                                        <VBox spacing="6">
+                                            <Label text="Bienvenue sur SmartPath"
+                                                   style="-fx-font-size: 26; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                                            <Label wrapText="true" maxWidth="500"
+                                                   text="Découvrez une nouvelle façon d'apprendre. Accédez à des cours de qualité, testez vos connaissances et transformez votre avenir."
+                                                   style="-fx-font-size: 13; -fx-text-fill: #5a6a8a;"/>
+                                        </VBox>
+                                        <HBox spacing="10">
+                                            <Button text="Mes cours" onAction="#showCours"
+                                                    styleClass="btn-primary"/>
+                                            <Button text="🧠 Quiz" onAction="#showQuiz"
+                                                    styleClass="btn-secondary"/>
+                                        </HBox>
+                                    </VBox>
+                                    <StackPane prefWidth="240" prefHeight="150"
+                                               style="-fx-background-color: linear-gradient(to bottom right, #eff6ff, #dbeafe);
+                                                      -fx-background-radius: 12;">
+                                        <ImageView fitWidth="220" fitHeight="138" preserveRatio="false" smooth="true"
+                                                   style="-fx-background-radius: 10;">
+                                            <image>
+                                                <Image url="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&amp;h=600&amp;fit=crop"/>
+                                            </image>
+                                        </ImageView>
+                                    </StackPane>
+                                </HBox>
+
+                                <!-- Stats rapides -->
+                                <HBox spacing="16">
+                                    <VBox HBox.hgrow="ALWAYS" spacing="4" alignment="CENTER"
+                                          style="-fx-background-color: linear-gradient(to bottom right, #1e3a8a, #2563eb); -fx-background-radius: 12; -fx-padding: 18;">
+                                        <Label text="50K+" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                                        <Label text="Apprenants" style="-fx-font-size: 11; -fx-text-fill: rgba(255,255,255,0.80);"/>
+                                    </VBox>
+                                    <VBox HBox.hgrow="ALWAYS" spacing="4" alignment="CENTER"
+                                          style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #e8eef8; -fx-border-radius: 12; -fx-padding: 18;">
+                                        <Label text="500+" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #2563eb;"/>
+                                        <Label text="Cours" style="-fx-font-size: 11; -fx-text-fill: #8898b8;"/>
+                                    </VBox>
+                                    <VBox HBox.hgrow="ALWAYS" spacing="4" alignment="CENTER"
+                                          style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #e8eef8; -fx-border-radius: 12; -fx-padding: 18;">
+                                        <Label text="95%" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #10b981;"/>
+                                        <Label text="Satisfaction" style="-fx-font-size: 11; -fx-text-fill: #8898b8;"/>
+                                    </VBox>
+                                    <VBox HBox.hgrow="ALWAYS" spacing="4" alignment="CENTER"
+                                          style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #e8eef8; -fx-border-radius: 12; -fx-padding: 18;">
+                                        <Label text="24/7" style="-fx-font-size: 24; -fx-font-weight: bold; -fx-text-fill: #8b5cf6;"/>
+                                        <Label text="Support" style="-fx-font-size: 11; -fx-text-fill: #8898b8;"/>
+                                    </VBox>
+                                </HBox>
+
+                                <!-- Fonctionnalités -->
+                                <VBox spacing="12">
+                                    <VBox spacing="3">
+                                        <Label text="✨ Pourquoi choisir SmartPath ?"
+                                               style="-fx-font-size: 17; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                                        <Label text="Des outils modernes pour un apprentissage efficace et agréable"
+                                               style="-fx-font-size: 12; -fx-text-fill: #8898b8;"/>
+                                    </VBox>
+                                    <GridPane hgap="14" vgap="14">
+                                        <VBox GridPane.columnIndex="0" GridPane.rowIndex="0" spacing="8"
+                                              style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #e8eef8; -fx-border-radius: 12; -fx-padding: 16;">
+                                            <Label text="" style="-fx-font-size: 22;"/>
+                                            <Label text="Apprentissage Personnalisé"
+                                                   style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                                            <Label wrapText="true" text="Recommandations adaptées à votre profil."
+                                                   style="-fx-font-size: 11; -fx-text-fill: #5a6a8a;"/>
+                                        </VBox>
+                                        <VBox GridPane.columnIndex="1" GridPane.rowIndex="0" spacing="8"
+                                              style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #e8eef8; -fx-border-radius: 12; -fx-padding: 16;">
+                                            <Label text="" style="-fx-font-size: 22;"/>
+                                            <Label text="Bibliothèque de Cours"
+                                                   style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                                            <Label wrapText="true" text="Des centaines de cours dans tous les domaines."
+                                                   style="-fx-font-size: 11; -fx-text-fill: #5a6a8a;"/>
+                                        </VBox>
+                                        <VBox GridPane.columnIndex="2" GridPane.rowIndex="0" spacing="8"
+                                              style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #e8eef8; -fx-border-radius: 12; -fx-padding: 16;">
+                                            <Label text="" style="-fx-font-size: 22;"/>
+                                            <Label text="Quiz Interactifs"
+                                                   style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                                            <Label wrapText="true" text="Testez et validez vos connaissances."
+                                                   style="-fx-font-size: 11; -fx-text-fill: #5a6a8a;"/>
+                                        </VBox>
+                                        <VBox GridPane.columnIndex="0" GridPane.rowIndex="1" spacing="8"
+                                              style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #e8eef8; -fx-border-radius: 12; -fx-padding: 16;">
+                                            <Label text="" style="-fx-font-size: 22;"/>
+                                            <Label text="Suivi des Progrès"
+                                                   style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                                            <Label wrapText="true" text="Indicateurs clairs de votre évolution."
+                                                   style="-fx-font-size: 11; -fx-text-fill: #5a6a8a;"/>
+                                        </VBox>
+                                        <VBox GridPane.columnIndex="1" GridPane.rowIndex="1" spacing="8"
+                                              style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #e8eef8; -fx-border-radius: 12; -fx-padding: 16;">
+                                            <Label text="" style="-fx-font-size: 22;"/>
+                                            <Label text="Experts Qualifiés"
+                                                   style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                                            <Label wrapText="true" text="Apprenez auprès de professeurs certifiés."
+                                                   style="-fx-font-size: 11; -fx-text-fill: #5a6a8a;"/>
+                                        </VBox>
+                                        <VBox GridPane.columnIndex="2" GridPane.rowIndex="1" spacing="8"
+                                              style="-fx-background-color: white; -fx-background-radius: 12; -fx-border-color: #e8eef8; -fx-border-radius: 12; -fx-padding: 16;">
+                                            <Label text="" style="-fx-font-size: 22;"/>
+                                            <Label text="Carrière"
+                                                   style="-fx-font-size: 12; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                                            <Label wrapText="true" text="Compétences utiles pour votre avenir pro."
+                                                   style="-fx-font-size: 11; -fx-text-fill: #5a6a8a;"/>
+                                        </VBox>
+                                    </GridPane>
+                                </VBox>
+
+                                <!-- CTA bas -->
+                                <HBox styleClass="section-card" alignment="CENTER_LEFT" spacing="24">
+                                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                                        <Label text="Pret a commencer ?"
+                                               style="-fx-font-size: 17; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                                        <Label text="Rejoignez des milliers d'apprenants qui progressent avec SmartPath."
+                                               style="-fx-font-size: 12; -fx-text-fill: #5a6a8a;"/>
+                                    </VBox>
+                                    <Button text="Commencer →" onAction="#showCours" styleClass="btn-primary"/>
+                                </HBox>
+
+                                <!-- Footer -->
+                                <VBox spacing="4"
+                                      style="-fx-background-color: #0f172a; -fx-background-radius: 12; -fx-padding: 16 20;">
+                                    <Label text="SmartPath"
+                                           style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: white;"/>
+                                    <Label wrapText="true"
+                                           text="Donner aux apprenants les moyens de réussir grâce à une éducation moderne et personnalisée."
+                                           style="-fx-font-size: 11; -fx-text-fill: rgba(255,255,255,0.65);"/>
+                                    <Label text="© 2026 SmartPath. Tous droits réservés."
+                                           style="-fx-font-size: 10; -fx-text-fill: rgba(255,255,255,0.45);"/>
+                                </VBox>
+
+                                <!-- Champs cachés contrôleur -->
+                                <VBox visible="false" managed="false">
+                                    <Label fx:id="moyenneLabel"    text="--"/>
+                                    <Label fx:id="nbCoursLabel"    text="0"/>
+                                    <Label fx:id="nbOffresLabel"   text="0"/>
+                                    <Label fx:id="quizStatusLabel" text="Non fait"/>
+                                    <ListView fx:id="coursList"/>
+                                    <ListView fx:id="offresList"/>
+                                </VBox>
+                            </VBox>
+                        </content>
+                    </ScrollPane>
+
+                    <!-- ── Vue À propos / Contact ── -->
+                    <ScrollPane fx:id="aboutContactView" fitToWidth="true" hbarPolicy="NEVER"
+                                visible="false" managed="false"
+                                style="-fx-background: transparent; -fx-background-color: transparent;">
+                        <content>
+                            <VBox spacing="20" style="-fx-padding: 24 28 32 28;">
+                                <VBox spacing="16" styleClass="section-card">
+                                    <VBox spacing="4">
+                                        <Label text="ℹ À Propos de SmartPath"
+                                               style="-fx-font-size: 22; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                                        <Label wrapText="true"
+                                               text="Nous transformons l'éducation en la rendant accessible, engageante et adaptée à chaque apprenant."
+                                               style="-fx-font-size: 13; -fx-text-fill: #5a6a8a;"/>
+                                    </VBox>
+                                    <HBox spacing="14">
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS"
+                                              style="-fx-background-color: #f0f6ff; -fx-background-radius: 10; -fx-border-color: #dbeafe; -fx-border-radius: 10; -fx-padding: 16;">
+                                            <Label text="Notre Mission"
+                                                   style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #1e3a8a;"/>
+                                            <Label wrapText="true"
+                                                   text="Démocratiser l'accès à une éducation de qualité, avec des parcours personnalisés."
+                                                   style="-fx-font-size: 12; -fx-text-fill: #5a6a8a;"/>
+                                        </VBox>
+                                        <VBox spacing="8" HBox.hgrow="ALWAYS"
+                                              style="-fx-background-color: #f0f6ff; -fx-background-radius: 10; -fx-border-color: #dbeafe; -fx-border-radius: 10; -fx-padding: 16;">
+                                            <Label text="Notre Vision"
+                                                   style="-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #1e3a8a;"/>
+                                            <Label wrapText="true"
+                                                   text="Permettre à chacun d'acquérir les compétences nécessaires pour réaliser ses objectifs."
+                                                   style="-fx-font-size: 12; -fx-text-fill: #5a6a8a;"/>
+                                        </VBox>
+                                    </HBox>
+                                </VBox>
+                                <VBox spacing="14" styleClass="section-card">
+                                    <VBox spacing="4">
+                                        <Label text="Contactez-nous"
+                                               style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #1a2340;"/>
+                                        <Label text="Notre équipe est disponible pour répondre à vos questions."
+                                               style="-fx-font-size: 12; -fx-text-fill: #8898b8;"/>
+                                    </VBox>
+                                    <HBox spacing="14">
+                                        <VBox spacing="5" HBox.hgrow="ALWAYS"
+                                              style="-fx-background-color: #f7f9fc; -fx-background-radius: 10; -fx-border-color: #e2e8f4; -fx-border-radius: 10; -fx-padding: 14;">
+                                            <Label text="✉  Email" style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #8898b8;"/>
+                                            <Label text="support@smartpath.tn" style="-fx-font-size: 13; -fx-text-fill: #2563eb; -fx-font-weight: bold;"/>
+                                        </VBox>
+                                        <VBox spacing="5" HBox.hgrow="ALWAYS"
+                                              style="-fx-background-color: #f7f9fc; -fx-background-radius: 10; -fx-border-color: #e2e8f4; -fx-border-radius: 10; -fx-padding: 14;">
+                                            <Label text="☎  Téléphone" style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #8898b8;"/>
+                                            <Label text="+216 70 000 000" style="-fx-font-size: 13; -fx-text-fill: #2563eb; -fx-font-weight: bold;"/>
+                                        </VBox>
+                                        <VBox spacing="5" HBox.hgrow="ALWAYS"
+                                              style="-fx-background-color: #f7f9fc; -fx-background-radius: 10; -fx-border-color: #e2e8f4; -fx-border-radius: 10; -fx-padding: 14;">
+                                            <Label text="Adresse" style="-fx-font-size: 11; -fx-font-weight: bold; -fx-text-fill: #8898b8;"/>
+                                            <Label text="Tunis, Tunisie" style="-fx-font-size: 13; -fx-text-fill: #2563eb; -fx-font-weight: bold;"/>
+                                        </VBox>
+                                    </HBox>
+                                </VBox>
+                            </VBox>
+                        </content>
+                    </ScrollPane>
+                </StackPane>
+            </VBox>
+
+            <!-- ══════════════════════════════════════════════
+                 🤖 FLOATING CHATBOT BUTTON (bottom-right FAB)
+                 ══════════════════════════════════════════════ -->
+            <Button fx:id="btnChatbot"
+                    text="🤖"
+                    onAction="#toggleChatbot"
+                    StackPane.alignment="BOTTOM_RIGHT"
+                    style="-fx-background-color: #2563eb;
+                           -fx-text-fill: white;
+                           -fx-font-size: 22px;
+                           -fx-background-radius: 50%;
+                           -fx-min-width: 56px;
+                           -fx-min-height: 56px;
+                           -fx-max-width: 56px;
+                           -fx-max-height: 56px;
+                           -fx-cursor: hand;
+                           -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.45), 12, 0, 0, 4);
+                           -fx-translate-x: -24;
+                           -fx-translate-y: -24;"/>
+
+        </StackPane>
+    </center>
+
+</BorderPane>
