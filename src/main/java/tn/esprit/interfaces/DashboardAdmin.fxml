@@ -123,6 +123,24 @@
                 <Label fx:id="pageTitle" styleClass="topbar-title" text="Dashboard"/>
                 <Pane HBox.hgrow="ALWAYS"/>
                 <Label fx:id="dateLabel" styleClass="topbar-date" text=""/>
+
+                <!-- ══ Cloche notifications ══ -->
+                <StackPane style="-fx-padding:0 0 0 14;">
+                    <Button fx:id="btnNotifications"
+                            onAction="#showNotifications"
+                            text="🔔"
+                            style="-fx-background-color:transparent; -fx-font-size:20px;
+                                   -fx-cursor:hand; -fx-padding:4 8;"/>
+                    <!-- Badge rouge compteur -->
+                    <Label fx:id="lblNotifBadge"
+                           text="0"
+                           visible="false" managed="false"
+                           translateX="6" translateY="-4"
+                           StackPane.alignment="TOP_RIGHT"
+                           style="-fx-background-color:#EF4444; -fx-text-fill:white;
+                                  -fx-font-size:9px; -fx-font-weight:bold;
+                                  -fx-background-radius:20; -fx-padding:1 5;"/>
+                </StackPane>
             </HBox>
 
             <StackPane fx:id="contentArea" style="-fx-padding:24 28;" VBox.vgrow="ALWAYS">

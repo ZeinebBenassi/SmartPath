@@ -14,6 +14,7 @@ import tn.esprit.entity.Answer;
 import tn.esprit.entity.Question;
 import tn.esprit.entity.QuizResult;
 import tn.esprit.entity.User;
+import tn.esprit.services.NotificationService;
 import tn.esprit.services.QuizAnalyzer;
 import tn.esprit.services.QuizService;
 
@@ -32,8 +33,9 @@ public class QuizPlayerController implements Initializable {
     @FXML private Button      btnNext;
     @FXML private Label       lblCategory;
 
-    private final QuizService  quizService  = new QuizService();
-    private final QuizAnalyzer quizAnalyzer = new QuizAnalyzer();
+    private final QuizService         quizService          = new QuizService();
+    private final QuizAnalyzer         quizAnalyzer         = new QuizAnalyzer();
+    private final NotificationService  notificationService  = new NotificationService();
 
     private List<Question>              questions       = new ArrayList<>();
     private int                         currentIndex    = 0;
@@ -125,7 +127,17 @@ public class QuizPlayerController implements Initializable {
         result.setRecommendations(quizAnalyzer.recommendationsToJson(recs));
         quizService.saveQuizResult(result);
 
-        // 4) Ouvrir la page résultats
+        // 4) Envoyer une notification à l'admin
+        if (currentUser != null) {
+            notificationService.create(
+                currentUser.getId(),
+                currentUser.getNom(),
+                currentUser.getPrenom(),
+                profile
+            );
+        }
+
+        // 5) Ouvrir la page résultats
         //    → Les universités seront chargées via API Groq directement dans QuizResultController
         openResultPage(result, scores, profile, recs);
     }
