@@ -72,11 +72,42 @@ public class ReleveAnalyserService {
      * @return Map contenant : notesDetectees, moyenneGenerale, pointsForts,
      *                         pointsFaibles, scoreParFiliere, filiereRecommandee, conseil
      */
+    // Mots-clés qui doivent apparaître dans un vrai relevé de notes
+    private static final List<String> MOTS_CLES_RELEVE = List.of(
+        "note", "notes", "matière", "matiere", "moyenne", "résultat", "resultat",
+        "examen", "semestre", "coefficient", "coeff", "module", "filière", "filiere",
+        "étudiant", "etudiant", "université", "universite", "année", "annee",
+        "bac", "lycée", "lycee", "relevé", "releve", "bulletin", "session",
+        "mention", "admis", "ajourné", "note/20", "/20", "trimestre"
+    );
+
     public Map<String, Object> analyserFichier(File fichier, String fileType) throws Exception {
         String texte = extraireTexte(fichier, fileType);
         if (texte == null || texte.isBlank())
             throw new RuntimeException("Impossible d'extraire le texte du fichier.");
+        // ── Validation : vérifier que c'est bien un relevé de notes ──
+        validerReleveDeNotes(texte);
         return analyserTexte(texte);
+    }
+
+    /**
+     * Vérifie que le texte extrait ressemble à un relevé de notes.
+     * Lève une exception claire si ce n'est pas le cas.
+     */
+    private void validerReleveDeNotes(String texte) throws Exception {
+        String texteLower = texte.toLowerCase();
+        long nbMotsCles = MOTS_CLES_RELEVE.stream()
+                .filter(texteLower::contains)
+                .count();
+        // Si moins de 2 mots-clés trouvés → probablement pas un relevé
+        if (nbMotsCles < 2) {
+            throw new RuntimeException(
+                "❌ Le fichier uploadé ne semble pas être un relevé de notes.\n\n" +
+                "Veuillez uploader un document contenant vos notes académiques\n" +
+                "(bulletin scolaire, relevé universitaire, etc.).\n\n" +
+                "Format accepté : PDF, JPG, PNG, WEBP"
+            );
+        }
     }
 
     public String extraireTexte(File fichier, String fileType) throws Exception {
