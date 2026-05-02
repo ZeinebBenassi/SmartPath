@@ -30,7 +30,7 @@
     </ScrollPane>
 
     <HBox spacing="10">
-        <Button text="✅ Terminer" onAction="#handleFinish" styleClass="sp-btn sp-btn-primary"/>
+        <Button fx:id="finishBtn" text="✅ Terminer" onAction="#handleFinish" styleClass="sp-btn sp-btn-primary"/>
     </HBox>
 
 </VBox>

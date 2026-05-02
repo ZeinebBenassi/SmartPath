@@ -1,7 +1,15 @@
 package tn.esprit.services;
 
 import tn.esprit.utils.MyDatabase;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.text.PDFTextStripper;
+import org.apache.pdfbox.rendering.PDFRenderer;
 
+import javax.imageio.ImageIO;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URI;
 import java.net.http.*;
@@ -25,7 +33,7 @@ public class ReleveAnalyserService {
     // ── Config Groq ────────────────────────────────────────────────────────
     private static final String GROQ_URL        = "https://api.groq.com/openai/v1/chat/completions";
     private static final String GROQ_MODEL_TEXT = "llama-3.3-70b-versatile";
-    private static final String GROQ_MODEL_VIS  = "meta-llama/llama-4-scout-17b-16e-instruct";
+    private static final String GROQ_MODEL_VIS  = "llama-3.2-11b-vision-preview";
 
     // Clé chargée de façon lazy (évite le crash au démarrage si config absente)
     private String groqApiKey = null;
@@ -114,7 +122,8 @@ public class ReleveAnalyserService {
         if ("pdf".equalsIgnoreCase(fileType)) {
             return extraireTextePDF(fichier);
         } else {
-            return extraireTexteImage(fichier);
+            byte[] bytes = Files.readAllBytes(fichier.toPath());
+            return extraireTexteImage(bytes, detectMimeType(fichier));
         }
     }
 
@@ -122,61 +131,105 @@ public class ReleveAnalyserService {
     //  EXTRACTION TEXTE
     // ══════════════════════════════════════════════════════════════════════
 
-    /** Extraction depuis image via Groq vision (llama-4-scout). */
-    private String extraireTexteImage(File fichier) throws Exception {
-        byte[] bytes    = Files.readAllBytes(fichier.toPath());
-        String base64   = Base64.getEncoder().encodeToString(bytes);
-        String mimeType = detectMimeType(fichier);
-        String dataUrl  = "data:" + mimeType + ";base64," + base64;
+    /** Extraction depuis image via Groq vision. */
+    private String extraireTexteImage(byte[] imageBytes, String mimeType) throws Exception {
+        byte[] finalBytes = imageBytes;
+        String finalMime = mimeType;
+        
+        // Toujours essayer de convertir en JPEG et redimensionner si nécessaire pour Groq
+        // Groq préfère le JPEG et a des limites de taille (4MB base64 ~= 3MB raw)
+        if (imageBytes.length > 2 * 1024 * 1024 || !"image/jpeg".equals(mimeType)) {
+            finalBytes = prepareImageForGroq(imageBytes);
+            finalMime = "image/jpeg";
+        }
 
-        String body = """
-            {
-              "model": "%s",
-              "max_tokens": 2000,
-              "messages": [{
-                "role": "user",
-                "content": [
-                  {"type": "image_url", "image_url": {"url": "%s"}},
-                  {"type": "text", "text": "Extrais intégralement toutes les notes et matières visibles sur ce relevé de notes. Retourne le texte brut."}
-                ]
-              }]
-            }
-            """.formatted(GROQ_MODEL_VIS, dataUrl);
+        String base64 = Base64.getEncoder().encodeToString(finalBytes);
+        String dataUrl = "data:" + finalMime + ";base64," + base64;
 
-        return callGroq(body);
+        JSONObject body = new JSONObject();
+        body.put("model", GROQ_MODEL_VIS);
+        body.put("max_tokens", 2048);
+        
+        JSONArray messages = new JSONArray();
+        JSONObject message = new JSONObject();
+        message.put("role", "user");
+        
+        JSONArray content = new JSONArray();
+        
+        JSONObject textContent = new JSONObject();
+        textContent.put("type", "text");
+        textContent.put("text", "Extrais intégralement toutes les notes et matières visibles sur ce relevé de notes. Retourne uniquement le texte brut.");
+        content.put(textContent);
+        
+        JSONObject imageContent = new JSONObject();
+        imageContent.put("type", "image_url");
+        JSONObject imageUrl = new JSONObject();
+        imageUrl.put("url", dataUrl);
+        imageContent.put("image_url", imageUrl);
+        content.put(imageContent);
+        
+        message.put("content", content);
+        messages.put(message);
+        body.put("messages", messages);
+
+        return callGroq(body.toString());
     }
 
-    /** Extraction depuis PDF : lit le fichier texte brut (PDF texte simple). */
-    private String extraireTextePDF(File fichier) throws Exception {
-        StringBuilder sb = new StringBuilder();
-        try (InputStream is = new FileInputStream(fichier)) {
-            byte[] buf = is.readAllBytes();
-            String raw = new String(buf, "ISO-8859-1");
-            // Extraction des flux texte du PDF (heuristique simple)
-            int idx = 0;
-            while ((idx = raw.indexOf("BT", idx)) != -1) {
-                int end = raw.indexOf("ET", idx);
-                if (end == -1) break;
-                String block = raw.substring(idx, end);
-                for (int i = 0; i < block.length(); i++) {
-                    if (block.charAt(i) == '(') {
-                        int close = block.indexOf(')', i);
-                        if (close > i) {
-                            sb.append(block, i + 1, close).append(" ");
-                            i = close;
-                        }
-                    }
+    private byte[] prepareImageForGroq(byte[] originalData) throws IOException {
+        try (ByteArrayInputStream bais = new ByteArrayInputStream(originalData)) {
+            BufferedImage original = ImageIO.read(bais);
+            if (original == null) return originalData;
+
+            int width = original.getWidth();
+            int height = original.getHeight();
+            int maxDimension = 1600;
+
+            if (width > maxDimension || height > maxDimension || original.getType() != BufferedImage.TYPE_INT_RGB) {
+                double ratio = Math.min((double) maxDimension / width, (double) maxDimension / height);
+                if (ratio > 1.0) ratio = 1.0;
+                
+                int newWidth = (int) (width * ratio);
+                int newHeight = (int) (height * ratio);
+
+                BufferedImage resized = new BufferedImage(newWidth, newHeight, BufferedImage.TYPE_INT_RGB);
+                Graphics2D g = resized.createGraphics();
+                // Fond blanc pour les PNG transparents
+                g.setColor(java.awt.Color.WHITE);
+                g.fillRect(0, 0, newWidth, newHeight);
+                g.drawImage(original, 0, 0, newWidth, newHeight, null);
+                g.dispose();
+                
+                try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                    ImageIO.write(resized, "jpg", baos);
+                    return baos.toByteArray();
                 }
-                idx = end + 2;
+            } else {
+                // Pas besoin de redimensionner, mais on convertit quand même en JPEG si ce n'était pas le cas
+                try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                    ImageIO.write(original, "jpg", baos);
+                    return baos.toByteArray();
+                }
             }
         }
-        String texte = sb.toString().trim();
+    }
 
-        // Si extraction trop courte (PDF scanné), utiliser le modèle vision
-        if (texte.length() < 50) {
-            texte = extraireTexteImage(fichier);
+    /** Extraction depuis PDF via PDFBox. */
+    private String extraireTextePDF(File fichier) throws Exception {
+        try (PDDocument document = PDDocument.load(fichier)) {
+            PDFTextStripper stripper = new PDFTextStripper();
+            String texte = stripper.getText(document).trim();
+
+            // Si le PDF est un scan (peu de texte), on rend la première page en image
+            if (texte.length() < 100 && document.getNumberOfPages() > 0) {
+                PDFRenderer renderer = new PDFRenderer(document);
+                BufferedImage image = renderer.renderImageWithDPI(0, 150); // 150 DPI suffisant pour OCR
+                try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                    ImageIO.write(image, "jpg", baos);
+                    return extraireTexteImage(baos.toByteArray(), "image/jpeg");
+                }
+            }
+            return texte;
         }
-        return texte;
     }
 
     // ══════════════════════════════════════════════════════════════════════

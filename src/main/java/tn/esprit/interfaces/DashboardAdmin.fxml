@@ -59,6 +59,11 @@
                         onAction="#showOffres"
                         styleClass="nav-btn" text="💼  Offres de stage"/>
 
+                <!-- Matières & Cours -->
+                <Button fx:id="btnMatieres" maxWidth="Infinity"
+                        onAction="#showMatieres"
+                        styleClass="nav-btn" text="📚  Matières &amp; Cours"/>
+
                 <!-- ── Statistiques (sous-menu toggle) ── -->
                 <Button fx:id="btnStatistiques" maxWidth="Infinity"
                         onAction="#toggleStatsMenu"

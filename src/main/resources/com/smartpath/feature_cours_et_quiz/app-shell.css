@@ -1,5 +1,27 @@
-/* Page-specific overrides for app-shell.fxml. */
+/* ═══════════════════════════════════════════════════════════════
+   SmartPath — app-shell.css
+   Only shell-specific overrides; shared styles live in app.css
+   ═══════════════════════════════════════════════════════════════ */
 
-.navbar {
-    -fx-background-color: rgba(10, 22, 40, 0.88);
+/* App shell outer container */
+.app-shell {
+    -fx-background-color: #F4F7FB;
+}
+
+/* Content host (center area) */
+.content-host {
+    -fx-padding: 20 28 20 28;
+    -fx-background-color: #F4F7FB;
+}
+
+/* Logout button override — danger style in navbar context */
+.sp-btn-danger {
+    -fx-font-size: 12px;
+    -fx-padding: 8 16 8 16;
+}
+
+/* Dashboard return button — compact in navbar */
+.sp-btn-primary {
+    -fx-font-size: 12px;
+    -fx-padding: 8 16 8 16;
 }

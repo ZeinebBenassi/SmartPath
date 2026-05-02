@@ -2,6 +2,7 @@ package tn.esprit.controllers.feature_cours_et_quiz;
 
 import tn.esprit.entity.feature_cours_et_quiz.Matiere;
 import tn.esprit.entity.feature_cours_et_quiz.Role;
+import tn.esprit.services.feature_cours_et_quiz.BadWordsService;
 import tn.esprit.services.feature_cours_et_quiz.MatiereCrudService;
 import tn.esprit.utils.feature_cours_et_quiz.AccessControl;
 import tn.esprit.utils.feature_cours_et_quiz.AppSession;
@@ -69,6 +70,11 @@ public class MatiereFormController implements NavigableController {
         }
         if (titre.length() < 3) {
             if (errorLabel != null) errorLabel.setText("Le titre doit contenir au moins 3 caractères.");
+            return;
+        }
+
+        if (BadWordsService.containsBadWords(titre) || BadWordsService.containsBadWords(desc)) {
+            if (errorLabel != null) errorLabel.setText("Le contenu contient des mots inappropriés.");
             return;
         }
 

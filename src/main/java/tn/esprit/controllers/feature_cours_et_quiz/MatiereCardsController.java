@@ -12,6 +12,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.sql.SQLException;
@@ -68,21 +69,35 @@ public class MatiereCardsController implements NavigableController {
     }
 
     private VBox createCard(Matiere matiere) {
-        VBox card = new VBox();
+        VBox card = new VBox(15);
         card.getStyleClass().add("sp-card");
+        card.setPrefWidth(320);
 
         Label title = new Label(matiere.getTitre());
         title.getStyleClass().add("sp-card-title");
+        title.setWrapText(true);
+
+        String ratingText = matiere.getNbAvis() > 0 
+            ? String.format("⭐ %.1f (%d avis)", matiere.getRating(), matiere.getNbAvis())
+            : "⭐ Pas encore d'avis";
+        Label rating = new Label(ratingText);
+        rating.getStyleClass().add("sp-rating-text");
+        
+        HBox ratingBox = new HBox(rating);
+        ratingBox.getStyleClass().add("sp-rating-box");
+        ratingBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
         Label desc = new Label(matiere.getDescription() == null ? "" : matiere.getDescription());
         desc.getStyleClass().add("sp-card-desc");
         desc.setWrapText(true);
+        desc.setMaxHeight(60);
 
-        VBox actions = new VBox(8);
+        VBox actions = new VBox(10);
         actions.getStyleClass().add("sp-card-actions");
 
         Button viewCours = new Button("📖 Voir cours");
         viewCours.getStyleClass().addAll("sp-btn", "sp-btn-primary");
+        viewCours.setMaxWidth(Double.MAX_VALUE);
         viewCours.setOnAction(e -> {
             if (appShell != null) appShell.showMatiereCours(matiere);
         });
@@ -91,6 +106,7 @@ public class MatiereCardsController implements NavigableController {
         if (AccessControl.canManageContent(role)) {
             Button addQuiz = new Button("➕ Ajouter Quiz");
             addQuiz.getStyleClass().addAll("sp-btn", "sp-btn-secondary");
+            addQuiz.setMaxWidth(Double.MAX_VALUE);
             addQuiz.setOnAction(e -> {
                 if (appShell != null) appShell.showQuizFormForMatiere(matiere);
             });
@@ -98,6 +114,7 @@ public class MatiereCardsController implements NavigableController {
 
             Button edit = new Button("✏️ Modifier");
             edit.getStyleClass().addAll("sp-btn", "sp-btn-secondary");
+            edit.setMaxWidth(Double.MAX_VALUE);
             edit.setOnAction(e -> {
                 if (appShell != null) appShell.showMatiereForm(matiere);
             });
@@ -107,11 +124,12 @@ public class MatiereCardsController implements NavigableController {
         if (AccessControl.canDelete(role)) {
             Button del = new Button("🗑 Supprimer");
             del.getStyleClass().addAll("sp-btn", "sp-btn-danger");
+            del.setMaxWidth(Double.MAX_VALUE);
             del.setOnAction(e -> handleDelete(matiere));
             actions.getChildren().add(del);
         }
 
-        card.getChildren().addAll(title, desc, actions);
+        card.getChildren().addAll(title, ratingBox, desc, actions);
         return card;
     }
 

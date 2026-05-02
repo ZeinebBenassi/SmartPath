@@ -68,24 +68,28 @@ public class QuizCardsController implements NavigableController {
     }
 
     private VBox createCard(Quiz quiz) {
-        VBox card = new VBox();
+        VBox card = new VBox(15);
         card.getStyleClass().add("sp-card");
+        card.setPrefWidth(300);
 
         Label title = new Label(quiz.getTitre());
         title.getStyleClass().add("sp-card-title");
+        title.setWrapText(true);
 
-        Label meta = new Label("⏱ " + quiz.getDuree() + " min  •  Matière ID: " + quiz.getMatiereId());
+        Label meta = new Label("⏱ " + quiz.getDuree() + " min");
         meta.getStyleClass().add("sp-card-meta");
 
         Label content = new Label(quiz.getContenu() == null ? "" : quiz.getContenu());
         content.getStyleClass().add("sp-card-desc");
         content.setWrapText(true);
+        content.setMaxHeight(60);
 
-        VBox actions = new VBox(8);
+        VBox actions = new VBox(10);
         actions.getStyleClass().add("sp-card-actions");
 
         Button pass = new Button("▶ Passer le quiz");
         pass.getStyleClass().addAll("sp-btn", "sp-btn-primary");
+        pass.setMaxWidth(Double.MAX_VALUE);
         pass.setOnAction(e -> {
             if (appShell != null) appShell.showQuizPass(quiz);
         });
@@ -94,6 +98,7 @@ public class QuizCardsController implements NavigableController {
         if (AccessControl.canManageContent(role)) {
             Button edit = new Button("✏️ Modifier");
             edit.getStyleClass().addAll("sp-btn", "sp-btn-secondary");
+            edit.setMaxWidth(Double.MAX_VALUE);
             edit.setOnAction(e -> {
                 if (appShell != null) appShell.showQuizForm(quiz);
             });
@@ -103,6 +108,7 @@ public class QuizCardsController implements NavigableController {
         if (AccessControl.canDelete(role)) {
             Button del = new Button("🗑 Supprimer");
             del.getStyleClass().addAll("sp-btn", "sp-btn-danger");
+            del.setMaxWidth(Double.MAX_VALUE);
             del.setOnAction(e -> handleDelete(quiz));
             actions.getChildren().add(del);
         }

@@ -21,13 +21,29 @@
 
     <Label fx:id="errorLabel" text="" styleClass="error-inline"/>
 
-    <TextField fx:id="titreField" promptText="Titre"/>
-    <TextArea fx:id="contenuField" promptText="Contenu"/>
+    <VBox spacing="20" styleClass="sp-card">
+        <VBox spacing="8">
+            <Label text="Titre du Quiz" styleClass="sp-card-title"/>
+            <TextField fx:id="titreField" promptText="Ex: Introduction au Java"/>
+        </VBox>
 
-    <TextField fx:id="dureeField" promptText="Durée (min)"/>
+        <VBox spacing="8">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Contenu pédagogique" styleClass="sp-card-title"/>
+                <HBox HBox.hgrow="ALWAYS"/>
+                <Button fx:id="aiGenBtn" text="🤖 Générer QCM avec IA" onAction="#handleAiGenerate" styleClass="sp-btn sp-btn-secondary"/>
+            </HBox>
+            <TextArea fx:id="contenuField" promptText="Saisissez le texte du cours pour que l'IA puisse générer des questions Vrai/Faux." prefHeight="150"/>
+        </VBox>
 
-    <HBox spacing="10">
+        <VBox spacing="8">
+            <Label text="Durée (minutes)" styleClass="sp-card-title"/>
+            <TextField fx:id="dureeField" promptText="Ex: 30"/>
+        </VBox>
+    </VBox>
+
+    <HBox spacing="15">
         <Button text="Annuler" onAction="#handleCancel" styleClass="sp-btn sp-btn-secondary"/>
-        <Button text="Enregistrer" onAction="#handleSave" styleClass="sp-btn sp-btn-primary"/>
+        <Button text="🚀 Enregistrer le Quiz" onAction="#handleSave" styleClass="sp-btn sp-btn-primary"/>
     </HBox>
 </VBox>

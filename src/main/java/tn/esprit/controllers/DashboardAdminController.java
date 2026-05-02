@@ -38,6 +38,7 @@ public class DashboardAdminController {
     @FXML private Button btnGestionEtudiants;
     @FXML private Button btnFilieres;
     @FXML private Button btnOffres;
+    @FXML private Button btnMatieres;
 
     // ── Statistiques (bouton toggle + sous-menu) ─────────────────────────
     @FXML private Button btnStatistiques;
@@ -130,6 +131,18 @@ public class DashboardAdminController {
     @FXML public void showOffres() {
         setActiveButton(btnOffres);
         navigate("/tn/esprit/interfaces/GestionOffres.fxml", "Offres de stage");
+    }
+
+    @FXML public void showMatieres() {
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/tn/esprit/feature_cours_et_quiz/app-shell.fxml"));
+            javafx.scene.Parent root = loader.load();
+            tn.esprit.controllers.feature_cours_et_quiz.AppShellController shellController = loader.getController();
+            shellController.onAfterLogin();
+            btnDashboard.getScene().setRoot(root);
+        } catch (Exception e) {
+            System.out.println("Erreur chargement Matières : " + e.getMessage());
+        }
     }
 
     // ── Sous-menu Statistiques ─────────────────────────────────────────────

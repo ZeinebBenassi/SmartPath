@@ -252,6 +252,9 @@ public class ChatbotService {
         }
 
         private synchronized String resolveModelId() {
+                String groqModel = ConfigLoader.get("GROQ_MODEL");
+                if (groqModel != null && !groqModel.isEmpty()) return groqModel.trim();
+
                 String model = ConfigLoader.get("hf.model");
                 if (model == null || model.isBlank()) model = System.getenv("HF_MODEL");
                 if (model == null || model.isBlank()) model = DEFAULT_MODEL;
@@ -263,17 +266,22 @@ public class ChatbotService {
     private CompletableFuture<String> callHuggingFace(String userMessage, String apiKey) {
 
         String model = resolveModelId();
+        String baseUrl = ConfigLoader.get("GROQ_API_URL");
+        if (baseUrl == null || baseUrl.isEmpty()) {
+            baseUrl = HF_API_URL;
+        }
+
         String jsonBody = "{"
             + "\"model\":" + jsonString(model) + ","
             + "\"stream\":false,"
             + "\"temperature\":0.6,"
             + "\"top_p\":0.9,"
-            + "\"max_tokens\":256,"
+            + "\"max_tokens\":1024,"
             + "\"messages\":" + buildMessagesJson(userMessage)
             + "}";
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(HF_API_URL))
+                .uri(URI.create(baseUrl))
                 .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + apiKey)
                 .timeout(Duration.ofSeconds(120))
@@ -294,13 +302,13 @@ public class ChatbotService {
                         }
                     }
                     return switch (status) {
-                        case 401 -> "Cle API invalide. Verifie hf.api_key dans config.properties.";
-                        case 403 -> "Acces refuse. Verifie ton token et/ou les conditions du modele sur Hugging Face.";
-                        case 400 -> "Requete invalide (400). " + extractBadRequestMessage(response.body());
-                        case 404 -> "Endpoint/model introuvable (404). Verifie l'URL d'inference et le nom du modele.";
-                        case 429 -> "Trop de requetes. Attends quelques secondes et reessaie.";
+                        case 401 -> "Clé API invalide. Vérifie ta configuration dans .env ou config.properties.";
+                        case 403 -> "Accès refusé. Vérifie tes permissions API.";
+                        case 400 -> "Requête invalide (400). " + extractBadRequestMessage(response.body());
+                        case 404 -> "Modèle ou endpoint introuvable (404).";
+                        case 429 -> "Trop de requêtes. Attends quelques secondes et réessaie.";
                         default  -> status >= 500
-                                ? "Serveur Hugging Face indisponible (" + status + "). Reessaie dans un moment."
+                                ? "Erreur serveur API (" + status + "). Réessaie dans un moment."
                                 : parseResponse(response.body());
                     };
                 })
@@ -406,13 +414,20 @@ public class ChatbotService {
     private synchronized String resolveApiKey() {
         if (cachedApiKey != null) return cachedApiKey;
 
+        // On essaye Groq via .env (priorité)
+        String groqKey = ConfigLoader.get("GROQ_API_KEY");
+        if (groqKey != null && !groqKey.isEmpty() && !groqKey.contains("REMPLACE")) {
+            cachedApiKey = groqKey.trim();
+            return cachedApiKey;
+        }
+
         String key = ConfigLoader.get("hf.api_key");
         if (key == null || key.isBlank() || key.startsWith("hf_REMPLACE"))
             key = System.getenv("HF_API_KEY");
 
         if (key == null || key.isBlank() || key.startsWith("hf_REMPLACE"))
             throw new IllegalStateException(
-                    "Cle HF manquante -> config.properties : hf.api_key=hf_...");
+                    "Clé API manquante. Configure GROQ_API_KEY dans .env ou hf.api_key dans config.properties.");
 
         cachedApiKey = key.trim();
         return cachedApiKey;

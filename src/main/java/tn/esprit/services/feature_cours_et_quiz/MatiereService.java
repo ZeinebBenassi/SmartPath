@@ -22,7 +22,9 @@ public class MatiereService {
             list.add(new Matiere(
                     rs.getInt("id"),
                     rs.getString("titre"),
-                    rs.getString("description")
+                    rs.getString("description"),
+                    rs.getDouble("rating"),
+                    rs.getInt("nb_avis")
             ));
         }
         return list;
@@ -100,6 +102,15 @@ public class MatiereService {
         ps.setString(1, m.getTitre());
         ps.setString(2, m.getDescription());
         ps.setInt(3, m.getId());
+        ps.executeUpdate();
+    }
+
+    public void rate(int matiereId, int note) throws SQLException {
+        // Simple incremental rating logic
+        String sql = "UPDATE matiere SET rating = (rating * nb_avis + ?) / (nb_avis + 1), nb_avis = nb_avis + 1 WHERE id=?";
+        PreparedStatement ps = getConnection().prepareStatement(sql);
+        ps.setInt(1, note);
+        ps.setInt(2, matiereId);
         ps.executeUpdate();
     }
 

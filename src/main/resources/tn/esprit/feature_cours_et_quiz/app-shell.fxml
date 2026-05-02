@@ -26,6 +26,7 @@
                 <HBox spacing="10">
                     <Label fx:id="userLabel" text="" styleClass="user-pill"/>
                     <Label fx:id="roleBadge" text="" styleClass="role-badge"/>
+                    <Button text="Retour Dashboard" onAction="#handleReturnDashboard" styleClass="sp-btn"/>
                     <Button text="Deconnexion" onAction="#handleLogout" styleClass="sp-btn sp-btn-danger"/>
                 </HBox>
             </HBox>

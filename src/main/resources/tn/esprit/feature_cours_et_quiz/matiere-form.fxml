@@ -20,11 +20,20 @@
 
     <Label fx:id="errorLabel" text="" styleClass="error-inline"/>
 
-    <TextField fx:id="titreField" promptText="Titre"/>
-    <TextArea fx:id="descField" promptText="Description"/>
+    <VBox spacing="20" styleClass="sp-card">
+        <VBox spacing="8">
+            <Label text="Nom de la matière" styleClass="sp-card-title"/>
+            <TextField fx:id="titreField" promptText="Ex: Développement Java"/>
+        </VBox>
 
-    <HBox spacing="10">
+        <VBox spacing="8">
+            <Label text="Description" styleClass="sp-card-title"/>
+            <TextArea fx:id="descField" promptText="Décrivez brièvement le programme de cette matière..." prefHeight="150"/>
+        </VBox>
+    </VBox>
+
+    <HBox spacing="15">
         <Button text="Annuler" onAction="#handleCancel" styleClass="sp-btn sp-btn-secondary"/>
-        <Button text="Enregistrer" onAction="#handleSave" styleClass="sp-btn sp-btn-primary"/>
+        <Button text="💾 Enregistrer la Matière" onAction="#handleSave" styleClass="sp-btn sp-btn-primary"/>
     </HBox>
 </VBox>

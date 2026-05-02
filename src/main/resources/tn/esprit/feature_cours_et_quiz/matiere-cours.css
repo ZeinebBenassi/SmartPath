@@ -1,0 +1,48 @@
+/* ═══════════════════════════════════════════════════════════════
+   SmartPath — Matiere Cours CSS
+   ═══════════════════════════════════════════════════════════════ */
+
+.sp-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 16;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 16;
+    -fx-padding: 24;
+    -fx-spacing: 14;
+}
+
+.sp-card-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #1E293B;
+}
+
+.list-view {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 16;
+    -fx-border-color: #E2E8F0;
+}
+
+.sp-btn {
+    -fx-background-color: #2563EB;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 10;
+    -fx-padding: 10 20;
+}
+
+.sp-btn-secondary {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #475569;
+    -fx-border-color: #E2E8F0;
+}
+
+.star-icon {
+    -fx-font-size: 26px;
+    -fx-cursor: hand;
+    -fx-text-fill: #CBD5E1;
+}
+
+.star-icon-active {
+    -fx-text-fill: #FBBF24;
+}

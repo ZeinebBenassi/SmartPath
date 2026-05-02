@@ -123,7 +123,18 @@ public class DashboardEtudiantController {
         ProfilController.setCurrentUser(currentUser);  // ✅ Fix: passer user au bon controller
         navigate("/tn/esprit/interfaces/Profil.fxml");
     }
-    @FXML public void showCours()  { setActiveButton(btnCours);  navigate("/tn/esprit/interfaces/Cours.fxml"); }
+    @FXML public void showCours()  {
+        setActiveButton(btnCours);
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/tn/esprit/feature_cours_et_quiz/app-shell.fxml"));
+            javafx.scene.Parent root = loader.load();
+            tn.esprit.controllers.feature_cours_et_quiz.AppShellController shellController = loader.getController();
+            shellController.onAfterLogin();
+            btnCours.getScene().setRoot(root);
+        } catch (Exception e) {
+            System.out.println("Erreur chargement Matières : " + e.getMessage());
+        }
+    }
     @FXML public void showStages() { setActiveButton(btnStages); navigate("/tn/esprit/interfaces/Stages.fxml"); }
     @FXML public void showReleve() {
         setActiveButton(btnReleve);
@@ -133,8 +144,16 @@ public class DashboardEtudiantController {
 
     @FXML public void showQuiz() {
         setActiveButton(btnQuiz);
-        try { QuizPlayerController.setCurrentUser(currentUser); navigate("/tn/esprit/interfaces/QuizPlayer.fxml"); }
-        catch (Exception e) { navigate("/tn/esprit/interfaces/Quiz.fxml"); }
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/tn/esprit/feature_cours_et_quiz/app-shell.fxml"));
+            javafx.scene.Parent root = loader.load();
+            tn.esprit.controllers.feature_cours_et_quiz.AppShellController shellController = loader.getController();
+            shellController.onAfterLogin();
+            shellController.showQuiz();
+            btnQuiz.getScene().setRoot(root);
+        } catch (Exception e) {
+            System.out.println("Erreur chargement Quiz : " + e.getMessage());
+        }
     }
 
     @FXML public void returnToSourceDashboard() {

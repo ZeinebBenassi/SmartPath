@@ -4,6 +4,7 @@ import tn.esprit.entity.feature_cours_et_quiz.Quiz;
 import tn.esprit.entity.feature_cours_et_quiz.Matiere;
 import tn.esprit.entity.feature_cours_et_quiz.Role;
 import tn.esprit.entity.feature_cours_et_quiz.Question;
+import tn.esprit.services.feature_cours_et_quiz.BadWordsService;
 import tn.esprit.services.feature_cours_et_quiz.QuestionService;
 import tn.esprit.services.feature_cours_et_quiz.QuizCrudService;
 import tn.esprit.utils.feature_cours_et_quiz.AccessControl;
@@ -11,6 +12,7 @@ import tn.esprit.utils.feature_cours_et_quiz.AppSession;
 import tn.esprit.utils.feature_cours_et_quiz.RoleUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
@@ -29,9 +31,11 @@ public class QuizFormController implements NavigableController {
     @FXML private TextArea contenuField;
     @FXML private TextField dureeField;
     @FXML private Label errorLabel;
+    @FXML private Button aiGenBtn;
 
     private final QuizCrudService service = new QuizCrudService();
     private final QuestionService questionService = new QuestionService();
+    private final tn.esprit.services.ChatbotService chatbotService = new tn.esprit.services.ChatbotService();
 
     private final Role role = RoleUtils.normalize(AppSession.getCurrentUser() == null ? null : AppSession.getCurrentUser().getType());
 
@@ -116,6 +120,12 @@ public class QuizFormController implements NavigableController {
             if (errorLabel != null) errorLabel.setText("Le titre doit contenir au moins 3 caractères.");
             return;
         }
+
+        if (BadWordsService.containsBadWords(titre) || BadWordsService.containsBadWords(contenu)) {
+            if (errorLabel != null) errorLabel.setText("Le contenu contient des mots inappropriés.");
+            return;
+        }
+
         if (duree <= 0) {
             if (errorLabel != null) errorLabel.setText("La durée doit être un nombre > 0.");
             return;
@@ -136,7 +146,11 @@ public class QuizFormController implements NavigableController {
                 int profId = AppSession.getCurrentUser() == null ? 0 : AppSession.getCurrentUser().getId();
                 int quizId = service.createAndReturnId(q, profId);
                 if (quizId > 0) {
-                    createQuestionsFlow(quizId);
+                    if (tempGeneratedQuestions != null) {
+                        saveGeneratedQuestions(quizId, tempGeneratedQuestions);
+                    } else {
+                        createQuestionsFlow(quizId);
+                    }
                 }
             } else {
                 existing.setTitre(titre);
@@ -230,6 +244,96 @@ public class QuizFormController implements NavigableController {
         });
 
         return dialog.showAndWait();
+    }
+
+    @FXML
+    public void handleAiGenerate() {
+        String content = safe(contenuField.getText());
+        if (content.isBlank()) {
+            new Alert(Alert.AlertType.WARNING, "Veuillez d'abord saisir le contenu du cours pour générer des questions.").showAndWait();
+            return;
+        }
+
+        aiGenBtn.setDisable(true);
+        aiGenBtn.setText("🤖 Génération...");
+
+        String prompt = "Génère exactement 5 questions de type 'Vrai ou Faux' à partir du contenu suivant. " +
+                "Réponds UNIQUEMENT avec les questions séparées par des sauts de ligne, sans numérotation ni introduction.\n\n" +
+                "Contenu : " + content;
+
+        chatbotService.askAsync(prompt)
+            .thenAccept(response -> {
+                javafx.application.Platform.runLater(() -> {
+                    aiGenBtn.setDisable(false);
+                    aiGenBtn.setText("🤖 Générer avec IA");
+                    
+                    if (response == null || response.isBlank()) return;
+                    
+                    String[] lines = response.split("\n");
+                    StringBuilder preview = new StringBuilder();
+                    for (String line : lines) {
+                        if (!line.trim().isBlank()) {
+                            preview.append("- ").append(line.trim()).append("\n");
+                        }
+                    }
+
+                    // Show preview dialog
+                    Alert previewAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                    previewAlert.setTitle("Approuver les questions");
+                    previewAlert.setHeaderText("Voici les questions générées (Vrai/Faux) :");
+                    TextArea area = new TextArea(preview.toString());
+                    area.setEditable(false);
+                    area.setWrapText(true);
+                    previewAlert.getDialogPane().setContent(area);
+                    
+                    ButtonType approve = new ButtonType("Approuver et Enregistrer");
+                    previewAlert.getButtonTypes().setAll(approve, ButtonType.CANCEL);
+
+                    previewAlert.showAndWait().ifPresent(btn -> {
+                        if (btn == approve) {
+                            // Save these questions as drafts to be saved when handleSave is called
+                            // Or save them immediately if the quiz exists
+                            if (existing != null) {
+                                saveGeneratedQuestions(existing.getId(), lines);
+                            } else {
+                                // For new quiz, we'll store them in a temporary list and save after quiz creation
+                                this.tempGeneratedQuestions = lines;
+                                new Alert(Alert.AlertType.INFORMATION, "Questions approuvées ! Elles seront créées avec le quiz.").showAndWait();
+                            }
+                        }
+                    });
+                });
+            })
+            .exceptionally(ex -> {
+                javafx.application.Platform.runLater(() -> {
+                    aiGenBtn.setDisable(false);
+                    aiGenBtn.setText("🤖 Générer avec IA");
+                    new Alert(Alert.AlertType.ERROR, "Erreur AI: " + ex.getMessage()).showAndWait();
+                });
+                return null;
+            });
+    }
+
+    private String[] tempGeneratedQuestions;
+
+    private void saveGeneratedQuestions(int quizId, String[] lines) {
+        int profId = AppSession.getCurrentUser() == null ? 0 : AppSession.getCurrentUser().getId();
+        int i = 1;
+        for (String line : lines) {
+            if (line.trim().isBlank()) continue;
+            try {
+                Question q = new Question();
+                q.setText(line.trim());
+                q.setCategory("AI Generated (Vrai/Faux)");
+                q.setOrdre(i++);
+                q.setActive(true);
+                q.setTestId(quizId);
+                questionService.createForTestId(quizId, q, profId);
+            } catch (SQLException e) {
+                new Alert(Alert.AlertType.ERROR, "Erreur: " + e.getMessage()).showAndWait();
+            }
+        }
+        new Alert(Alert.AlertType.INFORMATION, "5 questions ont été ajoutées au quiz !").showAndWait();
     }
 
     private record QuestionDraft(String text, String category) {}

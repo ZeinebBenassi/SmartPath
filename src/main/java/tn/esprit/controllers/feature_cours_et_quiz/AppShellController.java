@@ -74,6 +74,24 @@ public class AppShellController {
         }
     }
 
+    @FXML
+    public void handleReturnDashboard() {
+        try {
+            User user = AppSession.getCurrentUser();
+            String fxml = "/tn/esprit/interfaces/DashboardEtudiant.fxml";
+            if (user != null) {
+                switch (user.getType()) {
+                    case "admin" -> fxml = "/tn/esprit/interfaces/DashboardAdmin.fxml";
+                    case "prof" -> fxml = "/tn/esprit/interfaces/DashboardProf.fxml";
+                }
+            }
+            Parent root = javafx.fxml.FXMLLoader.load(getClass().getResource(fxml));
+            matieresBtn.getScene().setRoot(root);
+        } catch (IOException e) {
+            new Alert(Alert.AlertType.ERROR, "Erreur de retour: " + e.getMessage()).showAndWait();
+        }
+    }
+
     public void showMatiereForm(Matiere existing) {
         try {
             ViewNavigator.LoadedView view = ViewNavigator.load("/tn/esprit/feature_cours_et_quiz/matiere-form.fxml");

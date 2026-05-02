@@ -18,31 +18,41 @@
         <Button text="← Retour" onAction="#handleBack" styleClass="sp-btn sp-btn-secondary"/>
         <VBox spacing="2">
             <Label fx:id="matiereTitle" text="📖 Cours" styleClass="section-title"/>
-            <Label text="Sélectionnez une leçon pour lire son contenu." styleClass="sp-card-meta"/>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Sélectionnez une leçon pour lire son contenu." styleClass="sp-card-meta"/>
+                <HBox fx:id="starsContainer" spacing="4" alignment="CENTER_LEFT"/>
+            </HBox>
         </VBox>
     </HBox>
 
     <Label fx:id="errorLabel" text="" styleClass="error-inline"/>
 
-    <HBox spacing="16">
-        <VBox spacing="10" prefWidth="320" styleClass="sp-card">
-            <Label text="Leçons" styleClass="sp-card-title"/>
+    <HBox spacing="20">
+        <VBox spacing="15" prefWidth="350">
+            <VBox spacing="10" styleClass="sp-card">
+                <Label text="📚 Liste des Leçons" styleClass="sp-card-title"/>
+                <Label text="Sélectionnez un chapitre pour commencer." styleClass="sp-card-meta"/>
+                
+                <VBox fx:id="pdfDropZone" styleClass="sp-dropzone">
+                    <Label text="📄 Nouveau PDF" styleClass="sp-card-title"/>
+                    <Label text="Déposez ici pour uploader" styleClass="sp-card-meta"/>
+                </VBox>
 
-            <VBox fx:id="pdfDropZone" styleClass="sp-dropzone">
-                <Label text="📄 Ajouter un cours (PDF)" styleClass="sp-card-title"/>
-                <Label text="Glissez-déposez un fichier .pdf ici (ADMIN / PROF)." styleClass="sp-card-meta" wrapText="true"/>
+                <ListView fx:id="leconsList" prefHeight="450"/>
             </VBox>
-
-            <ListView fx:id="leconsList" prefHeight="520"/>
         </VBox>
 
-        <VBox spacing="10" HBox.hgrow="ALWAYS" styleClass="sp-card">
-            <HBox spacing="10">
-                <Label text="Contenu" styleClass="sp-card-title"/>
-                <HBox HBox.hgrow="ALWAYS"/>
-                <Button fx:id="openPdfBtn" text="Ouvrir PDF" onAction="#handleOpenPdf" styleClass="sp-btn sp-btn-secondary"/>
-            </HBox>
-            <TextArea fx:id="contenuArea" editable="false" wrapText="true" prefHeight="520"/>
+        <VBox spacing="15" HBox.hgrow="ALWAYS">
+            <VBox spacing="15" styleClass="sp-card" VBox.vgrow="ALWAYS">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="📖 Contenu de la leçon" styleClass="sp-card-title"/>
+                    <HBox HBox.hgrow="ALWAYS"/>
+                    <Button fx:id="translateBtn" text="🌐 Traduire" onAction="#handleTranslate" styleClass="sp-btn sp-btn-secondary"/>
+                    <Button fx:id="aiExplainBtn" text="🤖 Expliquer avec IA" onAction="#handleAiExplain" styleClass="sp-btn sp-btn-secondary"/>
+                    <Button fx:id="openPdfBtn" text="📂 Ouvrir PDF" onAction="#handleOpenPdf" styleClass="sp-btn sp-btn-primary"/>
+                </HBox>
+                <TextArea fx:id="contenuArea" editable="false" wrapText="true" prefHeight="550" VBox.vgrow="ALWAYS"/>
+            </VBox>
         </VBox>
     </HBox>
 

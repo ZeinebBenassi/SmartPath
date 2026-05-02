@@ -1,5 +1,23 @@
-/* Page-specific overrides for home.fxml. */
+/* ═══════════════════════════════════════════════════════════════
+   SmartPath — home.css
+   ═══════════════════════════════════════════════════════════════ */
 
-.welcome-banner .button {
-    -fx-min-width: 220;
+/* Banner inner button overrides (white variant on blue bg) */
+.welcome-banner .sp-btn-secondary {
+    -fx-background-color: rgba(255,255,255,0.18);
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: rgba(255,255,255,0.50);
+    -fx-border-radius: 10;
+    -fx-border-width: 1.5;
+}
+
+.welcome-banner .sp-btn-secondary:hover {
+    -fx-background-color: rgba(255,255,255,0.30);
+    -fx-border-color: rgba(255,255,255,0.80);
+}
+
+/* Quick-action row */
+.quick-actions-row {
+    -fx-padding: 4 0 0 0;
+    -fx-spacing: 12;
 }

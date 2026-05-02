@@ -1,0 +1,37 @@
+/* ═══════════════════════════════════════════════════════════════
+   SmartPath — Home CSS
+   ═══════════════════════════════════════════════════════════════ */
+
+.root {
+    -fx-background-color: #F4F7FB;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.sp-bg {
+    -fx-background-color: #F4F7FB;
+}
+
+.section-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #1E293B;
+}
+
+.welcome-banner {
+    -fx-background-color: linear-gradient(to right, #2563EB, #3B82F6);
+    -fx-padding: 40;
+    -fx-background-radius: 20;
+    -fx-spacing: 10;
+    -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.3), 20, 0, 0, 8);
+}
+
+.welcome-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: 900;
+    -fx-text-fill: white;
+}
+
+.welcome-desc {
+    -fx-font-size: 15px;
+    -fx-text-fill: rgba(255, 255, 255, 0.9);
+}

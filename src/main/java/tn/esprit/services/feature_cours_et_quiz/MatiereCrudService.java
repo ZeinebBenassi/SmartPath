@@ -23,6 +23,10 @@ public class MatiereCrudService {
         delegate.update(matiere);
     }
 
+    public void rate(int matiereId, int note) throws SQLException {
+        delegate.rate(matiereId, note);
+    }
+
     public void delete(int id) throws SQLException {
         delegate.delete(id);
     }

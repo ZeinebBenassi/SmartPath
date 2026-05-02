@@ -213,6 +213,7 @@ public class LoginController {
     //  Navigation
     // ─────────────────────────────────────────────────────────────────────────
     private void navigateToDashboard(User user) {
+        tn.esprit.utils.feature_cours_et_quiz.AppSession.setCurrentUser(user);
         try {
             String fxml;
             switch (user.getType()) {

@@ -1,67 +1,104 @@
-/* ─── quiz-pass.css ──────────────────────────────────────────── */
+/* ═══════════════════════════════════════════════════════════════
+   SmartPath — quiz-pass.css
+   ═══════════════════════════════════════════════════════════════ */
 
-/* ── Text area inside question cards ── */
-.sp-card .text-area {
-    -fx-min-height: 90;
-    -fx-font-size: 13px;
-    -fx-background-color: rgba(255, 255, 255, 0.04);
-    -fx-border-color: rgba(255, 255, 255, 0.10);
-    -fx-border-width: 1;
-    -fx-border-radius: 6;
-    -fx-background-radius: 6;
-    -fx-text-fill: rgba(226, 232, 240, 0.90);
-    -fx-prompt-text-fill: rgba(148, 163, 184, 0.55);
-    -fx-padding: 8 10;
+/* Question card blocks (added dynamically in questionsBox) */
+.question-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 14;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 14;
+    -fx-border-width: 1.5;
+    -fx-padding: 20 24 20 24;
+    -fx-spacing: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.04), 10, 0, 0, 3);
 }
 
-.sp-card-title {
-    -fx-line-spacing: 2px;
-    -fx-font-size: 14px;
+.question-card:hover {
+    -fx-border-color: #BFDBFE;
+}
+
+/* Question text label */
+.question-text {
+    -fx-font-size: 15px;
     -fx-font-weight: 700;
-    -fx-text-fill: rgba(226, 232, 240, 0.98);
+    -fx-text-fill: #1E293B;
+    -fx-wrap-text: true;
 }
 
-/* ── "Terminer" button — full-width row treatment ── */
-.sp-btn-primary {
-    -fx-background-color: linear-gradient(to bottom, #1a8a91, #01696f);
-    -fx-text-fill: #ffffff;
+/* Answer options */
+.answer-option {
     -fx-font-size: 14px;
-    -fx-font-weight: 700;
-    -fx-padding: 11 32;
-    -fx-background-radius: 8;
-    -fx-cursor: hand;
-    -fx-effect: dropshadow(gaussian, rgba(1, 105, 111, 0.45), 10, 0, 0, 2);
-}
-
-.sp-btn-primary:hover {
-    -fx-background-color: linear-gradient(to bottom, #22a0a8, #0c7e85);
-    -fx-effect: dropshadow(gaussian, rgba(1, 105, 111, 0.60), 14, 0, 0, 3);
-}
-
-.sp-btn-primary:pressed {
-    -fx-background-color: #015d62;
-    -fx-effect: none;
-}
-
-/* ── Back button ── */
-.sp-btn-secondary {
-    -fx-background-color: rgba(255, 255, 255, 0.07);
-    -fx-text-fill: rgba(203, 213, 225, 0.90);
-    -fx-font-size: 14px;
-    -fx-font-weight: 600;
-    -fx-padding: 9 18;
-    -fx-background-radius: 8;
-    -fx-border-color: rgba(255, 255, 255, 0.16);
-    -fx-border-width: 1;
-    -fx-border-radius: 8;
+    -fx-text-fill: #475569;
+    -fx-padding: 10 14 10 14;
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 9;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 9;
+    -fx-border-width: 1.5;
     -fx-cursor: hand;
 }
 
-.sp-btn-secondary:hover {
-    -fx-background-color: rgba(255, 255, 255, 0.12);
-    -fx-border-color: rgba(255, 255, 255, 0.28);
+.answer-option:hover {
+    -fx-background-color: #EFF6FF;
+    -fx-border-color: #93C5FD;
+    -fx-text-fill: #2563EB;
 }
 
-.sp-btn-secondary:pressed {
-    -fx-background-color: rgba(255, 255, 255, 0.04);
+.answer-option-selected {
+    -fx-background-color: #EFF6FF;
+    -fx-border-color: #2563EB;
+    -fx-text-fill: #2563EB;
+    -fx-font-weight: bold;
+}
+
+/* Correct / wrong feedback states */
+.answer-correct {
+    -fx-background-color: #F0FDF4;
+    -fx-border-color: #4ADE80;
+    -fx-text-fill: #15803D;
+    -fx-font-weight: bold;
+}
+
+.answer-wrong {
+    -fx-background-color: #FEF2F2;
+    -fx-border-color: #FCA5A5;
+    -fx-text-fill: #DC2626;
+    -fx-font-weight: bold;
+}
+
+/* Finish button — prominent */
+#finishBtn {
+    -fx-font-size: 14px;
+    -fx-padding: 12 30 12 30;
+    -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.30), 10, 0, 0, 4);
+}
+
+#finishBtn:hover {
+    -fx-background-color: #1D4ED8;
+    -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.45), 14, 0, 0, 6);
+}
+
+/* Score result box (shown after finish) */
+.score-box {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 18;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 18;
+    -fx-border-width: 1.5;
+    -fx-padding: 32;
+    -fx-alignment: CENTER;
+    -fx-spacing: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 16, 0, 0, 6);
+}
+
+.score-label {
+    -fx-font-size: 48px;
+    -fx-font-weight: 900;
+    -fx-text-fill: #2563EB;
+}
+
+.score-sub {
+    -fx-font-size: 15px;
+    -fx-text-fill: #64748B;
 }

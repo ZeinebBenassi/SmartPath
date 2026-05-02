@@ -1,18 +1,29 @@
 package tn.esprit.services;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * Lit config.properties depuis la racine du classpath ou du projet.
+ * Lit .env et config.properties.
  */
 public class ConfigLoader {
 
     private static final Properties props = new Properties();
+    private static Dotenv dotenv;
 
     static {
-        // 1) Essai depuis le classpath (src/main/resources ou racine)
+        // 1) Charger .env
+        try {
+            dotenv = Dotenv.configure()
+                    .directory("./")
+                    .ignoreIfMalformed()
+                    .ignoreIfMissing()
+                    .load();
+        } catch (Exception ignored) {}
+
+        // 2) Essai depuis le classpath (config.properties)
         try (InputStream is = ConfigLoader.class.getClassLoader()
                 .getResourceAsStream("config.properties")) {
             if (is != null) {
@@ -29,9 +40,17 @@ public class ConfigLoader {
     }
 
     public static String get(String key) {
-        // Priorité : variable d'environnement, puis properties
+        // Priorité 1 : .env
+        if (dotenv != null) {
+            String val = dotenv.get(key);
+            if (val != null && !val.isEmpty()) return val;
+        }
+
+        // Priorité 2 : variable d'environnement système
         String env = System.getenv(key);
         if (env != null && !env.isEmpty()) return env;
+
+        // Priorité 3 : properties
         return props.getProperty(key, "");
     }
 }

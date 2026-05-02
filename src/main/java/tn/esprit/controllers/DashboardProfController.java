@@ -56,8 +56,19 @@ public class DashboardProfController {
     }
 
     @FXML public void showDashboard()  { setActiveButton(btnDashboard); if (pageTitle != null) pageTitle.setText("Tableau de bord"); showOnly(dashboardView); }
-    @FXML public void showMatieres()   { setActiveButton(btnMatieres);  if (pageTitle != null) pageTitle.setText("Mes matières"); showOnly(dashboardView); }
-    @FXML public void showLecons()     { setActiveButton(btnLecons);    navigate("/tn/esprit/interfaces/Cours.fxml", "Mes leçons"); }
+    @FXML public void showMatieres() {
+        setActiveButton(btnMatieres);
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(getClass().getResource("/tn/esprit/feature_cours_et_quiz/app-shell.fxml"));
+            javafx.scene.Parent root = loader.load();
+            tn.esprit.controllers.feature_cours_et_quiz.AppShellController shellController = loader.getController();
+            shellController.onAfterLogin();
+            btnDashboard.getScene().setRoot(root);
+        } catch (Exception e) {
+            System.out.println("Erreur chargement Matières : " + e.getMessage());
+        }
+    }
+    @FXML public void showLecons() { showMatieres(); }
     @FXML public void showTests()      { setActiveButton(btnTests);     if (pageTitle != null) pageTitle.setText("Tests / Évaluations"); showOnly(dashboardView); }
     @FXML public void showEtudiants()  { setActiveButton(btnEtudiants); if (pageTitle != null) pageTitle.setText("Mes étudiants"); showOnly(dashboardView); }
     @FXML public void showProfil()     { setActiveButton(btnProfil);    navigate("/tn/esprit/interfaces/Profil.fxml", "Mon profil"); }
