@@ -32,12 +32,32 @@ public class ReleveAnalyserService {
 
     private String getGroqApiKey() {
         if (groqApiKey != null) return groqApiKey;
-        // 1. Variable d'environnement (priorité haute)
+        // 1. Variable d'environnement système
         String envKey = System.getenv("GROQ_API_KEY");
         if (envKey != null && !envKey.isBlank()) { groqApiKey = envKey; return groqApiKey; }
+        // 2. Lire depuis config.properties à la racine du projet
+        String[] configPaths = {
+            "config.properties",
+            System.getProperty("user.dir") + java.io.File.separator + "config.properties",
+            new java.io.File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath())
+                .getParentFile().getParentFile().getAbsolutePath() + java.io.File.separator + "config.properties"
+        };
+        for (String path : configPaths) {
+            try {
+                java.io.File configFile = new java.io.File(path);
+                if (configFile.exists()) {
+                    java.util.Properties props = new java.util.Properties();
+                    try (java.io.FileInputStream fis = new java.io.FileInputStream(configFile)) {
+                        props.load(fis);
+                    }
+                    String val = props.getProperty("GROQ_API_KEY");
+                    if (val != null && !val.isBlank()) { groqApiKey = val.trim(); return groqApiKey; }
+                }
+            } catch (Exception ignored) {}
+        }
         throw new RuntimeException(
             "Clé GROQ_API_KEY introuvable !\n" +
-            "Définissez la variable d'environnement GROQ_API_KEY (gsk_...).");
+            "Vérifiez que config.properties à la racine du projet contient GROQ_API_KEY=gsk_...");
     }
 
     private final HttpClient http       = HttpClient.newHttpClient();
@@ -52,11 +72,42 @@ public class ReleveAnalyserService {
      * @return Map contenant : notesDetectees, moyenneGenerale, pointsForts,
      *                         pointsFaibles, scoreParFiliere, filiereRecommandee, conseil
      */
+    // Mots-clés qui doivent apparaître dans un vrai relevé de notes
+    private static final List<String> MOTS_CLES_RELEVE = List.of(
+        "note", "notes", "matière", "matiere", "moyenne", "résultat", "resultat",
+        "examen", "semestre", "coefficient", "coeff", "module", "filière", "filiere",
+        "étudiant", "etudiant", "université", "universite", "année", "annee",
+        "bac", "lycée", "lycee", "relevé", "releve", "bulletin", "session",
+        "mention", "admis", "ajourné", "note/20", "/20", "trimestre"
+    );
+
     public Map<String, Object> analyserFichier(File fichier, String fileType) throws Exception {
         String texte = extraireTexte(fichier, fileType);
         if (texte == null || texte.isBlank())
             throw new RuntimeException("Impossible d'extraire le texte du fichier.");
+        // ── Validation : vérifier que c'est bien un relevé de notes ──
+        validerReleveDeNotes(texte);
         return analyserTexte(texte);
+    }
+
+    /**
+     * Vérifie que le texte extrait ressemble à un relevé de notes.
+     * Lève une exception claire si ce n'est pas le cas.
+     */
+    private void validerReleveDeNotes(String texte) throws Exception {
+        String texteLower = texte.toLowerCase();
+        long nbMotsCles = MOTS_CLES_RELEVE.stream()
+                .filter(texteLower::contains)
+                .count();
+        // Si moins de 2 mots-clés trouvés → probablement pas un relevé
+        if (nbMotsCles < 2) {
+            throw new RuntimeException(
+                "❌ Le fichier uploadé ne semble pas être un relevé de notes.\n\n" +
+                "Veuillez uploader un document contenant vos notes académiques\n" +
+                "(bulletin scolaire, relevé universitaire, etc.).\n\n" +
+                "Format accepté : PDF, JPG, PNG, WEBP"
+            );
+        }
     }
 
     public String extraireTexte(File fichier, String fileType) throws Exception {

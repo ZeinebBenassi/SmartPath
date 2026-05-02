@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import tn.esprit.entity.User;
+import tn.esprit.services.NotificationService;
 import tn.esprit.services.UserService;
 
 import java.time.LocalDate;
@@ -39,14 +40,18 @@ public class DashboardAdminController {
     @FXML private Button btnOffres;
 
     // ── Statistiques (bouton toggle + sous-menu) ─────────────────────────
-    @FXML private Button btnStatistiques;       // bouton "📊 Statistiques ▾"
-    @FXML private VBox   statsSubMenu;          // sous-menu caché/visible
-    @FXML private Button btnStatistiquesUsers;  // → Stats Users
-    @FXML private Button btnStatistiquesQuiz;   // → Stats Quiz  ← correspond au FXML
+    @FXML private Button btnStatistiques;
+    @FXML private VBox   statsSubMenu;
+    @FXML private Button btnStatistiquesUsers;
+    @FXML private Button btnStatistiquesQuiz;
 
     // ── Quiz ─────────────────────────────────────────────────────────────
     @FXML private Button btnQuizAdmin;
     @FXML private Button btnQuizHistorique;
+
+    // ── Notifications ─────────────────────────────────────────────────────
+    @FXML private Button btnNotifications;  // cloche dans la topbar
+    @FXML private Label  lblNotifBadge;     // badge rouge compteur
 
     // ── Autres ───────────────────────────────────────────────────────────
     @FXML private Button btnProfil;
@@ -58,7 +63,8 @@ public class DashboardAdminController {
 
     // ── État ─────────────────────────────────────────────────────────────
     private static User currentUser;
-    private final UserService userService = new UserService();
+    private final UserService        userService  = new UserService();
+    private final NotificationService notifService = new NotificationService();
     private boolean usersMenuOpen = false;
     private boolean statsMenuOpen = false;
 
@@ -75,6 +81,7 @@ public class DashboardAdminController {
         if (currentUser != null && adminNameLabel != null)
             adminNameLabel.setText(currentUser.getPrenom() + " " + currentUser.getNom());
         loadStats();
+        refreshNotifBadge();
         setActiveButton(btnDashboard);
         showOnly(dashboardView);
         if (pageTitle != null) pageTitle.setText("Dashboard");
@@ -127,7 +134,6 @@ public class DashboardAdminController {
 
     // ── Sous-menu Statistiques ─────────────────────────────────────────────
 
-    /** Toggle le sous-menu Statistiques — appelé par btnStatistiques */
     @FXML public void toggleStatsMenu() {
         if (statsSubMenu == null) return;
         statsMenuOpen = !statsMenuOpen;
@@ -137,19 +143,11 @@ public class DashboardAdminController {
         if (statsMenuOpen) closeUsersMenu();
     }
 
-    /**
-     * Affiche les statistiques utilisateurs.
-     * Appelé par btnStatistiquesUsers (sidebar) et le bouton "Actions rapides".
-     */
     @FXML public void showStatistiquesUsers() {
         setActiveButton(btnStatistiques);
         navigate("/tn/esprit/interfaces/Statistiques.fxml", "📈 Statistiques Utilisateurs");
     }
 
-    /**
-     * Affiche les statistiques du Quiz — IDENTIQUE à admin_quiz_statistics Symfony.
-     * Appelé par btnStatistiquesQuiz (sidebar) et le bouton "Actions rapides".
-     */
     @FXML public void showStatistiquesQuiz() {
         setActiveButton(btnStatistiques);
         navigate("/tn/esprit/interfaces/QuizStatistiques.fxml", "📊 Statistiques Quiz");
@@ -164,7 +162,42 @@ public class DashboardAdminController {
 
     @FXML public void showQuizHistorique() {
         setActiveButton(btnQuizHistorique);
-        navigate("/tn/esprit/interfaces/QuizHistorique.fxml", "📋 Historique du Quiz");
+        navigate("/tn/esprit/interfaces/QuizHistorique.fxml", "📋 Historique Quiz");
+    }
+
+    // ── Notifications ──────────────────────────────────────────────────────
+
+    /** Ouvre le panneau de notifications dans le contentArea. */
+    @FXML public void showNotifications() {
+        if (pageTitle != null) pageTitle.setText("🔔 Notifications");
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/tn/esprit/interfaces/Notifications.fxml"));
+            Parent view = loader.load();
+            NotificationsController ctrl = loader.getController();
+            // Mise à jour du badge en temps réel quand l'utilisateur marque comme lu
+            ctrl.setOnUnreadCountChanged(count -> {
+                if (lblNotifBadge != null) {
+                    lblNotifBadge.setText(count > 0 ? String.valueOf(count) : "");
+                    lblNotifBadge.setVisible(count > 0);
+                    lblNotifBadge.setManaged(count > 0);
+                }
+            });
+            if (contentArea != null) contentArea.getChildren().setAll(view);
+        } catch (Exception e) {
+            System.out.println("Erreur showNotifications : " + e.getMessage());
+        }
+        // Après ouverture, rafraîchir le badge (peut avoir changé)
+        refreshNotifBadge();
+    }
+
+    /** Rafraîchit le badge rouge de la cloche avec le nombre de notifications non lues. */
+    public void refreshNotifBadge() {
+        if (lblNotifBadge == null) return;
+        int unread = notifService.countUnread();
+        lblNotifBadge.setText(unread > 0 ? String.valueOf(unread) : "");
+        lblNotifBadge.setVisible(unread > 0);
+        lblNotifBadge.setManaged(unread > 0);
     }
 
     // ── Profil / logout ────────────────────────────────────────────────────
