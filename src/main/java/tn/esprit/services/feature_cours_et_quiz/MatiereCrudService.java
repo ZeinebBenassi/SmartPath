@@ -15,6 +15,10 @@ public class MatiereCrudService {
         delegate.create(matiere);
     }
 
+    public void create(Matiere matiere, Integer profId) throws SQLException {
+        delegate.create(matiere, profId);
+    }
+
     public void update(Matiere matiere) throws SQLException {
         delegate.update(matiere);
     }
