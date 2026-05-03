@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.smartpath.controller.feature_cours_et_quiz.MatiereFormController"
+    fx:controller="tn.esprit.controllers.feature_cours_et_quiz.MatiereFormController"
   prefWidth="1100.0" prefHeight="700.0"
   stylesheets="@app.css,@matiere-form.css"
     styleClass="page-root sp-bg">

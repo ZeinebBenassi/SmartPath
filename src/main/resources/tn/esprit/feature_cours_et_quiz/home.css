@@ -1,5 +1,7 @@
 /* Page-specific overrides for home.fxml */
 
 .welcome-banner .button {
+    -fx-pref-width: 260;
     -fx-min-width: 220;
+    -fx-max-width: Infinity;
 }

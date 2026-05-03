@@ -226,6 +226,24 @@
 .btn-nav-next:hover    { -fx-background-color: #1d4ed8; }
 .btn-nav-next:disabled { -fx-background-color: #C7D2FE; -fx-effect: none; }
 
+/* Quick link buttons used in AI dashboard */
+.btn-link-youtube, .btn-link-udemy, .btn-link-coursera {
+    -fx-background-color: linear-gradient(to bottom right, #FFFFFF, #F3F4F6);
+    -fx-text-fill: #111827;
+    -fx-font-weight: 800;
+    -fx-padding: 8 14;
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(16,24,40,0.06);
+    -fx-border-width: 1;
+    -fx-cursor: hand;
+}
+.btn-link-youtube:hover { -fx-background-color: linear-gradient(to bottom right, #FFEDD5, #FEE2E2); -fx-text-fill: #B91C1C; }
+.btn-link-udemy:hover   { -fx-background-color: linear-gradient(to bottom right, #EFF6FF, #DBEAFE); -fx-text-fill: #1E40AF; }
+.btn-link-coursera:hover{ -fx-background-color: linear-gradient(to bottom right, #EEF2FF, #E9D5FF); -fx-text-fill: #6B21A8; }
+
+/* Ensure quick links have slight elevation */
+.btn-link-youtube, .btn-link-udemy, .btn-link-coursera { -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 6, 0, 0, 2); }
+
 /* ══════════════════════════════════════════════════════════════
    FORMULAIRES
    ══════════════════════════════════════════════════════════════ */

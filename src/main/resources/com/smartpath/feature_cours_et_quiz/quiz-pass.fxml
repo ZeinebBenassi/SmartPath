@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 
 <VBox xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="com.smartpath.controller.feature_cours_et_quiz.QuizPassController"
+    fx:controller="tn.esprit.controllers.feature_cours_et_quiz.QuizPassController"
       spacing="14"
     prefWidth="1100.0" prefHeight="700.0"
     stylesheets="@app.css,@quiz-pass.css"

@@ -12,6 +12,11 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = FXMLLoader.load(getClass().getResource("/tn/esprit/interfaces/Login.fxml"));
         Scene scene = new Scene(root);
+        // Ensure the global stylesheet is applied
+        try {
+            scene.getStylesheets().add(getClass().getResource("/tn/esprit/interfaces/smartpath.css").toExternalForm());
+        } catch (Exception ignored) {
+        }
         primaryStage.setTitle("SmartPath");
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(1100);

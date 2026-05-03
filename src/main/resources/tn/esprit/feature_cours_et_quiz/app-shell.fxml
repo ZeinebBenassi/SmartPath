@@ -23,10 +23,10 @@
                     <Button fx:id="quizBtn" text="Quiz" onAction="#showQuiz" styleClass="nav-btn"/>
                 </HBox>
 
-                <HBox spacing="10">
+                    <HBox spacing="10">
                     <Label fx:id="userLabel" text="" styleClass="user-pill"/>
                     <Label fx:id="roleBadge" text="" styleClass="role-badge"/>
-                    <Button text="Deconnexion" onAction="#handleLogout" styleClass="sp-btn sp-btn-danger"/>
+                    <Button fx:id="logoutBtn" text="Deconnexion" onAction="#handleLogout" styleClass="sp-btn sp-btn-danger"/>
                 </HBox>
             </HBox>
         </top>

@@ -23,6 +23,7 @@ public class AppShellController {
     @FXML private Button homeBtn;
     @FXML private Button matieresBtn;
     @FXML private Button quizBtn;
+    @FXML private Button logoutBtn;
 
     private Role currentRole = Role.ETUDIANT;
     private static String initialTab = "home";
@@ -164,6 +165,8 @@ public class AppShellController {
                 controller.setQuiz(quiz);
             }
             setContent(view.root());
+            // Hide logout button while a quiz is being taken to prevent accidental disconnects
+            if (logoutBtn != null) { logoutBtn.setVisible(false); logoutBtn.setManaged(false); }
         } catch (IOException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).showAndWait();
         }
@@ -196,6 +199,8 @@ public class AppShellController {
     private void setContent(Parent root) {
         if (contentHost != null) {
             contentHost.getChildren().setAll(root);
+            // Ensure logout button is visible when not in quiz-pass
+            if (logoutBtn != null) { logoutBtn.setVisible(true); logoutBtn.setManaged(true); }
         }
     }
 }
