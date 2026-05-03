@@ -21,4 +21,9 @@ public class Matiere {
     public void setDescription(String description) { this.description = description; }
     public int getFiliereId() { return filiereId; }
     public void setFiliereId(int filiereId) { this.filiereId = filiereId; }
+
+    @Override
+    public String toString() {
+        return titre == null ? "" : titre;
+    }
 }

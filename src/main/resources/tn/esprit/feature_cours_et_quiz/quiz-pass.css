@@ -1,0 +1,10 @@
+/* Page-specific overrides for quiz-pass.fxml */
+
+.radio-button {
+    -fx-text-fill: rgba(226, 232, 240, 0.92);
+    -fx-font-weight: 700;
+}
+
+.page-root > .h-box {
+    -fx-alignment: center-left;
+}

@@ -32,12 +32,15 @@ public class ReleveAnalyserService {
 
     private String getGroqApiKey() {
         if (groqApiKey != null) return groqApiKey;
-        // 1. Variable d'environnement (priorité haute)
-        String envKey = System.getenv("GROQ_API_KEY");
-        if (envKey != null && !envKey.isBlank()) { groqApiKey = envKey; return groqApiKey; }
+        String configKey = ConfigLoader.get("GROQ_API_KEY");
+        if (configKey != null && !configKey.isBlank()) { groqApiKey = configKey; return groqApiKey; }
+        String secondaryKey = ConfigLoader.get("GROQ_API_KEY_2");
+        if (secondaryKey != null && !secondaryKey.isBlank()) { groqApiKey = secondaryKey; return groqApiKey; }
+        String legacyKey = ConfigLoader.get("groq.api.key");
+        if (legacyKey != null && !legacyKey.isBlank()) { groqApiKey = legacyKey; return groqApiKey; }
         throw new RuntimeException(
             "Clé GROQ_API_KEY introuvable !\n" +
-            "Définissez la variable d'environnement GROQ_API_KEY (gsk_...).");
+            "Définissez GROQ_API_KEY dans config.properties ou comme variable d'environnement.");
     }
 
     private final HttpClient http       = HttpClient.newHttpClient();

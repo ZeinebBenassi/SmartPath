@@ -26,7 +26,7 @@ public class LoginController {
     @FXML private Label         errorLabel;
 
     // ── Section Face Auth ─────────────────────────────────────────────────────
-    @FXML private Button    faceToggleBtn;   // simple Button (pas ToggleButton)
+    @FXML private Button    faceToggleBtn;
     @FXML private VBox      facePanel;
     @FXML private ImageView cameraPreview;
     @FXML private Label     faceStatusLabel;
@@ -39,7 +39,7 @@ public class LoginController {
     private final FaceAuthService faceService  = FaceAuthService.getInstance();
 
     // ── État interne ──────────────────────────────────────────────────────────
-    private boolean  faceMode    = false;   // true = mode face auth activé
+    private boolean  faceMode    = false;
     private boolean  faceVerified = false;
     private Timeline cameraTimeline;
     private Mat      lastFrame;
@@ -53,56 +53,56 @@ public class LoginController {
         "-fx-font-size: 11; -fx-font-weight: bold; " +
         "-fx-background-radius: 20; -fx-cursor: hand; -fx-padding: 5 14; -fx-border-width: 0;";
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  Initialisation
-    // ─────────────────────────────────────────────────────────────────────────
     @FXML
     public void initialize() {
-        facePanel.setVisible(false);
-        facePanel.setManaged(false);
-        btnVerifyFace.setDisable(true);
+        if (facePanel != null) {
+            facePanel.setVisible(false);
+            facePanel.setManaged(false);
+        }
+        if (btnVerifyFace != null) btnVerifyFace.setDisable(true);
         applyToggleStyle();
 
-        if (!faceService.isAvailable()) {
-            faceToggleBtn.setDisable(true);
-            faceToggleBtn.setTooltip(new Tooltip("OpenCV non disponible sur ce système."));
+        if (faceService != null && !faceService.isAvailable()) {
+            if (faceToggleBtn != null) {
+                faceToggleBtn.setDisable(true);
+                faceToggleBtn.setTooltip(new Tooltip("OpenCV non disponible sur ce système."));
+            }
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  Toggle Face Auth  (appelé par onAction="#handleFaceToggle" dans le FXML)
-    // ─────────────────────────────────────────────────────────────────────────
     @FXML
     public void handleFaceToggle() {
-        faceMode = !faceMode;          // simple bascule booléenne
+        faceMode = !faceMode;
         faceVerified = false;
         applyToggleStyle();
 
-        facePanel.setVisible(faceMode);
-        facePanel.setManaged(faceMode);
+        if (facePanel != null) {
+            facePanel.setVisible(faceMode);
+            facePanel.setManaged(faceMode);
+        }
 
         if (!faceMode) {
             stopCamera();
-            passwordGroup.setVisible(true);
-            passwordGroup.setManaged(true);
+            if (passwordGroup != null) {
+                passwordGroup.setVisible(true);
+                passwordGroup.setManaged(true);
+            }
             setFaceStatus("Reconnaissance faciale désactivée.", "info");
         } else {
-            passwordGroup.setVisible(false);
-            passwordGroup.setManaged(false);
+            if (passwordGroup != null) {
+                passwordGroup.setVisible(false);
+                passwordGroup.setManaged(false);
+            }
             setFaceStatus("Cliquez sur « Activer la caméra » pour commencer.", "info");
         }
     }
 
-    /** Met à jour le texte et la couleur du bouton toggle selon l'état faceMode. */
     private void applyToggleStyle() {
         if (faceToggleBtn == null) return;
         faceToggleBtn.setText(faceMode ? "ON" : "OFF");
         faceToggleBtn.setStyle(faceMode ? STYLE_BTN_ON : STYLE_BTN_OFF);
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  Caméra
-    // ─────────────────────────────────────────────────────────────────────────
     @FXML
     public void handleStartCamera() {
         if (!faceService.isAvailable()) {
@@ -125,7 +125,7 @@ public class LoginController {
             List<Rect> faces = faceService.detectFaces(frame);
             Mat display = faceService.drawFaceBoxes(frame, faces);
             javafx.scene.image.Image img = faceService.frameToFxImage(display);
-            if (img != null) cameraPreview.setImage(img);
+            if (img != null && cameraPreview != null) cameraPreview.setImage(img);
         }));
         cameraTimeline.setCycleCount(Timeline.INDEFINITE);
         cameraTimeline.play();
@@ -140,9 +140,6 @@ public class LoginController {
         lastFrame = null;
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  Vérification faciale
-    // ─────────────────────────────────────────────────────────────────────────
     @FXML
     public void handleVerifyFace() {
         faceVerified = false;
@@ -177,14 +174,11 @@ public class LoginController {
         }, "face-verify").start();
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  Connexion
-    // ─────────────────────────────────────────────────────────────────────────
     @FXML
     public void handleLogin() {
         String email = emailField.getText().trim();
+        System.out.println("[Login] Tentative de connexion pour : " + email);
 
-        // ── Mode face ──
         if (faceMode) {
             if (email.isEmpty())  { showError("Saisissez votre email."); return; }
             if (!faceVerified)    { showError("Vérification faciale requise avant connexion."); return; }
@@ -196,26 +190,24 @@ public class LoginController {
             return;
         }
 
-        // ── Mode classique ──
         String password = passwordField.getText().trim();
         if (email.isEmpty() || password.isEmpty()) { showError("Veuillez remplir tous les champs."); return; }
 
         User user = userService.login(email, password);
         if (user != null) {
+            System.out.println("[Login] Succès ! Type utilisateur : " + user.getType());
             if ("ban".equalsIgnoreCase(user.getStatus())) { showError("❌ Compte banni."); return; }
             navigateToDashboard(user);
         } else {
+            System.out.println("[Login] Échec : email ou mot de passe incorrect.");
             showError("Email ou mot de passe incorrect.");
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  Navigation
-    // ─────────────────────────────────────────────────────────────────────────
     private void navigateToDashboard(User user) {
         try {
             String fxml;
-            switch (user.getType()) {
+            switch (user.getType().toLowerCase()) {
                 case "admin":
                     DashboardAdminController.setCurrentUser(user);
                     DashboardEtudiantController.setSourceDashboardType(null);
@@ -229,9 +221,11 @@ public class LoginController {
                     DashboardEtudiantController.setSourceDashboardType(null);
                     fxml = "/tn/esprit/interfaces/DashboardEtudiant.fxml"; break;
             }
+            System.out.println("[Login] Navigation vers : " + fxml);
             Parent root = FXMLLoader.load(getClass().getResource(fxml));
             emailField.getScene().setRoot(root);
         } catch (Exception e) {
+            System.err.println("[Login] Erreur navigation : " + e.getMessage());
             showError("Erreur navigation : " + e.getMessage());
             e.printStackTrace();
         }
@@ -244,15 +238,17 @@ public class LoginController {
         try {
             Parent root = FXMLLoader.load(getClass().getResource(fxml));
             emailField.getScene().setRoot(root);
-        } catch (Exception e) { showError("Navigation impossible."); }
+        } catch (Exception e) { 
+            System.err.println("[Login] Navigation impossible vers " + fxml + " : " + e.getMessage());
+            showError("Navigation impossible."); 
+        }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    //  Helpers UI
-    // ─────────────────────────────────────────────────────────────────────────
     private void showError(String msg) {
-        errorLabel.setStyle("-fx-text-fill: #e94560; -fx-font-size: 12;");
-        errorLabel.setText(msg);
+        if (errorLabel != null) {
+            errorLabel.setStyle("-fx-text-fill: #e94560; -fx-font-size: 12;");
+            errorLabel.setText(msg);
+        }
     }
 
     private void setFaceStatus(String msg, String level) {

@@ -23,4 +23,9 @@ public class Lecon {
     public void setContenu(String contenu) { this.contenu = contenu; }
     public int getMatiereId() { return matiereId; }
     public void setMatiereId(int matiereId) { this.matiereId = matiereId; }
+
+    @Override
+    public String toString() {
+        return titre == null ? "" : titre;
+    }
 }

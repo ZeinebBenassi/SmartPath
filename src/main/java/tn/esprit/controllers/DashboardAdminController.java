@@ -16,20 +16,15 @@ import java.util.Locale;
 
 public class DashboardAdminController {
 
-    // ── Labels / zones principales ───────────────────────────────────────
     @FXML private Label     adminNameLabel;
     @FXML private Label     pageTitle;
     @FXML private Label     dateLabel;
     @FXML private StackPane contentArea;
     @FXML private VBox      dashboardView;
-
-    // ── Cartes du dashboard ──────────────────────────────────────────────
     @FXML private Label totalUsers;
     @FXML private Label totalEtudiants;
     @FXML private Label totalProfs;
     @FXML private Label totalOffres;
-
-    // ── Boutons sidebar ──────────────────────────────────────────────────
     @FXML private Button btnDashboard;
     @FXML private Button btnUsers;
     @FXML private VBox   usersSubMenu;
@@ -37,34 +32,24 @@ public class DashboardAdminController {
     @FXML private Button btnGestionEtudiants;
     @FXML private Button btnFilieres;
     @FXML private Button btnOffres;
-
-    // ── Statistiques (bouton toggle + sous-menu) ─────────────────────────
-    @FXML private Button btnStatistiques;       // bouton "📊 Statistiques ▾"
-    @FXML private VBox   statsSubMenu;          // sous-menu caché/visible
-    @FXML private Button btnStatistiquesUsers;  // → Stats Users
-    @FXML private Button btnStatistiquesQuiz;   // → Stats Quiz  ← correspond au FXML
-
-    // ── Quiz ─────────────────────────────────────────────────────────────
+    @FXML private Button btnStatistiques;
+    @FXML private VBox   statsSubMenu;
+    @FXML private Button btnStatistiquesUsers;
+    @FXML private Button btnStatistiquesQuiz;
     @FXML private Button btnQuizAdmin;
     @FXML private Button btnQuizHistorique;
-
-    // ── Autres ───────────────────────────────────────────────────────────
+    @FXML private Button btnCourseFeedback; // New button
     @FXML private Button btnProfil;
     @FXML private Button btnVueEtudiant;
 
-    // ── TableView (caché, compatibilité FXML) ────────────────────────────
-    @FXML private TableView<?>      usersTable;
-    @FXML private TableColumn<?,?> colNom, colPrenom, colEmail, colType, colStatus, colActions;
-
-    // ── État ─────────────────────────────────────────────────────────────
     private static User currentUser;
     private final UserService userService = new UserService();
     private boolean usersMenuOpen = false;
     private boolean statsMenuOpen = false;
 
     public static void setCurrentUser(User user) { currentUser = user; }
+    public static User getCurrentUser() { return currentUser; }
 
-    // ─────────────────────────────────────────────────────────────────────
     @FXML
     public void initialize() {
         LocalDate today   = LocalDate.now();
@@ -89,8 +74,6 @@ public class DashboardAdminController {
         } catch (Exception e) { System.out.println("Stats dashboard : " + e.getMessage()); }
     }
 
-    // ── Navigation principale ─────────────────────────────────────────────
-
     @FXML public void showDashboard() {
         setActiveButton(btnDashboard);
         showOnly(dashboardView);
@@ -98,8 +81,6 @@ public class DashboardAdminController {
         closeUsersMenu();
         closeStatsMenu();
     }
-
-    // ── Sous-menu Utilisateurs ─────────────────────────────────────────────
 
     @FXML public void toggleUsersMenu() {
         if (usersSubMenu == null) return;
@@ -125,9 +106,6 @@ public class DashboardAdminController {
         navigate("/tn/esprit/interfaces/GestionOffres.fxml", "Offres de stage");
     }
 
-    // ── Sous-menu Statistiques ─────────────────────────────────────────────
-
-    /** Toggle le sous-menu Statistiques — appelé par btnStatistiques */
     @FXML public void toggleStatsMenu() {
         if (statsSubMenu == null) return;
         statsMenuOpen = !statsMenuOpen;
@@ -137,29 +115,21 @@ public class DashboardAdminController {
         if (statsMenuOpen) closeUsersMenu();
     }
 
-    /**
-     * Affiche les statistiques utilisateurs.
-     * Appelé par btnStatistiquesUsers (sidebar) et le bouton "Actions rapides".
-     */
     @FXML public void showStatistiquesUsers() {
         setActiveButton(btnStatistiques);
         navigate("/tn/esprit/interfaces/Statistiques.fxml", "📈 Statistiques Utilisateurs");
     }
 
-    /**
-     * Affiche les statistiques du Quiz — IDENTIQUE à admin_quiz_statistics Symfony.
-     * Appelé par btnStatistiquesQuiz (sidebar) et le bouton "Actions rapides".
-     */
     @FXML public void showStatistiquesQuiz() {
         setActiveButton(btnStatistiques);
         navigate("/tn/esprit/interfaces/QuizStatistiques.fxml", "📊 Statistiques Quiz");
     }
 
-    // ── Quiz ──────────────────────────────────────────────────────────────
-
     @FXML public void showQuizAdmin() {
         setActiveButton(btnQuizAdmin);
-        navigate("/tn/esprit/interfaces/QuestionContent.fxml", "Quiz - Gestion des questions");
+        tn.esprit.utils.feature_cours_et_quiz.AppSession.setCurrentUser(currentUser);
+        tn.esprit.controllers.feature_cours_et_quiz.AppShellController.setInitialTab("quiz");
+        navigate("/tn/esprit/feature_cours_et_quiz/app-shell.fxml", "Quiz - Gestion");
     }
 
     @FXML public void showQuizHistorique() {
@@ -167,7 +137,10 @@ public class DashboardAdminController {
         navigate("/tn/esprit/interfaces/QuizHistorique.fxml", "📋 Historique du Quiz");
     }
 
-    // ── Profil / logout ────────────────────────────────────────────────────
+    @FXML public void showCourseFeedback() {
+        setActiveButton(btnCourseFeedback);
+        navigate("/tn/esprit/interfaces/CourseFeedbackView.fxml", "Course Reviews & Feedback");
+    }
 
     @FXML public void showProfil() {
         setActiveButton(btnProfil);
@@ -190,8 +163,6 @@ public class DashboardAdminController {
             btnDashboard.getScene().setRoot(root);
         } catch (Exception e) { e.printStackTrace(); }
     }
-
-    // ── Utilitaires privés ─────────────────────────────────────────────────
 
     private void navigate(String fxml, String title) {
         try {
@@ -242,7 +213,7 @@ public class DashboardAdminController {
 
     private void setActiveButton(Button active) {
         Button[] all = {btnDashboard, btnUsers, btnFilieres, btnOffres,
-                        btnQuizAdmin, btnQuizHistorique, btnStatistiques, btnProfil};
+                        btnQuizAdmin, btnQuizHistorique, btnCourseFeedback, btnStatistiques, btnProfil};
         for (Button b : all) {
             if (b == null) continue;
             if (b == active) {

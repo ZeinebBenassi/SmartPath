@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="tn.esprit.controllers.CourseFeedbackController"
+      spacing="15" styleClass="app-content" stylesheets="@smartpath.css">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <Label text="Course Feedback & Reviews" styleClass="topbar-title"/>
+    <Label text="View student ratings and comments for courses." styleClass="page-subtitle"/>
+
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Label text="Select Course:" styleClass="form-label"/>
+        <ComboBox fx:id="courseComboBox" prefWidth="300" styleClass="form-combo"/>
+        <Button text="Load Feedback" onAction="#loadFeedback" styleClass="btn-primary"/>
+    </HBox>
+
+    <TableView fx:id="feedbackTable" VBox.vgrow="ALWAYS" styleClass="table-view">
+        <columns>
+            <TableColumn fx:id="colStudent" text="Student" prefWidth="150"/>
+            <TableColumn fx:id="colStars" text="Stars" prefWidth="80"/>
+            <TableColumn fx:id="colComment" text="Comment" prefWidth="400"/>
+            <TableColumn fx:id="colDate" text="Date" prefWidth="150"/>
+        </columns>
+    </TableView>
+
+    <Label fx:id="statusLabel" text="" styleClass="muted-label"/>
+
+</VBox>

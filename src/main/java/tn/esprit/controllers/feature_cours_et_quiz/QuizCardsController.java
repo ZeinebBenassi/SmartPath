@@ -74,7 +74,7 @@ public class QuizCardsController implements NavigableController {
         Label title = new Label(quiz.getTitre());
         title.getStyleClass().add("sp-card-title");
 
-        Label meta = new Label("⏱ " + quiz.getDuree() + " min  •  Matière ID: " + quiz.getMatiereId());
+        Label meta = new Label("⏱ " + quiz.getDuree() + " min");
         meta.getStyleClass().add("sp-card-meta");
 
         Label content = new Label(quiz.getContenu() == null ? "" : quiz.getContenu());

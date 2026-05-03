@@ -24,9 +24,10 @@ public class DashboardEtudiantController {
     @FXML private Button btnQuiz;
     @FXML private Button btnStages;
     @FXML private Button btnReleve;
+    @FXML private Button btnAiTools; // New AI button
     @FXML private Button btnRetourDashboard;
     @FXML private Button btnProfil;
-    @FXML private Button btnChatbot;          // ← NEW: floating chatbot FAB
+    @FXML private Button btnChatbot;
     @FXML private StackPane contentArea;
     @FXML private ScrollPane homeView;
     @FXML private ScrollPane aboutContactView;
@@ -36,10 +37,10 @@ public class DashboardEtudiantController {
     private static User currentUser;
     private static String sourceDashboardType;
 
-    /** Popup that holds the Chatbot.fxml pane */
     private Popup chatbotPopup;
 
     public static void setCurrentUser(User u) { currentUser = u; }
+    public static User getCurrentUser() { return currentUser; } // Added this method
     public static void setSourceDashboardType(String role) { sourceDashboardType = role; }
 
     @FXML
@@ -62,12 +63,6 @@ public class DashboardEtudiantController {
         }
     }
 
-    /* ─────────────── Chatbot FAB ─────────────── */
-
-    /**
-     * Toggles the chatbot popup open/closed.
-     * The popup appears just above the FAB button, anchored to screen coordinates.
-     */
     @FXML
     public void toggleChatbot() {
         if (chatbotPopup == null) {
@@ -78,7 +73,6 @@ public class DashboardEtudiantController {
             chatbotPopup.hide();
             btnChatbot.setText("🤖");
         } else {
-            // Compute screen position: show popup above-left of the FAB button
             Bounds btnBounds = btnChatbot.localToScreen(btnChatbot.getBoundsInLocal());
             double popupWidth  = 380;
             double popupHeight = 520;
@@ -94,17 +88,13 @@ public class DashboardEtudiantController {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/tn/esprit/interfaces/Chatbot.fxml"));
             Parent root = loader.load();
-
             Popup popup = new Popup();
-            popup.setAutoHide(false);   // user closes via ✕ button or FAB
+            popup.setAutoHide(false);
             popup.setHideOnEscape(true);
             popup.getContent().add(root);
-
-            // Reset FAB icon when popup is hidden via Escape or OS
             popup.setOnHidden(e -> {
                 if (btnChatbot != null) btnChatbot.setText("🤖");
             });
-
             return popup;
         } catch (Exception e) {
             e.printStackTrace();
@@ -113,28 +103,38 @@ public class DashboardEtudiantController {
         }
     }
 
-    /* ─────────────── Navigation ─────────────── */
-
     @FXML public void showAccueil()      { setActiveButton(btnAccueil); showHomeView(); }
     @FXML public void showAboutContact() { setActiveButton(btnAboutContact); showAboutContactView(); }
 
     @FXML public void showProfil() {
         setActiveButton(btnProfil);
-        ProfilController.setCurrentUser(currentUser);  // ✅ Fix: passer user au bon controller
+        ProfilController.setCurrentUser(currentUser);
         navigate("/tn/esprit/interfaces/Profil.fxml");
     }
-    @FXML public void showCours()  { setActiveButton(btnCours);  navigate("/tn/esprit/interfaces/Cours.fxml"); }
+    @FXML public void showCours()  { 
+        setActiveButton(btnCours);  
+        tn.esprit.utils.feature_cours_et_quiz.AppSession.setCurrentUser(currentUser);
+        tn.esprit.controllers.feature_cours_et_quiz.AppShellController.setInitialTab("matieres");
+        navigate("/tn/esprit/feature_cours_et_quiz/app-shell.fxml"); 
+    }
+
+    @FXML public void showQuiz() {
+        setActiveButton(btnQuiz);
+        tn.esprit.utils.feature_cours_et_quiz.AppSession.setCurrentUser(currentUser);
+        tn.esprit.controllers.feature_cours_et_quiz.AppShellController.setInitialTab("quiz");
+        navigate("/tn/esprit/feature_cours_et_quiz/app-shell.fxml");
+    }
+
+    @FXML public void showAiDashboard() {
+        setActiveButton(btnAiTools);
+        navigate("/tn/esprit/interfaces/AiDashboard.fxml");
+    }
+
     @FXML public void showStages() { setActiveButton(btnStages); navigate("/tn/esprit/interfaces/Stages.fxml"); }
     @FXML public void showReleve() {
         setActiveButton(btnReleve);
         ReleveController.setCurrentUser(currentUser);
         navigate("/tn/esprit/interfaces/Releve.fxml");
-    }
-
-    @FXML public void showQuiz() {
-        setActiveButton(btnQuiz);
-        try { QuizPlayerController.setCurrentUser(currentUser); navigate("/tn/esprit/interfaces/QuizPlayer.fxml"); }
-        catch (Exception e) { navigate("/tn/esprit/interfaces/Quiz.fxml"); }
     }
 
     @FXML public void returnToSourceDashboard() {
@@ -154,8 +154,6 @@ public class DashboardEtudiantController {
         try { Parent root = FXMLLoader.load(getClass().getResource("/tn/esprit/interfaces/Login.fxml")); btnAccueil.getScene().setRoot(root); }
         catch (Exception e) { e.printStackTrace(); }
     }
-
-    /* ─────────────── Helpers ─────────────── */
 
     private void navigate(String fxml) {
         try {
@@ -183,7 +181,7 @@ public class DashboardEtudiantController {
     }
 
     private void setActiveButton(Button active) {
-        Button[] all = {btnAccueil, btnAboutContact, btnCours, btnQuiz, btnStages, btnReleve, btnProfil};
+        Button[] all = {btnAccueil, btnAboutContact, btnCours, btnQuiz, btnStages, btnReleve, btnProfil, btnAiTools};
         for (Button b : all) {
             if (b == null) continue;
             if (b == active) b.setStyle("-fx-background-color: #eff6ff; -fx-text-fill: #2563eb; -fx-font-weight: bold; -fx-font-size: 13; -fx-padding: 10 16; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT; -fx-border-color: #bfdbfe; -fx-border-radius: 8;");

@@ -27,6 +27,7 @@
                 <Button fx:id="btnQuiz"         text="🧠  Quiz orientation"    onAction="#showQuiz"         maxWidth="Infinity" styleClass="nav-btn"/>
                 <Button fx:id="btnStages"       text="Stages &amp; Offres" onAction="#showStages"       maxWidth="Infinity" styleClass="nav-btn"/>
                 <Button fx:id="btnReleve"       text="📄  Relevé de notes"     onAction="#showReleve"       maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnAiTools"      text="🤖 AI Academic Tools"   onAction="#showAiDashboard" maxWidth="Infinity" styleClass="nav-btn"/>
                 <Button fx:id="btnAboutContact" text="ℹ  À propos"            onAction="#showAboutContact" maxWidth="Infinity" styleClass="nav-btn"/>
                 <Button fx:id="btnProfil"       text="👤  Mon profil"           onAction="#showProfil"       maxWidth="Infinity" styleClass="nav-btn"/>
             </VBox>
@@ -97,12 +98,8 @@
                                     <StackPane prefWidth="240" prefHeight="150"
                                                style="-fx-background-color: linear-gradient(to bottom right, #eff6ff, #dbeafe);
                                                       -fx-background-radius: 12;">
-                                        <ImageView fitWidth="220" fitHeight="138" preserveRatio="false" smooth="true"
-                                                   style="-fx-background-radius: 10;">
-                                            <image>
-                                                <Image url="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&amp;h=600&amp;fit=crop"/>
-                                            </image>
-                                        </ImageView>
+                                        <!-- Removed Unsplash Image to prevent hang -->
+                                        <Label text="🎓" style="-fx-font-size: 80;"/>
                                     </StackPane>
                                 </HBox>
 

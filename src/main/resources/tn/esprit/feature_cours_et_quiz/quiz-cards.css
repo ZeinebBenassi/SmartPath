@@ -1,0 +1,5 @@
+/* Page-specific overrides for quiz-cards.fxml */
+
+.cards-grid {
+    -fx-padding: 10;
+}

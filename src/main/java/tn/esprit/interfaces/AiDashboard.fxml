@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.shape.Circle?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="tn.esprit.controllers.AiDashboardController"
+      spacing="0" styleClass="app-content" stylesheets="@smartpath.css">
+
+    <!-- Header -->
+    <HBox alignment="CENTER_LEFT" styleClass="topbar-modern">
+        <VBox spacing="2">
+            <Label text="AI Academic Insights" styleClass="topbar-title"/>
+            <Label text="Smart recommendations based on your performance" styleClass="page-subtitle"/>
+        </VBox>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="🔄 Refresh Quiz Grades" onAction="#loadGradesFromDb" styleClass="btn-primary"/>
+    </HBox>
+
+    <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-background: transparent;" VBox.vgrow="ALWAYS">
+        <content>
+            <VBox spacing="24" style="-fx-padding: 24;">
+
+                <!-- Main Grid -->
+                <HBox spacing="24">
+
+                    <!-- Left: Grades Overview -->
+                    <VBox spacing="16" prefWidth="450" styleClass="section-card">
+                        <HBox alignment="CENTER_LEFT">
+                            <Label text="Your Quiz Performance" styleClass="card-title"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="gradeCountLabel" text="0 Subjects" styleClass="badge-active"/>
+                        </HBox>
+
+                        <TableView fx:id="gradesTable" prefHeight="400" styleClass="table-view">
+                            <columns>
+                                <TableColumn fx:id="colSubject" text="Quiz / Subject" prefWidth="280"/>
+                                <TableColumn fx:id="colScore" text="Score" prefWidth="120"/>
+                            </columns>
+                        </TableView>
+
+                        <Button text="🧠 Generate Improvement Plan" onAction="#handleAiAnalyze"
+                                maxWidth="Infinity" styleClass="btn-quiz" prefHeight="45"/>
+                    </VBox>
+
+                    <!-- Right: AI Output -->
+                    <VBox spacing="16" HBox.hgrow="ALWAYS" styleClass="section-card">
+                        <Label text="Smart Advisor Output" styleClass="card-title"/>
+                        <TextArea fx:id="aiOutputArea" editable="false" wrapText="true" VBox.vgrow="ALWAYS"
+                                  promptText="Your personalized learning roadmap will appear here..."
+                                  style="-fx-font-family: 'Segoe UI'; -fx-font-size: 14; -fx-control-inner-background: #f8faff;"/>
+
+                        <VBox spacing="10" styleClass="learning-links-card">
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <Label text="Quick Learning Links" styleClass="learning-links-title"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Label fx:id="linkTopicLabel" text="Topic: study skills" styleClass="learning-topic-badge"/>
+                            </HBox>
+
+                            <HBox spacing="10" alignment="CENTER_LEFT">
+                                <Button fx:id="youtubeBtn" text="▶ YouTube" onAction="#handleOpenYouTube" styleClass="btn-link-youtube"/>
+                                <Button fx:id="udemyBtn" text="🎓 Udemy" onAction="#handleOpenUdemy" styleClass="btn-link-udemy"/>
+                                <Button fx:id="courseraBtn" text="🏛 Coursera" onAction="#handleOpenCoursera" styleClass="btn-link-coursera"/>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+                </HBox>
+
+                <!-- PDF Section -->
+                <VBox spacing="16" styleClass="section-card">
+                    <Label text="PDF Material Translator" styleClass="card-title"/>
+                    <HBox spacing="16" alignment="CENTER_LEFT">
+                        <VBox HBox.hgrow="ALWAYS" spacing="8">
+                            <Label text="Source PDF" styleClass="form-label"/>
+                            <HBox spacing="10">
+                                <TextField fx:id="pdfPathField" promptText="Select a course PDF..." HBox.hgrow="ALWAYS" editable="false" styleClass="form-field"/>
+                                <Button text="Browse" onAction="#handleSelectPdf" styleClass="btn-secondary"/>
+                            </HBox>
+                        </VBox>
+                        <VBox prefWidth="200" spacing="8">
+                            <Label text="Target Language" styleClass="form-label"/>
+                            <ComboBox fx:id="langCombo" maxWidth="Infinity" styleClass="form-combo"/>
+                        </VBox>
+                        <VBox alignment="BOTTOM_CENTER">
+                            <Button text="Translate &amp; Export" onAction="#handleTranslate" styleClass="btn-primary" prefHeight="40"/>
+                        </VBox>
+                    </HBox>
+                    <Label fx:id="transStatusLabel" text="Status: Ready" styleClass="muted-label"/>
+                </VBox>
+
+            </VBox>
+        </content>
+    </ScrollPane>
+</VBox>

@@ -18,7 +18,7 @@
                 <Label text="SmartPath" styleClass="navbar-title"/>
 
                 <HBox spacing="8" HBox.hgrow="ALWAYS">
-                    <Button text="Accueil" onAction="#showHome" styleClass="nav-btn"/>
+                    <Button fx:id="homeBtn" text="Accueil" onAction="#showHome" styleClass="nav-btn"/>
                     <Button fx:id="matieresBtn" text="Matieres" onAction="#showMatieres" styleClass="nav-btn"/>
                     <Button fx:id="quizBtn" text="Quiz" onAction="#showQuiz" styleClass="nav-btn"/>
                 </HBox>

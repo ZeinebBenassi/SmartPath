@@ -1,0 +1,5 @@
+/* Page-specific overrides for matiere-cours.fxml */
+
+#contenuArea {
+    -fx-font-size: 13px;
+}

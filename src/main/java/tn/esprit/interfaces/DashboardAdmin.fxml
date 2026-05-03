@@ -87,6 +87,11 @@
                         onAction="#showQuizHistorique"
                         styleClass="nav-btn" text="📋  Historique Quiz"/>
 
+                <!-- New button for Course Feedback -->
+                <Button fx:id="btnCourseFeedback" maxWidth="Infinity"
+                        onAction="#showCourseFeedback"
+                        styleClass="nav-btn" text="⭐  Course Feedback"/>
+
                 <!-- Profil -->
                 <Button fx:id="btnProfil" maxWidth="Infinity"
                         onAction="#showProfil"

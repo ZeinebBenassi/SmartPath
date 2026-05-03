@@ -2,7 +2,8 @@ package tn.esprit.controllers.feature_cours_et_quiz;
 
 import tn.esprit.entity.feature_cours_et_quiz.Matiere;
 import tn.esprit.entity.feature_cours_et_quiz.Role;
-import tn.esprit.service.feature_cours_et_quiz.MatiereCrudService;
+import tn.esprit.services.CourseRatingService;
+import tn.esprit.services.feature_cours_et_quiz.MatiereCrudService;
 import tn.esprit.utils.feature_cours_et_quiz.AccessControl;
 import tn.esprit.utils.feature_cours_et_quiz.RoleUtils;
 import tn.esprit.utils.feature_cours_et_quiz.AppSession;
@@ -13,6 +14,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 import java.sql.SQLException;
@@ -24,7 +26,8 @@ public class MatiereCardsController implements NavigableController {
     @FXML private ScrollPane scroll;
     @FXML private Button addBtn;
 
-    private final tn.esprit.services.feature_cours_et_quiz.MatiereCrudService service = new tn.esprit.services.feature_cours_et_quiz.MatiereCrudService();
+    private final MatiereCrudService service = new MatiereCrudService();
+    private final CourseRatingService ratingService = new CourseRatingService();
     private AppShellController appShell;
     private Role role = Role.ETUDIANT;
 
@@ -79,6 +82,11 @@ public class MatiereCardsController implements NavigableController {
         desc.getStyleClass().add("sp-card-desc");
         desc.setWrapText(true);
 
+        HBox feedbackRow = null;
+        if (role == Role.ADMIN) {
+            feedbackRow = createFeedbackRow(matiere.getId());
+        }
+
         VBox actions = new VBox(8);
         actions.getStyleClass().add("sp-card-actions");
 
@@ -112,8 +120,43 @@ public class MatiereCardsController implements NavigableController {
             actions.getChildren().add(del);
         }
 
-        card.getChildren().addAll(title, desc, actions);
+        if (feedbackRow != null) {
+            card.getChildren().addAll(title, desc, feedbackRow, actions);
+        } else {
+            card.getChildren().addAll(title, desc, actions);
+        }
         return card;
+    }
+
+    private HBox createFeedbackRow(int courseId) {
+        HBox row = new HBox(10);
+        row.getStyleClass().add("course-feedback-row");
+
+        Label badge = new Label("Feedback");
+        badge.getStyleClass().add("course-feedback-badge");
+
+        Label summary = new Label("No feedback yet");
+        summary.getStyleClass().add("course-feedback-text");
+        summary.setWrapText(true);
+
+        try {
+            CourseRatingService.FeedbackSummary feedback = ratingService.getFeedbackSummary(courseId);
+            if (feedback.count > 0) {
+                String shortComment = feedback.latestComment == null ? "" : feedback.latestComment.trim();
+                if (shortComment.length() > 90) {
+                    shortComment = shortComment.substring(0, 87) + "...";
+                }
+                summary.setText(String.format("%.1f/5 • %d avis%s",
+                        feedback.average,
+                        feedback.count,
+                        shortComment.isBlank() ? "" : " • " + shortComment));
+            }
+        } catch (SQLException e) {
+            summary.setText("Feedback unavailable");
+        }
+
+        row.getChildren().addAll(badge, summary);
+        return row;
     }
 
     private void handleDelete(Matiere matiere) {

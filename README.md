@@ -72,9 +72,15 @@ mvn clean install
 
 Configurer la base de données dans les fichiers .properties.
 
-Configurer le chatbot (fichier ignore par git) :
-- `hf.api_key=hf_...`
-- (optionnel) `hf.model=mistralai/Mistral-7B-Instruct-v0.3`
+Configurer Groq AI dans un fichier `config.properties` à la racine du projet ou via variables d'environnement :
+
+```properties
+GROQ_API_KEY=gsk_...
+GROQ_API_URL=https://api.groq.com/openai/v1/chat/completions
+GROQ_MODEL=llama-3.3-70b-versatile
+```
+
+Les variantes en minuscules sont aussi acceptées, par exemple `groq.api.key`.
 
 ---
 

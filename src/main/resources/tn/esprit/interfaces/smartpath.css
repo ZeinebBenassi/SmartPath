@@ -318,6 +318,66 @@
    ══════════════════════════════════════════════════════════════ */
 .scroll-bar              { -fx-background-color: #F8FAFC; }
 .scroll-bar .thumb       { -fx-background-color: #CBD5E1; -fx-background-radius: 5; }
+
+/* ══════════════════════════════════════════════════════════════
+   AI QUICK LINKS
+   ══════════════════════════════════════════════════════════════ */
+.learning-links-card {
+    -fx-background-color: linear-gradient(to right, #F8FAFF, #EEF2FF);
+    -fx-background-radius: 12;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-padding: 12;
+}
+
+.learning-links-title {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1E293B;
+}
+
+.learning-topic-badge {
+    -fx-background-color: #DBEAFE;
+    -fx-text-fill: #1D4ED8;
+    -fx-background-radius: 20;
+    -fx-padding: 4 10;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.btn-link-youtube {
+    -fx-background-color: #FF0000;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-background-radius: 20;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+.btn-link-youtube:hover { -fx-background-color: #CC0000; }
+
+.btn-link-udemy {
+    -fx-background-color: #A435F0;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-background-radius: 20;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+.btn-link-udemy:hover { -fx-background-color: #8B2BC7; }
+
+.btn-link-coursera {
+    -fx-background-color: #0056D2;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-background-radius: 20;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+.btn-link-coursera:hover { -fx-background-color: #0041A3; }
 .scroll-bar .thumb:hover { -fx-background-color: #94A3B8; }
 .scroll-bar .track       { -fx-background-color: #F8FAFC; }
 .scroll-bar .increment-button, .scroll-bar .decrement-button { -fx-background-color: transparent; }

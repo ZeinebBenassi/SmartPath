@@ -40,13 +40,27 @@ public class LeconService {
 
     public void create(Lecon l, Integer profId) throws SQLException {
         Connection conn = getConnection();
-        // Simplified column check for brevity, assuming standard structure or adapting like QuizService if needed
-        String sql = "INSERT INTO lecon (titre, contenu, matiere_id) VALUES (?, ?, ?)";
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, l.getTitre());
-        ps.setString(2, l.getContenu());
-        ps.setInt(3, l.getMatiereId());
-        ps.executeUpdate();
+        // Assuming 'created_at' and 'prof_id' columns exist and are NOT NULL
+        // If prof_id is optional, you might need to adjust the SQL and parameter setting
+        String sql = "INSERT INTO lecon (titre, contenu, matiere_id, prof_id, created_at) VALUES (?, ?, ?, ?, ?)";
+        
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, l.getTitre());
+            ps.setString(2, l.getContenu());
+            ps.setInt(3, l.getMatiereId());
+            
+            // Handle profId: if null, set to a default (e.g., 0 or 1) or to NULL if the column allows it
+            if (profId != null && profId > 0) {
+                ps.setInt(4, profId);
+            } else {
+                // Assuming prof_id is NOT NULL, you might need a default prof ID or handle this case
+                // For now, setting to 1 as a placeholder if profId is not provided
+                ps.setInt(4, 1); 
+            }
+            
+            ps.setTimestamp(5, new Timestamp(System.currentTimeMillis())); // Set current timestamp
+            ps.executeUpdate();
+        }
     }
 
     public void update(Lecon l) throws SQLException {

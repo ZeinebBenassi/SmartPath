@@ -32,6 +32,13 @@ public class ConfigLoader {
         // Priorité : variable d'environnement, puis properties
         String env = System.getenv(key);
         if (env != null && !env.isEmpty()) return env;
-        return props.getProperty(key, "");
+
+        String value = props.getProperty(key, "");
+        if (value != null && !value.isEmpty()) {
+            return value;
+        }
+
+        String legacyKey = key.toLowerCase().replace('_', '.');
+        return props.getProperty(legacyKey, "");
     }
 }

@@ -25,7 +25,7 @@
                      -fx-padding: 48;">
 
             <ImageView fitWidth="150" preserveRatio="true" smooth="true">
-                <image><Image url="@/images/logo.png"/></image>
+                <image><Image url="/images/logo.png"/></image>
             </ImageView>
 
             <VBox spacing="10" alignment="CENTER">

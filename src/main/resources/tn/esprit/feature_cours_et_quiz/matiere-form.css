@@ -1,0 +1,10 @@
+/* Page-specific overrides for matiere-form.fxml */
+
+.page-root {
+    -fx-padding: 24;
+    -fx-spacing: 16;
+}
+
+.text-field, .text-area {
+    -fx-max-width: 720;
+}
