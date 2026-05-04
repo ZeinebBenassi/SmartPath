@@ -28,11 +28,8 @@
             <VBox spacing="3" style="-fx-padding: 16 12 0 12;">
                 <Label styleClass="sidebar-section-label" text="MENU" />
                 <Button fx:id="btnDashboard" maxWidth="Infinity" onAction="#showDashboard" styleClass="nav-btn-active" text="🏠  Tableau de bord" />
-                <Button fx:id="btnMatieres" maxWidth="Infinity" onAction="#showMatieres" styleClass="nav-btn" text="📖  Mes matières" />
                 <Button fx:id="btnCours"    maxWidth="Infinity" onAction="#showCours"    styleClass="nav-btn" text="📚  Mes cours" />
                 <Button fx:id="btnQuiz"     maxWidth="Infinity" onAction="#showQuiz"     styleClass="nav-btn" text="🧠  Quiz" />
-                <Button fx:id="btnLecons" maxWidth="Infinity" onAction="#showLecons" styleClass="nav-btn" text="📝  Mes leçons" />
-                <Button fx:id="btnTests" maxWidth="Infinity" onAction="#showTests" styleClass="nav-btn" text="📋  Tests / Évaluations" />
                 <Button fx:id="btnProfil" maxWidth="Infinity" onAction="#showProfil" styleClass="nav-btn" text="👤  Mon profil" />
                 <Button fx:id="btnEtudiants" maxWidth="Infinity" onAction="#showEtudiants" styleClass="nav-btn" text="🎓  Mes étudiants" />
             </VBox>
@@ -66,7 +63,6 @@
             <HBox alignment="CENTER_LEFT" styleClass="topbar-modern">
                 <Label fx:id="pageTitle" styleClass="topbar-title" text="Tableau de bord" />
                 <Pane HBox.hgrow="ALWAYS" />
-                <Button onAction="#addLecon" styleClass="btn-primary" text="+ Nouvelle leçon" />
             </HBox>
 
             <!-- Zone de contenu -->
@@ -122,8 +118,6 @@
                             <Label styleClass="card-subtitle" text="Accédez rapidement à vos outils d'enseignement" />
                         </VBox>
                         <HBox spacing="12">
-                            <Button onAction="#addLecon" styleClass="chip-btn" text="📝  Nouvelle leçon" />
-                            <Button onAction="#showMatieres" styleClass="chip-btn-success" text="📖  Mes matières" />
                             <Button onAction="#showEtudiants" styleClass="chip-btn-warn" text="🎓  Mes étudiants" />
                         </HBox>
                     </VBox>
