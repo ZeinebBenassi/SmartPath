@@ -10,11 +10,36 @@ import java.util.List;
 public class FiliereService implements ICrud<Filiere> {
 
     private final Connection cnx = MyDatabase.getInstance().getConnection();
+    private static Boolean imageColumnExists = null;
+
+    public FiliereService() {
+        ensureImageColumn();
+    }
+
+    private void ensureImageColumn() {
+        if (imageColumnExists != null) return;
+        try (ResultSet rs = cnx.getMetaData().getColumns(null, null, "filiere", "image")) {
+            if (rs.next()) {
+                imageColumnExists = true;
+                return;
+            }
+        } catch (Exception ignored) {}
+
+        try (Statement st = cnx.createStatement()) {
+            st.executeUpdate("ALTER TABLE filiere ADD COLUMN image VARCHAR(500) NULL");
+            imageColumnExists = true;
+        } catch (SQLException e) {
+            imageColumnExists = false;
+            System.out.println("[FiliereService] image column unavailable: " + e.getMessage());
+        }
+    }
 
     @Override
     public void ajouter(Filiere f) throws SQLException {
-        String sql = "INSERT INTO filiere (nom, categorie, niveau, description, debouches, competences, icon, image) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        ensureImageColumn();
+        String sql = Boolean.TRUE.equals(imageColumnExists)
+                ? "INSERT INTO filiere (nom, categorie, niveau, description, debouches, competences, icon, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+                : "INSERT INTO filiere (nom, categorie, niveau, description, debouches, competences, icon) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, f.getNom());
             ps.setString(2, f.getCategorie());
@@ -23,7 +48,9 @@ public class FiliereService implements ICrud<Filiere> {
             ps.setString(5, f.getDebouches());
             ps.setString(6, f.getCompetences());
             ps.setString(7, f.getIcon());
-            ps.setString(8, f.getImage());
+            if (Boolean.TRUE.equals(imageColumnExists)) {
+                ps.setString(8, f.getImage());
+            }
             ps.executeUpdate();
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) f.setId(rs.getInt(1));
@@ -41,8 +68,10 @@ public class FiliereService implements ICrud<Filiere> {
 
     @Override
     public void modifier(Filiere f) throws SQLException {
-        String sql = "UPDATE filiere SET nom=?, categorie=?, niveau=?, description=?, " +
-                     "debouches=?, competences=?, icon=?, image=? WHERE id=?";
+        ensureImageColumn();
+        String sql = Boolean.TRUE.equals(imageColumnExists)
+                ? "UPDATE filiere SET nom=?, categorie=?, niveau=?, description=?, debouches=?, competences=?, icon=?, image=? WHERE id=?"
+                : "UPDATE filiere SET nom=?, categorie=?, niveau=?, description=?, debouches=?, competences=?, icon=? WHERE id=?";
         try (PreparedStatement ps = cnx.prepareStatement(sql)) {
             ps.setString(1, f.getNom());
             ps.setString(2, f.getCategorie());
@@ -51,8 +80,12 @@ public class FiliereService implements ICrud<Filiere> {
             ps.setString(5, f.getDebouches());
             ps.setString(6, f.getCompetences());
             ps.setString(7, f.getIcon());
-            ps.setString(8, f.getImage());
-            ps.setInt(9, f.getId());
+            if (Boolean.TRUE.equals(imageColumnExists)) {
+                ps.setString(8, f.getImage());
+                ps.setInt(9, f.getId());
+            } else {
+                ps.setInt(8, f.getId());
+            }
             ps.executeUpdate();
         }
     }
@@ -83,7 +116,11 @@ public class FiliereService implements ICrud<Filiere> {
                 rs.getString("niveau"), rs.getString("description"),
                 rs.getString("debouches"), rs.getString("competences"), rs.getString("icon")
         );
-        f.setImage(rs.getString("image"));
+        try {
+            f.setImage(rs.getString("image"));
+        } catch (SQLException ignored) {
+            f.setImage(null);
+        }
         return f;
     }
 }

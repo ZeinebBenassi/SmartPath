@@ -55,9 +55,11 @@ public class UserService {
         String statusExpr = Boolean.TRUE.equals(statusColumnExists)
                 ? " COALESCE(u.status, 'actif') AS status" : " 'actif' AS status";
         String sql = "SELECT u.*," + statusExpr + ","
-                + " CASE WHEN EXISTS (SELECT 1 FROM etudiant e WHERE e.id = u.id) THEN 'etudiant'"
-                + "      WHEN EXISTS (SELECT 1 FROM prof p WHERE p.id = u.id) THEN 'prof'"
-                + "      ELSE 'admin' END AS user_type"
+            + " CASE"
+            + "      WHEN LOWER(TRIM(COALESCE(u.type, ''))) IN ('admin', 'prof', 'etudiant') THEN LOWER(TRIM(u.type))"
+            + "      WHEN EXISTS (SELECT 1 FROM etudiant e WHERE e.id = u.id) THEN 'etudiant'"
+            + "      WHEN EXISTS (SELECT 1 FROM prof p WHERE p.id = u.id) THEN 'prof'"
+            + "      ELSE 'admin' END AS user_type"
                 + " FROM `user` u WHERE u.email=?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, email);
@@ -96,7 +98,9 @@ public class UserService {
 
     private String baseSelect() {
         return "SELECT u.*," + statusExpr() + ","
-                + " CASE WHEN EXISTS (SELECT 1 FROM etudiant e WHERE e.id = u.id) THEN 'etudiant'"
+                + " CASE"
+                + "      WHEN LOWER(TRIM(COALESCE(u.type, ''))) IN ('admin', 'prof', 'etudiant') THEN LOWER(TRIM(u.type))"
+                + "      WHEN EXISTS (SELECT 1 FROM etudiant e WHERE e.id = u.id) THEN 'etudiant'"
                 + "      WHEN EXISTS (SELECT 1 FROM prof p WHERE p.id = u.id) THEN 'prof'"
                 + "      ELSE 'admin' END AS user_type"
                 + " FROM `user` u";
