@@ -151,6 +151,27 @@ public class ReleveController {
         if (selectedFile == null) { showAlert("Veuillez d'abord choisir un fichier."); return; }
         if (currentUser == null)  { showAlert("Erreur : aucun utilisateur connecté. Veuillez vous reconnecter."); return; }
 
+        // ── Vérification de la taille du fichier (max 10 Mo) ──
+        long tailleMax = 10L * 1024 * 1024; // 10 Mo
+        if (selectedFile.length() > tailleMax) {
+            showErrorAlert("❌ Fichier trop volumineux",
+                "Le fichier dépasse la taille maximale autorisée (10 Mo).\n" +
+                "Veuillez choisir un fichier plus léger.");
+            return;
+        }
+
+        // ── Vérification de l'extension ──
+        String nomFichier = selectedFile.getName().toLowerCase();
+        boolean extensionValide = nomFichier.endsWith(".pdf") || nomFichier.endsWith(".jpg")
+                || nomFichier.endsWith(".jpeg") || nomFichier.endsWith(".png")
+                || nomFichier.endsWith(".webp");
+        if (!extensionValide) {
+            showErrorAlert("❌ Format non supporté",
+                "Le fichier doit être au format PDF, JPG, PNG ou WEBP.\n" +
+                "Veuillez choisir un fichier valide.");
+            return;
+        }
+
         if (loadingBox  != null) { loadingBox.setVisible(true);  loadingBox.setManaged(true);  }
         if (btnAnalyser != null)   btnAnalyser.setDisable(true);
 
@@ -180,7 +201,12 @@ public class ReleveController {
                 Platform.runLater(() -> {
                     if (loadingBox  != null) { loadingBox.setVisible(false); loadingBox.setManaged(false); }
                     if (btnAnalyser != null)   btnAnalyser.setDisable(false);
-                    showAlert("Erreur lors de l'analyse : " + e.getMessage());
+                    String msg = e.getMessage() != null ? e.getMessage() : "Erreur inconnue.";
+                    if (msg.contains("relevé de notes") || msg.contains("releve")) {
+                        showErrorAlert("❌ Document invalide", msg);
+                    } else {
+                        showErrorAlert("⚠️ Erreur lors de l'analyse", msg);
+                    }
                     e.printStackTrace();
                 });
             }
@@ -448,6 +474,18 @@ public class ReleveController {
     private void showAlert(String msg) {
         Alert a = new Alert(Alert.AlertType.INFORMATION, msg, ButtonType.OK);
         a.setHeaderText(null);
+        a.showAndWait();
+    }
+
+    private void showErrorAlert(String titre, String msg) {
+        Alert a = new Alert(Alert.AlertType.ERROR);
+        a.setTitle("SmartPath – Erreur");
+        a.setHeaderText(titre);
+        a.setContentText(msg);
+        // Style personnalisé pour rendre le message lisible
+        a.getDialogPane().setStyle(
+            "-fx-font-size: 13px; -fx-font-family: 'Segoe UI';"  
+        );
         a.showAndWait();
     }
 

@@ -22,6 +22,7 @@ public class DashboardEtudiantController {
     @FXML private Button btnAboutContact;
     @FXML private Button btnCours;
     @FXML private Button btnQuiz;
+    @FXML private Button btnQuizPersonnalite;
     @FXML private Button btnStages;
     @FXML private Button btnReleve;
     @FXML private Button btnAiTools; // New AI button
@@ -125,6 +126,21 @@ public class DashboardEtudiantController {
         navigate("/tn/esprit/feature_cours_et_quiz/app-shell.fxml");
     }
 
+    @FXML public void showQuizPersonnalite() {
+        setActiveButton(btnQuizPersonnalite);
+        tn.esprit.controllers.QuizPlayerController.setCurrentUser(currentUser);
+        // Load the personality quiz player directly
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/tn/esprit/interfaces/QuizPlayer.fxml"));
+            Parent root = loader.load();
+            if (contentArea != null) contentArea.getChildren().setAll(root);
+            else if (btnAccueil != null && btnAccueil.getScene() != null) btnAccueil.getScene().setRoot(root);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert("Impossible d'ouvrir le Quiz de personnalité: " + e.getMessage());
+        }
+    }
+
     @FXML public void showAiDashboard() {
         setActiveButton(btnAiTools);
         navigate("/tn/esprit/interfaces/AiDashboard.fxml");
@@ -181,7 +197,7 @@ public class DashboardEtudiantController {
     }
 
     private void setActiveButton(Button active) {
-        Button[] all = {btnAccueil, btnAboutContact, btnCours, btnQuiz, btnStages, btnReleve, btnProfil, btnAiTools};
+        Button[] all = {btnAccueil, btnAboutContact, btnCours, btnQuiz, btnQuizPersonnalite, btnStages, btnReleve, btnProfil, btnAiTools};
         for (Button b : all) {
             if (b == null) continue;
             if (b == active) b.setStyle("-fx-background-color: #eff6ff; -fx-text-fill: #2563eb; -fx-font-weight: bold; -fx-font-size: 13; -fx-padding: 10 16; -fx-background-radius: 8; -fx-cursor: hand; -fx-alignment: CENTER_LEFT; -fx-border-color: #bfdbfe; -fx-border-radius: 8;");

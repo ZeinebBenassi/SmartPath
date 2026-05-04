@@ -99,9 +99,27 @@ public class AdminProfService implements IService<Prof> {
 
     public ObservableList<Prof> afficher() throws SQLException {
         ObservableList<Prof> list = FXCollections.observableArrayList();
-        String sql = "SELECT u.id, u.nom, u.prenom, u.email, u.password, u.CIN, u.telephone, u.adresse, u.date_naissance, u.photo, u.roles, u.created_at, p.specialite FROM `user` u INNER JOIN prof p ON u.id = p.id ORDER BY u.id DESC";
+        // On lit COALESCE(u.status,'actif') depuis la table user (source de vérité du ban)
+        String sql = "SELECT u.id, u.nom, u.prenom, u.email, u.password, u.CIN, u.telephone, "
+                + "u.adresse, u.date_naissance, u.photo, u.roles, u.created_at, p.specialite, "
+                + "COALESCE(u.status, 'actif') AS status "
+                + "FROM `user` u INNER JOIN prof p ON u.id = p.id ORDER BY u.id DESC";
         try (Statement stmt = connection.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) list.add(mapProf(rs));
+        }
+        return list;
+    }
+
+    public ObservableList<Prof> search(String nom) throws SQLException {
+        ObservableList<Prof> list = FXCollections.observableArrayList();
+        String sql = "SELECT u.id, u.nom, u.prenom, u.email, u.password, u.CIN, u.telephone, "
+                + "u.adresse, u.date_naissance, u.photo, u.roles, u.created_at, p.specialite, "
+                + "COALESCE(u.status, 'actif') AS status "
+                + "FROM `user` u INNER JOIN prof p ON u.id = p.id "
+                + "WHERE u.nom LIKE ? ORDER BY u.id DESC";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, nom + "%");
+            try (ResultSet rs = ps.executeQuery()) { while (rs.next()) list.add(mapProf(rs)); }
         }
         return list;
     }
@@ -111,7 +129,10 @@ public class AdminProfService implements IService<Prof> {
     @Override public void delete(int id) { try { supprimer(id); } catch (SQLException ex) { throw new RuntimeException(ex); } }
     @Override public List<Prof> getAll() { try { return new ArrayList<>(afficher()); } catch (SQLException ex) { throw new RuntimeException(ex); } }
     @Override public Prof getById(int id) {
-        String sql = "SELECT u.id, u.nom, u.prenom, u.email, u.password, u.CIN, u.telephone, u.adresse, u.date_naissance, u.photo, u.roles, u.created_at, p.specialite FROM `user` u INNER JOIN prof p ON u.id = p.id WHERE u.id = ?";
+        String sql = "SELECT u.id, u.nom, u.prenom, u.email, u.password, u.CIN, u.telephone, "
+                + "u.adresse, u.date_naissance, u.photo, u.roles, u.created_at, p.specialite, "
+                + "COALESCE(u.status, 'actif') AS status "
+                + "FROM `user` u INNER JOIN prof p ON u.id = p.id WHERE u.id = ?";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) { if (rs.next()) return mapProf(rs); }
@@ -152,6 +173,9 @@ public class AdminProfService implements IService<Prof> {
         Timestamp createdAt = rs.getTimestamp("created_at");
         p.setCreatedAt(createdAt != null ? new java.util.Date(createdAt.getTime()) : new java.util.Date());
         p.setSpecialite(rs.getString("specialite"));
+        // Lire le statut depuis user (source de vérité)
+        String status = rs.getString("status");
+        p.setStatus(status != null ? status : "actif");
         return p;
     }
 }

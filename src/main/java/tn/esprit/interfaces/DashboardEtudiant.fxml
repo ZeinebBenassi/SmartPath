@@ -25,6 +25,7 @@
                 <Button fx:id="btnAccueil"      text="Accueil"            onAction="#showAccueil"      maxWidth="Infinity" styleClass="nav-btn-active"/>
                 <Button fx:id="btnCours"        text="Mes cours"           onAction="#showCours"        maxWidth="Infinity" styleClass="nav-btn"/>
                 <Button fx:id="btnQuiz"         text="🧠  Quiz orientation"    onAction="#showQuiz"         maxWidth="Infinity" styleClass="nav-btn"/>
+                <Button fx:id="btnQuizPersonnalite" text="🧭 Quiz personnalité" onAction="#showQuizPersonnalite" maxWidth="Infinity" styleClass="nav-btn"/>
                 <Button fx:id="btnStages"       text="Stages &amp; Offres" onAction="#showStages"       maxWidth="Infinity" styleClass="nav-btn"/>
                 <Button fx:id="btnReleve"       text="📄  Relevé de notes"     onAction="#showReleve"       maxWidth="Infinity" styleClass="nav-btn"/>
                 <Button fx:id="btnAiTools"      text="🤖 AI Academic Tools"   onAction="#showAiDashboard" maxWidth="Infinity" styleClass="nav-btn"/>

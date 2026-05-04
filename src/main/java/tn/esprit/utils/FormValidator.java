@@ -13,9 +13,7 @@ import java.util.regex.Pattern;
 
 public class FormValidator {
 
-    private static final Pattern EMAIL_PATTERN =
-            Pattern.compile("^[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}$");
-
+    // EMAIL : délégué à EmailValidator (plus besoin de regex locale)
     private static final Pattern CIN_PATTERN =
             Pattern.compile("^[0-9]{8}$");
 
@@ -31,7 +29,7 @@ public class FormValidator {
                     "-fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1; -fx-padding: 8 12;";
 
     // ─────────────────────────────────────────────────────────────────────────
-    // Validations existantes
+    // Validations
     // ─────────────────────────────────────────────────────────────────────────
 
     public static boolean validateRequired(TextField field, String labelName, List<String> errors) {
@@ -46,19 +44,47 @@ public class FormValidator {
         return true;
     }
 
+    /**
+     * Validation email améliorée :
+     *   - Format structurel (regex)
+     *   - TLD whitelist (.cvc, .abc → refusés)
+     *   - Pas de vérification DNS (trop lente pour le formulaire temps réel)
+     *
+     * Pour activer la vérification DNS au moment du submit :
+     *   utiliser validateEmailWithDns()
+     */
     public static boolean validateEmail(TextField field, List<String> errors) {
         if (field == null) return true;
         String val = field.getText() == null ? "" : field.getText().trim();
-        if (val.isEmpty()) {
+
+        EmailValidator.ValidationResult result = EmailValidator.validate(val, false);
+
+        if (!result.valid) {
             markError(field);
-            errors.add("L'email est obligatoire.");
+            errors.add(result.message);
             return false;
         }
-        if (!EMAIL_PATTERN.matcher(val).matches()) {
+
+        markOk(field);
+        return true;
+    }
+
+    /**
+     * Validation email avec vérification DNS (à appeler au submit, pas en temps réel).
+     * Plus lente (~1-3s) mais vérifie que le domaine existe vraiment.
+     */
+    public static boolean validateEmailWithDns(TextField field, List<String> errors) {
+        if (field == null) return true;
+        String val = field.getText() == null ? "" : field.getText().trim();
+
+        EmailValidator.ValidationResult result = EmailValidator.validate(val, true);
+
+        if (!result.valid) {
             markError(field);
-            errors.add("L'email n'est pas valide (ex : nom@domaine.com).");
+            errors.add(result.message);
             return false;
         }
+
         markOk(field);
         return true;
     }
@@ -161,16 +187,11 @@ public class FormValidator {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // 🔐 NOUVEAU – Affichage force du mot de passe en temps réel
+    // 🔐 Affichage force du mot de passe en temps réel
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
      * Met à jour la barre de progression et les labels de feedback en temps réel.
-     *
-     * @param field         le PasswordField observé
-     * @param strengthBar   ProgressBar (0.0 à 1.0) à coloriser
-     * @param levelLabel    Label affichant le niveau (ex : "🟢 FORT")
-     * @param adviceLabel   Label affichant l'explication + conseil
      */
     public static void updatePasswordStrengthUI(
             PasswordField field,
@@ -194,25 +215,22 @@ public class FormValidator {
         PasswordStrengthUtil.Result result = PasswordStrengthUtil.analyze(pwd);
         String color = result.getColor();
 
-        // Barre de progression
         if (strengthBar != null) {
             double progress = result.score / 100.0;
             strengthBar.setProgress(progress);
             strengthBar.setStyle(
-                "-fx-accent: " + color + "; " +
-                "-fx-background-color: #e2e8f0; " +
-                "-fx-background-radius: 4; " +
-                "-fx-pref-height: 8;"
+                    "-fx-accent: " + color + "; " +
+                            "-fx-background-color: #e2e8f0; " +
+                            "-fx-background-radius: 4; " +
+                            "-fx-pref-height: 8;"
             );
         }
 
-        // Label niveau
         if (levelLabel != null) {
             levelLabel.setText(result.getLevelLabel());
             levelLabel.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 11; -fx-font-weight: bold;");
         }
 
-        // Label conseil
         if (adviceLabel != null) {
             adviceLabel.setText(result.explication + "  ➜  " + result.conseil);
             adviceLabel.setStyle("-fx-text-fill: #5a6a8a; -fx-font-size: 10;");
@@ -224,8 +242,8 @@ public class FormValidator {
     // Helpers internes
     // ─────────────────────────────────────────────────────────────────────────
 
-    private static void markError(TextField   field) { field.setStyle(STYLE_ERROR); }
-    private static void markOk   (TextField   field) { field.setStyle(STYLE_OK);    }
+    private static void markError(TextField     field) { field.setStyle(STYLE_ERROR); }
+    private static void markOk   (TextField     field) { field.setStyle(STYLE_OK);    }
     private static void markError(PasswordField field) { field.setStyle(STYLE_ERROR); }
     private static void markOk   (PasswordField field) { field.setStyle(STYLE_OK);    }
 }

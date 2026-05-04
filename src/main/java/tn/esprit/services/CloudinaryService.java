@@ -65,8 +65,8 @@ public class CloudinaryService {
             String stringToSign = buildQueryString(params);          // trié alphabétiquement
             String signature    = sha1(stringToSign + apiSecret);    // sans "&" avant le secret
 
-            System.out.println("🔑 String to sign : " + stringToSign);
-            System.out.println("🔑 Signature      : " + signature);
+            System.out.println("String to sign : " + stringToSign);
+            System.out.println("Signature      : " + signature);
 
             // ── 2. Corps multipart ────────────────────────────────────────────────────
             String boundary = "----Boundary" + UUID.randomUUID().toString().replace("-", "");
@@ -142,12 +142,12 @@ public class CloudinaryService {
             JSONObject json = new JSONObject(res.body());
             boolean ok = "ok".equals(json.optString("result"));
             System.out.println(ok
-                    ? "✅ Cloudinary delete OK : " + publicId
-                    : "⚠️  Cloudinary delete result : " + res.body());
+                    ? "Cloudinary delete OK : " + publicId
+                    : "⚠ Cloudinary delete result : " + res.body());
             return ok;
 
         } catch (Exception e) {
-            System.err.println("❌ CloudinaryService.deleteImage : " + e.getMessage());
+            System.err.println("CloudinaryService.deleteImage : " + e.getMessage());
             return false;
         }
     }
@@ -202,7 +202,7 @@ public class CloudinaryService {
     }
 
     private static void addField(ByteArrayOutputStream out, String boundary,
-                                  String name, String value) throws IOException {
+                                 String name, String value) throws IOException {
         write(out, "--" + boundary + "\r\n");
         write(out, "Content-Disposition: form-data; name=\"" + name + "\"\r\n\r\n");
         write(out, value + "\r\n");

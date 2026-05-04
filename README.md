@@ -75,7 +75,7 @@ Configurer la base de données dans les fichiers .properties.
 Configurer Groq AI dans un fichier `config.properties` à la racine du projet ou via variables d'environnement :
 
 ```properties
-GROQ_API_KEY=gsk_...
+GROQ_API_KEY=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
 GROQ_API_URL=https://api.groq.com/openai/v1/chat/completions
 GROQ_MODEL=llama-3.3-70b-versatile
 ```
