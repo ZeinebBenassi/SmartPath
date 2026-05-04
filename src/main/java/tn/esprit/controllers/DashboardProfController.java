@@ -22,6 +22,8 @@ public class DashboardProfController {
     @FXML private Label nbEtudiants;
     @FXML private Button btnDashboard;
     @FXML private Button btnMatieres;
+    @FXML private Button btnCours;
+    @FXML private Button btnQuiz;
     @FXML private Button btnLecons;
     @FXML private Button btnTests;
     @FXML private Button btnEtudiants;
@@ -55,6 +57,20 @@ public class DashboardProfController {
         tn.esprit.utils.feature_cours_et_quiz.AppSession.setCurrentUser(currentUser);
         tn.esprit.controllers.feature_cours_et_quiz.AppShellController.setInitialTab("matieres");
         navigate("/tn/esprit/feature_cours_et_quiz/app-shell.fxml", "Mes Matières"); 
+    }
+
+    @FXML public void showCours() {
+        setActiveButton(btnCours);
+        tn.esprit.utils.feature_cours_et_quiz.AppSession.setCurrentUser(currentUser);
+        tn.esprit.controllers.feature_cours_et_quiz.AppShellController.setInitialTab("matieres");
+        navigate("/tn/esprit/feature_cours_et_quiz/app-shell.fxml", "Mes Cours");
+    }
+
+    @FXML public void showQuiz() {
+        setActiveButton(btnQuiz);
+        tn.esprit.utils.feature_cours_et_quiz.AppSession.setCurrentUser(currentUser);
+        tn.esprit.controllers.feature_cours_et_quiz.AppShellController.setInitialTab("quiz");
+        navigate("/tn/esprit/feature_cours_et_quiz/app-shell.fxml", "Quiz");
     }
 
     @FXML public void showLecons() {
@@ -117,7 +133,7 @@ public class DashboardProfController {
     private void showOnly(javafx.scene.Node node) { if (contentArea != null) contentArea.getChildren().setAll(node); }
 
     private void setActiveButton(Button active) {
-        Button[] all = {btnDashboard, btnMatieres, btnLecons, btnTests, btnEtudiants, btnProfil};
+        Button[] all = {btnDashboard, btnMatieres, btnCours, btnQuiz, btnLecons, btnTests, btnEtudiants, btnProfil};
         for (Button button : all) {
             if (button == null) continue;
             if (button == active) { 

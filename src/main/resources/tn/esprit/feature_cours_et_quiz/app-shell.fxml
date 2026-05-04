@@ -13,21 +13,16 @@
            styleClass="sp-bg">
 
     <BorderPane styleClass="app-shell">
+        <!-- top navbar removed: navigation handled by parent dashboard sidebar -->
+        <!-- Hidden labels kept for controller compatibility -->
         <top>
-            <HBox styleClass="navbar" spacing="14">
-                <Label text="SmartPath" styleClass="navbar-title"/>
-
-                <HBox spacing="8" HBox.hgrow="ALWAYS">
-                    <Button fx:id="homeBtn" text="Accueil" onAction="#showHome" styleClass="nav-btn"/>
-                    <Button fx:id="matieresBtn" text="Matieres" onAction="#showMatieres" styleClass="nav-btn"/>
-                    <Button fx:id="quizBtn" text="Quiz" onAction="#showQuiz" styleClass="nav-btn"/>
-                </HBox>
-
-                    <HBox spacing="10">
-                    <Label fx:id="userLabel" text="" styleClass="user-pill"/>
-                    <Label fx:id="roleBadge" text="" styleClass="role-badge"/>
-                    <Button fx:id="logoutBtn" text="Deconnexion" onAction="#handleLogout" styleClass="sp-btn sp-btn-danger"/>
-                </HBox>
+            <HBox visible="false" managed="false">
+                <Label fx:id="userLabel" text=""/>
+                <Label fx:id="roleBadge" text=""/>
+                <Button fx:id="homeBtn" text=""/>
+                <Button fx:id="matieresBtn" text=""/>
+                <Button fx:id="quizBtn" text=""/>
+                <Button fx:id="logoutBtn" text=""/>
             </HBox>
         </top>
 
