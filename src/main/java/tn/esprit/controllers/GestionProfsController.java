@@ -27,6 +27,7 @@ public class GestionProfsController {
     @FXML private TableColumn<Prof, String> colSpecialite;
     @FXML private TableColumn<Prof, String> colCIN;
     @FXML private TableColumn<Prof, String> colTelephone;
+    @FXML private TableColumn<Prof, String> colStatus;   // ← colonne statut ajoutée
     @FXML private TableColumn<Prof, Void>   colActions;
     @FXML private TextField                 searchField;
     @FXML private Label                     countLabel;
@@ -49,17 +50,34 @@ public class GestionProfsController {
         if (colSpecialite != null) colSpecialite.setCellValueFactory(new PropertyValueFactory<>("specialite"));
         if (colCIN        != null) colCIN.setCellValueFactory(new PropertyValueFactory<>("cin"));
         if (colTelephone  != null) colTelephone.setCellValueFactory(new PropertyValueFactory<>("telephone"));
+
+        // Colonne statut colorée (identique à GestionEtudiants)
+        if (colStatus != null) {
+            colStatus.setCellFactory(col -> new TableCell<>() {
+                @Override
+                protected void updateItem(String item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                        setText(null); setStyle(""); return;
+                    }
+                    Prof p = (Prof) getTableRow().getItem();
+                    String st = p.getStatus() != null ? p.getStatus() : "actif";
+                    setText(st);
+                    String bg    = "ban".equalsIgnoreCase(st) ? "#fee2e2" : "#dcfce7";
+                    String color = "ban".equalsIgnoreCase(st) ? "#b91c1c" : "#15803d";
+                    setStyle("-fx-background-color:" + bg + ";-fx-text-fill:" + color
+                            + ";-fx-font-weight:bold;-fx-background-radius:6;-fx-alignment:CENTER;");
+                }
+            });
+        }
     }
 
     private void setupActionColumn() {
         if (colActions == null) return;
         colActions.setCellFactory(col -> new TableCell<>() {
 
-            // Bouton Modifier — icône uniquement
             private final Button btnEdit = makeIconBtn("/images/modifier.png", "✏", "#2563eb", "Modifier");
-            // Bouton Ban
             private final Button btnBan  = makeIconBtn("/images/block.png",    "🚫", "#f59e0b", "Bannir");
-            // Bouton Supprimer
             private final Button btnDel  = makeTextBtn("🗑", "#dc2626", "Supprimer");
             private final HBox   box     = new HBox(6, btnEdit, btnBan, btnDel);
 
@@ -73,12 +91,24 @@ public class GestionProfsController {
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty || getTableRow() == null || getTableRow().getItem() == null ? null : box);
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setGraphic(null); return;
+                }
+                // Adapter le bouton Ban selon le statut courant
+                Prof prof = getTableRow().getItem();
+                String st = prof.getStatus() != null ? prof.getStatus() : "actif";
+                if ("ban".equalsIgnoreCase(st)) {
+                    btnBan.setTooltip(new Tooltip("Réactiver"));
+                    btnBan.setStyle("-fx-background-color:#10b981;-fx-background-radius:6;-fx-padding:4 8;-fx-cursor:hand;");
+                } else {
+                    btnBan.setTooltip(new Tooltip("Bannir"));
+                    btnBan.setStyle("-fx-background-color:#f59e0b;-fx-background-radius:6;-fx-padding:4 8;-fx-cursor:hand;");
+                }
+                setGraphic(box);
             }
         });
     }
 
-    /** Bouton avec image (fallback texte si image absente) */
     private Button makeIconBtn(String imagePath, String fallbackText, String color, String tooltip) {
         Button b = new Button();
         b.setTooltip(new Tooltip(tooltip));
@@ -95,7 +125,6 @@ public class GestionProfsController {
         return b;
     }
 
-    /** Bouton texte/emoji standard */
     private Button makeTextBtn(String text, String color, String tooltip) {
         Button b = new Button(text);
         b.setTooltip(new Tooltip(tooltip));
@@ -116,16 +145,16 @@ public class GestionProfsController {
         if (q.isEmpty()) { if (profsTable != null) profsTable.setItems(data); updateCount(); return; }
         ObservableList<Prof> f = FXCollections.observableArrayList();
         for (Prof p : data)
-            if ((p.getNom()       !=null && p.getNom()      .toLowerCase().contains(q)) ||
-                    (p.getPrenom()    !=null && p.getPrenom()   .toLowerCase().contains(q)) ||
-                    (p.getEmail()     !=null && p.getEmail()    .toLowerCase().contains(q)) ||
-                    (p.getSpecialite()!=null && p.getSpecialite().toLowerCase().contains(q))) f.add(p);
+            if ((p.getNom()        != null && p.getNom()      .toLowerCase().contains(q)) ||
+                    (p.getPrenom()     != null && p.getPrenom()   .toLowerCase().contains(q)) ||
+                    (p.getEmail()      != null && p.getEmail()    .toLowerCase().contains(q)) ||
+                    (p.getSpecialite() != null && p.getSpecialite().toLowerCase().contains(q))) f.add(p);
         if (profsTable != null) profsTable.setItems(f);
         updateCount();
     }
 
     private void updateCount() {
-        if (countLabel!=null && profsTable!=null)
+        if (countLabel != null && profsTable != null)
             countLabel.setText(profsTable.getItems().size() + " professeur(s)");
     }
 
@@ -149,17 +178,22 @@ public class GestionProfsController {
 
     private void confirmBan(Prof prof) {
         if (prof == null) return;
+        String currentStatus = prof.getStatus() != null ? prof.getStatus() : "actif";
+        boolean isBanned = "ban".equalsIgnoreCase(currentStatus);
+        String newStatus = isBanned ? "actif" : "ban";
+        String action    = isBanned ? "réactiver" : "bannir";
+
         Alert a = new Alert(Alert.AlertType.CONFIRMATION);
-        a.setTitle("Bannir professeur");
+        a.setTitle(isBanned ? "Réactiver professeur" : "Bannir professeur");
         a.setHeaderText(null);
-        a.setContentText("Voulez-vous bannir " + prof.getPrenom() + " " + prof.getNom() + " ?");
+        a.setContentText("Voulez-vous " + action + " " + prof.getPrenom() + " " + prof.getNom() + " ?");
         Optional<ButtonType> r = a.showAndWait();
         if (r.isPresent() && r.get() == ButtonType.OK) {
             try {
-                // Bannir via UserService si le prof est lié à un User
                 tn.esprit.services.UserService userService = new tn.esprit.services.UserService();
-                userService.updateStatusByEmail(prof.getEmail(), "ban");
-                showInfo("Banni", prof.getPrenom() + " " + prof.getNom() + " a été banni.");
+                userService.updateStatusByEmail(prof.getEmail(), newStatus);
+                showInfo(isBanned ? "Réactivé" : "Banni",
+                        prof.getPrenom() + " " + prof.getNom() + " a été " + (isBanned ? "réactivé." : "banni."));
                 loadData();
             } catch (Exception e) {
                 showError("Erreur bannissement", e.getMessage());

@@ -221,12 +221,31 @@ public class UserService {
         return false;
     }
 
+    /**
+     * Met à jour le statut dans `user` ET synchronise `etudiant.status` si applicable.
+     */
     public boolean updateStatusByEmail(String email, String status) {
         ensureStatusColumn();
         if (!Boolean.TRUE.equals(statusColumnExists)) return false;
-        try (PreparedStatement ps = connection.prepareStatement("UPDATE `user` SET status=? WHERE email=?")) {
-            ps.setString(1, status); ps.setString(2, email); return ps.executeUpdate() > 0;
-        } catch (Exception e) { System.out.println("Erreur updateStatusByEmail: " + e.getMessage()); }
+        try {
+            connection.setAutoCommit(false);
+            // 1. Mettre à jour user.status (source de vérité)
+            int rows = 0;
+            try (PreparedStatement ps = connection.prepareStatement("UPDATE `user` SET status=? WHERE email=?")) {
+                ps.setString(1, status); ps.setString(2, email); rows = ps.executeUpdate();
+            }
+            // 2. Synchroniser etudiant.status si l'utilisateur est un étudiant
+            try (PreparedStatement ps = connection.prepareStatement(
+                    "UPDATE etudiant e INNER JOIN `user` u ON e.id = u.id SET e.status=? WHERE u.email=?")) {
+                ps.setString(1, status); ps.setString(2, email); ps.executeUpdate();
+            } catch (Exception ignored) { /* pas un étudiant ou colonne absente, on ignore */ }
+            connection.commit();
+            connection.setAutoCommit(true);
+            return rows > 0;
+        } catch (Exception e) {
+            try { connection.rollback(); connection.setAutoCommit(true); } catch (Exception ignored) {}
+            System.out.println("Erreur updateStatusByEmail: " + e.getMessage());
+        }
         return false;
     }
 

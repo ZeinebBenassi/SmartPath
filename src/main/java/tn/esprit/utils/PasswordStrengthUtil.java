@@ -1,27 +1,14 @@
 package tn.esprit.utils;
 
-/**
- * PasswordStrengthUtil – Analyse et classe la force d'un mot de passe.
- *
- * Niveaux :
- *   LOW    🔴 – mot de passe faible
- *   MEDIUM 🟠 – mot de passe moyen
- *   HIGH   🟢 – mot de passe fort
- *
- * Règles de classification :
- *   LOW    : < 6 caractères  OU  uniquement lettres  OU  uniquement chiffres
- *            OU mot très simple (123456, password, azerty…)
- *   MEDIUM : 6-10 caractères, mélange partiel (lettres + chiffres), sans symboles
- *   HIGH   : > 10 caractères + majuscules + minuscules + chiffres + symboles
- */
+
 public class PasswordStrengthUtil {
 
     // ── Mots de passe bannis (exemples très simples) ──────────────────────────
     private static final java.util.Set<String> BANNED = java.util.Set.of(
-        "123456", "password", "azerty", "qwerty", "111111",
-        "123456789", "000000", "abc123", "iloveyou", "admin",
-        "letmein", "welcome", "monkey", "dragon", "master",
-        "pass", "test", "1234", "12345", "1234567890"
+            "123456", "password", "azerty", "qwerty", "111111",
+            "123456789", "000000", "abc123", "iloveyou", "admin",
+            "letmein", "welcome", "monkey", "dragon", "master",
+            "pass", "test", "1234", "12345", "1234567890"
     );
 
     // ── Résultat d'analyse ────────────────────────────────────────────────────
@@ -74,42 +61,42 @@ public class PasswordStrengthUtil {
         // ── LOW ──────────────────────────────────────────────────────────────
         if (len == 0) {
             return new Result(Level.LOW,
-                "Aucun mot de passe saisi.",
-                "Saisissez un mot de passe d'au moins 6 caractères.",
-                0);
+                    "Aucun mot de passe saisi.",
+                    "Saisissez un mot de passe d'au moins 6 caractères.",
+                    0);
         }
         if (isBanned) {
             return new Result(Level.LOW,
-                "Ce mot de passe est beaucoup trop courant et connu des pirates.",
-                "Choisissez quelque chose d'unique : évitez les suites simples et les mots du dictionnaire.",
-                5);
+                    "Ce mot de passe est beaucoup trop courant et connu des pirates.",
+                    "Choisissez quelque chose d'unique : évitez les suites simples et les mots du dictionnaire.",
+                    5);
         }
         if (len < 6) {
             return new Result(Level.LOW,
-                "Trop court (" + len + " caractère" + (len > 1 ? "s" : "") + ") — facile à deviner.",
-                "Ajoutez plus de caractères. Visez au moins 10 avec des majuscules, chiffres et symboles.",
-                10);
+                    "Trop court (" + len + " caractère" + (len > 1 ? "s" : "") + ") — facile à deviner.",
+                    "Ajoutez plus de caractères. Visez au moins 10 avec des majuscules, chiffres et symboles.",
+                    10);
         }
         if (onlyLetters) {
             return new Result(Level.LOW,
-                "Uniquement des lettres — manque de variété.",
-                "Ajoutez des chiffres (@, #, !, 3, 7…) pour augmenter la complexité.",
-                15);
+                    "Uniquement des lettres — manque de variété.",
+                    "Ajoutez des chiffres (@, #, !, 3, 7…) pour augmenter la complexité.",
+                    15);
         }
         if (onlyDigits) {
             return new Result(Level.LOW,
-                "Uniquement des chiffres — très vulnérable aux attaques par force brute.",
-                "Mélangez lettres, chiffres et symboles.",
-                15);
+                    "Uniquement des chiffres — très vulnérable aux attaques par force brute.",
+                    "Mélangez lettres, chiffres et symboles.",
+                    15);
         }
 
         // ── HIGH ─────────────────────────────────────────────────────────────
         if (len > 10 && haUpper && hasLower && hasDigit && hasSymbol) {
             int score = Math.min(100, 75 + (len - 11) * 2);
             return new Result(Level.HIGH,
-                "Excellent ! Mélange complet : majuscules, minuscules, chiffres et symboles sur " + len + " caractères.",
-                "Parfait. Conservez-le dans un gestionnaire de mots de passe sécurisé.",
-                score);
+                    "Excellent ! Mélange complet : majuscules, minuscules, chiffres et symboles sur " + len + " caractères.",
+                    "Parfait. Conservez-le dans un gestionnaire de mots de passe sécurisé.",
+                    score);
         }
 
         // ── MEDIUM ───────────────────────────────────────────────────────────

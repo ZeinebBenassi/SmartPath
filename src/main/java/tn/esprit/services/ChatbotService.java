@@ -19,28 +19,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/**
- * ChatbotService — SmartPath AI intelligent et context-aware.
- *
- * Fonctionnalités :
- *  - Mémoire conversationnelle (MAX_TURNS tours)
- *  - Détection des demandes de clarification ("explique plus", "je comprends pas"...)
- *    -> continue le dernier sujet au lieu de traiter comme nouvelle question
- *  - Prompt systeme riche et pedagogique (tuteur CS)
- *  - Specialise CS uniquement (redirige les hors-sujets)
- *  - Bilingue FR / EN, adaptatif au niveau de l'utilisateur
- *
- * Modele : mistralai/Mistral-7B-Instruct-v0.2 (Inference Providers)
- * Auth   : config.properties -> hf.api_key=hf_...
- */
 public class ChatbotService {
 
     private static final Logger LOG = Logger.getLogger(ChatbotService.class.getName());
 
-    // Endpoint OpenAI-compatible (selection provider "auto" cote serveur)
     private static final String HF_API_URL = "https://router.huggingface.co/v1/chat/completions";
 
-    // Override possible via config.properties: hf.model=... (ou env: HF_MODEL)
     private static final String DEFAULT_MODEL = "Qwen/Qwen2.5-72B-Instruct";
 
     private static final int MAX_TURNS = 6;
@@ -51,48 +35,48 @@ public class ChatbotService {
     private static final Set<String> CLARIFICATION_TRIGGERS;
     static {
         Set<String> s = new HashSet<>(Arrays.asList(
-            "explique plus",
-            "explique encore",
-            "plus de details",
-            "plus de detail",
-            "je comprends pas",
-            "je comprends toujours pas",
-            "je ne comprends pas",
-            "j'ai pas compris",
-            "pas compris",
-            "j'ai pas compris",
-            "je n'ai pas compris",
-            "plus simple",
-            "simplifie",
-            "simplifie moi",
-            "simplifie-moi",
-            "reformule",
-            "c'est quoi exactement",
-            "c'est quoi",
-            "c est quoi",
-            "donne un exemple",
-            "donne des exemples",
-            "exemple concret",
-            "continue",
-            "continue l'explication",
-            "et alors",
-            "et ensuite",
-            "more details",
-            "explain more",
-            "i don't understand",
-            "i dont understand",
-            "simplify",
-            "give an example",
-            "go on",
-            "continue please",
-            "vas-y",
-            "vas y",
-            "je vois pas",
-            "je vois toujours pas",
-            "encore",
-            "repete",
-            "repete moi ca",
-            "repete ca"
+                "explique plus",
+                "explique encore",
+                "plus de details",
+                "plus de detail",
+                "je comprends pas",
+                "je comprends toujours pas",
+                "je ne comprends pas",
+                "j'ai pas compris",
+                "pas compris",
+                "j'ai pas compris",
+                "je n'ai pas compris",
+                "plus simple",
+                "simplifie",
+                "simplifie moi",
+                "simplifie-moi",
+                "reformule",
+                "c'est quoi exactement",
+                "c'est quoi",
+                "c est quoi",
+                "donne un exemple",
+                "donne des exemples",
+                "exemple concret",
+                "continue",
+                "continue l'explication",
+                "et alors",
+                "et ensuite",
+                "more details",
+                "explain more",
+                "i don't understand",
+                "i dont understand",
+                "simplify",
+                "give an example",
+                "go on",
+                "continue please",
+                "vas-y",
+                "vas y",
+                "je vois pas",
+                "je vois toujours pas",
+                "encore",
+                "repete",
+                "repete moi ca",
+                "repete ca"
         ));
         CLARIFICATION_TRIGGERS = Collections.unmodifiableSet(s);
     }
@@ -121,16 +105,16 @@ public class ChatbotService {
             LOG.warning("HF API key not configured: " + e.getMessage());
             return CompletableFuture.completedFuture(
                     "Cle API Hugging Face manquante.\n"
-                    + "Ouvre config.properties et remplace :\n"
-                    + "  hf.api_key=hf_REMPLACE_PAR_TON_TOKEN\n"
-                    + "par ton vrai token (gratuit sur huggingface.co/settings/tokens)");
+                            + "Ouvre config.properties et remplace :\n"
+                            + "  hf.api_key=hf_REMPLACE_PAR_TON_TOKEN\n"
+                            + "par ton vrai token (gratuit sur huggingface.co/settings/tokens)");
         }
 
         String  trimmed      = userMessage.trim();
         boolean isClarif     = isClarificationRequest(trimmed);
         String  effectiveMsg = (isClarif && lastTopic != null)
-                               ? buildClarificationMessage(trimmed)
-                               : trimmed;
+                ? buildClarificationMessage(trimmed)
+                : trimmed;
 
         LOG.info("Message effectif -> " + effectiveMsg);
         return callHuggingFace(effectiveMsg, apiKey)
@@ -175,88 +159,88 @@ public class ChatbotService {
 
     private String buildClarificationMessage(String userMsg) {
         return "A propos de \"" + lastTopic + "\" : " + userMsg
-               + ". Continue l'explication du meme sujet avec plus de details,"
-               + " ne change pas de sujet.";
+                + ". Continue l'explication du meme sujet avec plus de details,"
+                + " ne change pas de sujet.";
     }
 
     // ── Construction du prompt ───────────────────────────────────────────────
 
     private static String systemPrompt() {
         return
-            "Tu es SmartPath AI, un assistant intelligent et pedagogique integre dans une application " +
-            "pour etudiants en informatique a Esprit School of Engineering (Tunisie).\n\n" +
+                "Tu es SmartPath AI, un assistant intelligent et pedagogique integre dans une application " +
+                        "pour etudiants en informatique a Esprit School of Engineering (Tunisie).\n\n" +
 
-            "## Role\n" +
-            "Tu es un tuteur expert en computer science. Tu expliques, guides et aides.\n\n" +
+                        "## Role\n" +
+                        "Tu es un tuteur expert en computer science. Tu expliques, guides et aides.\n\n" +
 
-            "## Domaines autorises UNIQUEMENT\n" +
-            "- Programmation (Java, Python, C, C++, JavaScript, etc.)\n" +
-            "- Algorithmes et structures de donnees\n" +
-            "- Bases de donnees (SQL, NoSQL, modelisation)\n" +
-            "- Reseaux informatiques\n" +
-            "- Intelligence Artificielle et Machine Learning\n" +
-            "- Big Data (Hadoop, Spark, etc.)\n" +
-            "- Cybersecurite\n" +
-            "- Genie logiciel (MVC, Design Patterns, etc.)\n\n" +
+                        "## Domaines autorises UNIQUEMENT\n" +
+                        "- Programmation (Java, Python, C, C++, JavaScript, etc.)\n" +
+                        "- Algorithmes et structures de donnees\n" +
+                        "- Bases de donnees (SQL, NoSQL, modelisation)\n" +
+                        "- Reseaux informatiques\n" +
+                        "- Intelligence Artificielle et Machine Learning\n" +
+                        "- Big Data (Hadoop, Spark, etc.)\n" +
+                        "- Cybersecurite\n" +
+                        "- Genie logiciel (MVC, Design Patterns, etc.)\n\n" +
 
-            "## Regles de comportement\n" +
-            "1. CONTEXTE : Tu gardes le contexte de toute la conversation.\n" +
-            "2. CLARIFICATION : Si l'utilisateur dit 'explique plus', 'je comprends pas', " +
-               "'plus simple', 'donne un exemple' -> tu CONTINUES le meme sujet avec plus de details. " +
-               "Tu ne changes JAMAIS de sujet sur une demande de clarification.\n" +
-            "3. HORS SUJET : Tu ne reponds JAMAIS a une question hors informatique. " +
-               "Dis simplement : 'Je suis specialise en informatique uniquement.'\n" +
-            "4. SALUTATIONS : Reponds chaleureusement et propose de l'aide en informatique.\n" +
-            "5. REPONSES : Phrases courtes. Exemples simples. Explications progressives. " +
-               "Jamais de blabla, jamais d'introduction, jamais de conclusion.\n\n" +
+                        "## Regles de comportement\n" +
+                        "1. CONTEXTE : Tu gardes le contexte de toute la conversation.\n" +
+                        "2. CLARIFICATION : Si l'utilisateur dit 'explique plus', 'je comprends pas', " +
+                        "'plus simple', 'donne un exemple' -> tu CONTINUES le meme sujet avec plus de details. " +
+                        "Tu ne changes JAMAIS de sujet sur une demande de clarification.\n" +
+                        "3. HORS SUJET : Tu ne reponds JAMAIS a une question hors informatique. " +
+                        "Dis simplement : 'Je suis specialise en informatique uniquement.'\n" +
+                        "4. SALUTATIONS : Reponds chaleureusement et propose de l'aide en informatique.\n" +
+                        "5. REPONSES : Phrases courtes. Exemples simples. Explications progressives. " +
+                        "Jamais de blabla, jamais d'introduction, jamais de conclusion.\n\n" +
 
-            "## Style de reponse\n" +
-            "- Langue de l'utilisateur (francais ou anglais)\n" +
-            "- Maximum 80 mots. Ultra-concis et direct.\n" +
-            "- Pas d'introduction, pas de conclusion.\n" +
-            "- Va droit au but : reponds uniquement a ce qui est demande.\n" +
-            "- Exemples simples et concrets.\n" +
-            "- Explications progressives : commence par l'essentiel.\n" +
-            "- Naturel, comme un tuteur humain.";
+                        "## Style de reponse\n" +
+                        "- Langue de l'utilisateur (francais ou anglais)\n" +
+                        "- Maximum 80 mots. Ultra-concis et direct.\n" +
+                        "- Pas d'introduction, pas de conclusion.\n" +
+                        "- Va droit au but : reponds uniquement a ce qui est demande.\n" +
+                        "- Exemples simples et concrets.\n" +
+                        "- Explications progressives : commence par l'essentiel.\n" +
+                        "- Naturel, comme un tuteur humain.";
     }
 
-        private synchronized String buildMessagesJson(String userMessage) {
-                StringBuilder sb = new StringBuilder(1024);
-                sb.append('[');
+    private synchronized String buildMessagesJson(String userMessage) {
+        StringBuilder sb = new StringBuilder(1024);
+        sb.append('[');
 
-                // system
-                sb.append("{\"role\":\"system\",\"content\":")
-                    .append(jsonString(systemPrompt()))
-                    .append('}');
+        // system
+        sb.append("{\"role\":\"system\",\"content\":")
+                .append(jsonString(systemPrompt()))
+                .append('}');
 
-                // history (user/assistant)
-                for (Turn t : turns) {
-                        sb.append(',')
-                            .append("{\"role\":\"user\",\"content\":")
-                            .append(jsonString(t.user))
-                            .append('}');
-                        sb.append(',')
-                            .append("{\"role\":\"assistant\",\"content\":")
-                            .append(jsonString(t.assistant))
-                            .append('}');
-                }
-
-                // current user
-                sb.append(',')
+        // history (user/assistant)
+        for (Turn t : turns) {
+            sb.append(',')
                     .append("{\"role\":\"user\",\"content\":")
-                    .append(jsonString(userMessage))
+                    .append(jsonString(t.user))
                     .append('}');
-
-                sb.append(']');
-                return sb.toString();
+            sb.append(',')
+                    .append("{\"role\":\"assistant\",\"content\":")
+                    .append(jsonString(t.assistant))
+                    .append('}');
         }
 
-        private synchronized String resolveModelId() {
-                String model = ConfigLoader.get("hf.model");
-                if (model == null || model.isBlank()) model = System.getenv("HF_MODEL");
-                if (model == null || model.isBlank()) model = DEFAULT_MODEL;
-                return model.trim();
-        }
+        // current user
+        sb.append(',')
+                .append("{\"role\":\"user\",\"content\":")
+                .append(jsonString(userMessage))
+                .append('}');
+
+        sb.append(']');
+        return sb.toString();
+    }
+
+    private synchronized String resolveModelId() {
+        String model = ConfigLoader.get("hf.model");
+        if (model == null || model.isBlank()) model = System.getenv("HF_MODEL");
+        if (model == null || model.isBlank()) model = DEFAULT_MODEL;
+        return model.trim();
+    }
 
     // ── Appel HTTP ───────────────────────────────────────────────────────────
 
@@ -264,13 +248,13 @@ public class ChatbotService {
 
         String model = resolveModelId();
         String jsonBody = "{"
-            + "\"model\":" + jsonString(model) + ","
-            + "\"stream\":false,"
-            + "\"temperature\":0.6,"
-            + "\"top_p\":0.9,"
-            + "\"max_tokens\":256,"
-            + "\"messages\":" + buildMessagesJson(userMessage)
-            + "}";
+                + "\"model\":" + jsonString(model) + ","
+                + "\"stream\":false,"
+                + "\"temperature\":0.6,"
+                + "\"top_p\":0.9,"
+                + "\"max_tokens\":256,"
+                + "\"messages\":" + buildMessagesJson(userMessage)
+                + "}";
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(HF_API_URL))
