@@ -12,11 +12,11 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="700" prefWidth="1200" styleClass="app-bg" stylesheets="@smartpath.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.esprit.controllers.DashboardProfController">
+<BorderPane prefHeight="760" prefWidth="1340" styleClass="app-bg" stylesheets="@smartpath.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tn.esprit.controllers.DashboardProfController">
 
     <!-- ═══════ SIDEBAR ═══════ -->
     <left>
-        <VBox prefWidth="248" styleClass="sidebar-modern">
+        <VBox prefWidth="292" styleClass="sidebar-modern">
 
             <!-- Logo -->
             <VBox alignment="CENTER_LEFT" spacing="3" styleClass="sidebar-logo-zone">
@@ -25,7 +25,7 @@
             </VBox>
 
             <!-- Navigation -->
-            <VBox spacing="2" style="-fx-padding: 16 10 0 10;">
+            <VBox spacing="3" style="-fx-padding: 16 12 0 12;">
                 <Label styleClass="sidebar-section-label" text="MENU" />
                 <Button fx:id="btnDashboard" maxWidth="Infinity" onAction="#showDashboard" styleClass="nav-btn-active" text="🏠  Tableau de bord" />
                 <Button fx:id="btnMatieres" maxWidth="Infinity" onAction="#showMatieres" styleClass="nav-btn" text="📖  Mes matières" />
@@ -68,20 +68,20 @@
             </HBox>
 
             <!-- Zone de contenu -->
-            <StackPane fx:id="contentArea" style="-fx-padding: 24 28;" VBox.vgrow="ALWAYS">
+            <StackPane fx:id="contentArea" style="-fx-padding: 20 24;" VBox.vgrow="ALWAYS">
                 <VBox fx:id="dashboardView" spacing="22">
 
                     <!-- Titre -->
-                    <VBox spacing="3">
-                        <Label style="-fx-font-size: 17; -fx-font-weight: bold; -fx-text-fill: #1a2340;" text="Tableau de bord" />
-                        <Label style="-fx-font-size: 12; -fx-text-fill: #8898b8;" text="Bienvenue dans votre espace enseignant" />
+                    <VBox spacing="4">
+                        <Label styleClass="section-title-main" text="Tableau de bord" />
+                        <Label styleClass="section-subtitle-main" text="Bienvenue dans votre espace enseignant" />
                     </VBox>
 
                     <!-- Cartes stats -->
                     <HBox spacing="16">
                         <VBox spacing="12" styleClass="stat-card" HBox.hgrow="ALWAYS">
                             <HBox alignment="CENTER_LEFT" spacing="10">
-                                <Label style="-fx-font-size: 20;" text="📖" />
+                                <Label styleClass="stat-icon" text="📖" />
                                 <Label styleClass="stat-label" text="Matières" />
                             </HBox>
                             <Label fx:id="nbMatieres" styleClass="stat-number" text="0" />
@@ -89,7 +89,7 @@
                         </VBox>
                         <VBox spacing="12" styleClass="stat-card" HBox.hgrow="ALWAYS">
                             <HBox alignment="CENTER_LEFT" spacing="10">
-                                <Label style="-fx-font-size: 20;" text="📝" />
+                                <Label styleClass="stat-icon" text="📝" />
                                 <Label styleClass="stat-label" text="Leçons" />
                             </HBox>
                             <Label fx:id="nbLecons" styleClass="stat-number-green" text="0" />
@@ -97,7 +97,7 @@
                         </VBox>
                         <VBox spacing="12" styleClass="stat-card" HBox.hgrow="ALWAYS">
                             <HBox alignment="CENTER_LEFT" spacing="10">
-                                <Label style="-fx-font-size: 20;" text="📋" />
+                                <Label styleClass="stat-icon" text="📋" />
                                 <Label styleClass="stat-label" text="Tests" />
                             </HBox>
                             <Label fx:id="nbTests" styleClass="stat-number-purple" text="0" />
@@ -105,7 +105,7 @@
                         </VBox>
                         <VBox spacing="12" styleClass="stat-card" HBox.hgrow="ALWAYS">
                             <HBox alignment="CENTER_LEFT" spacing="10">
-                                <Label style="-fx-font-size: 20;" text="🎓" />
+                                <Label styleClass="stat-icon" text="🎓" />
                                 <Label styleClass="stat-label" text="Étudiants" />
                             </HBox>
                             <Label fx:id="nbEtudiants" styleClass="stat-number-amber" text="0" />

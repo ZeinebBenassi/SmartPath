@@ -35,6 +35,11 @@ public class AppShellController {
     @FXML
     public void initialize() {
         onAfterLogin();
+        if (currentRole == Role.ADMIN) {
+            showHome();
+            initialTab = "home";
+            return;
+        }
         if ("matieres".equals(initialTab)) {
             showMatieres();
         } else if ("quiz".equals(initialTab)) {
@@ -62,8 +67,9 @@ public class AppShellController {
             }
         }
 
-        if (matieresBtn != null) matieresBtn.setDisable(false);
-        if (quizBtn != null) quizBtn.setDisable(false);
+        boolean adminBlocked = currentRole == Role.ADMIN;
+        if (matieresBtn != null) matieresBtn.setDisable(adminBlocked);
+        if (quizBtn != null) quizBtn.setDisable(adminBlocked);
     }
 
     public Role getCurrentRole() {
@@ -78,12 +84,22 @@ public class AppShellController {
 
     @FXML
     public void showMatieres() {
+        if (currentRole == Role.ADMIN) {
+            new Alert(Alert.AlertType.INFORMATION, "Accès refusé: module réservé aux profs et étudiants.").showAndWait();
+            showHome();
+            return;
+        }
         setActiveNav("matieres");
         setContent("/tn/esprit/feature_cours_et_quiz/matiere-cards.fxml");
     }
 
     @FXML
     public void showQuiz() {
+        if (currentRole == Role.ADMIN) {
+            new Alert(Alert.AlertType.INFORMATION, "Accès refusé: module réservé aux profs et étudiants.").showAndWait();
+            showHome();
+            return;
+        }
         setActiveNav("quiz");
         setContent("/tn/esprit/feature_cours_et_quiz/quiz-cards.fxml");
     }

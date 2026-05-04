@@ -464,3 +464,212 @@
     -fx-scale-y: 1.04;
     -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.20), 10, 0, 0, 3);
 }
+
+/* ══════════════════════════════════════════════════════════════
+   FINAL VISUAL CLEANUP (closer to provided screenshot)
+   Keep this block at the end so it overrides previous values.
+   ══════════════════════════════════════════════════════════════ */
+
+.app-bg {
+    -fx-background-color: #eef2f7;
+}
+
+.sidebar-modern {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #d7dfea;
+    -fx-border-width: 0 1 0 0;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.06), 10, 0, 2, 0);
+}
+
+.sidebar-logo-zone {
+    -fx-background-color: linear-gradient(to right, #2f6ee7, #3f7ff0);
+    -fx-padding: 22 22 22 22;
+}
+
+.sidebar-logo-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: 800;
+    -fx-text-fill: white;
+}
+
+.sidebar-logo-subtitle {
+    -fx-font-size: 11px;
+    -fx-text-fill: rgba(255,255,255,0.72);
+}
+
+.sidebar-section-label {
+    -fx-font-size: 10px;
+    -fx-font-weight: 700;
+    -fx-text-fill: #9aa8bf;
+    -fx-padding: 14 16 6 16;
+}
+
+.nav-btn,
+.nav-btn-active,
+.nav-sub-btn {
+    -fx-font-size: 13px;
+    -fx-padding: 12 16;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-min-height: 50;
+}
+
+.nav-btn {
+    -fx-text-fill: #667a98;
+}
+
+.nav-btn-active {
+    -fx-background-color: #e9effc;
+    -fx-text-fill: #2563eb;
+    -fx-font-weight: 700;
+    -fx-border-color: #bfd3fa;
+    -fx-border-width: 1;
+}
+
+.chip-btn {
+    -fx-font-size: 12px;
+    -fx-padding: 10 20;
+    -fx-background-radius: 24;
+    -fx-border-radius: 24;
+}
+
+.sidebar-footer {
+    -fx-padding: 14 14;
+    -fx-background-color: #fafcff;
+    -fx-border-color: #dfe6f2;
+    -fx-border-width: 1 0 0 0;
+}
+
+.user-name {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+}
+
+.user-role {
+    -fx-font-size: 11px;
+    -fx-text-fill: #99a6bc;
+}
+
+.btn-logout {
+    -fx-font-size: 12px;
+    -fx-padding: 10 14;
+    -fx-background-radius: 10;
+}
+
+.topbar-modern {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #dfe5ef;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 16 28;
+}
+
+.topbar-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #172033;
+}
+
+.btn-primary {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-padding: 11 26;
+    -fx-background-radius: 24;
+    -fx-effect: dropshadow(gaussian, rgba(37,99,235,0.28), 10, 0, 0, 3);
+}
+
+.stat-card,
+.section-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 16;
+    -fx-border-color: #e0e6f0;
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+    -fx-padding: 24;
+    -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.05), 8, 0, 0, 2);
+}
+
+.card-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #172033;
+}
+
+.card-subtitle,
+.muted-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #8ea0bc;
+}
+
+.stat-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+}
+
+.stat-number,
+.stat-number-green,
+.stat-number-purple,
+.stat-number-amber {
+    -fx-font-size: 44px;
+    -fx-font-weight: 800;
+}
+
+.chip-btn,
+.chip-btn-success,
+.chip-btn-warn,
+.quick-action-btn {
+    -fx-font-size: 13px;
+    -fx-font-weight: 700;
+    -fx-padding: 11 22;
+    -fx-background-radius: 24;
+    -fx-border-radius: 24;
+}
+
+.section-title-main {
+    -fx-font-size: 42px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #1a2340;
+}
+
+.section-subtitle-main {
+    -fx-font-size: 26px;
+    -fx-text-fill: #8ea0bc;
+}
+
+.stat-icon {
+    -fx-font-size: 22px;
+}
+
+/* Keep professor/admin navbar proportions close to provided screenshot */
+.sidebar-modern {
+    -fx-background-color: #ffffff;
+}
+
+.nav-btn,
+.nav-btn-active,
+.nav-sub-btn {
+    -fx-min-height: 46;
+    -fx-padding: 10 14;
+}
+
+.topbar-modern {
+    -fx-padding: 14 22;
+}
+
+.btn-primary {
+    -fx-padding: 10 24;
+    -fx-background-radius: 22;
+}
+
+.stat-card,
+.section-card {
+    -fx-padding: 20;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+}
+
+.stat-number,
+.stat-number-green,
+.stat-number-purple,
+.stat-number-amber {
+    -fx-font-size: 46px;
+}

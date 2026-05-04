@@ -75,27 +75,6 @@
                             text="🧩  Statistiques Quiz"/>
                 </VBox>
 
-                <!-- ── SECTION : QUIZ ── -->
-                <Label text="QUIZ" styleClass="sidebar-section-label"
-                       style="-fx-padding:14 0 4 8;"/>
-
-                <Button fx:id="btnQuizAdmin" maxWidth="Infinity"
-                        onAction="#showQuizAdmin"
-                        styleClass="nav-btn" text="🧠  Questions du Quiz"/>
-
-                <Button fx:id="btnQuizHistorique" maxWidth="Infinity"
-                        onAction="#showQuizHistorique"
-                        styleClass="nav-btn" text="📋  Historique Quiz"/>
-
-                <Button fx:id="btnQuizPersonnalite" maxWidth="Infinity"
-                    onAction="#showQuizPersonnalite"
-                    styleClass="nav-btn" text="🧭  Quiz personnalité"/>
-
-                <!-- New button for Course Feedback -->
-                <Button fx:id="btnCourseFeedback" maxWidth="Infinity"
-                        onAction="#showCourseFeedback"
-                        styleClass="nav-btn" text="⭐  Course Feedback"/>
-
                 <!-- Profil -->
                 <Button fx:id="btnProfil" maxWidth="Infinity"
                         onAction="#showProfil"

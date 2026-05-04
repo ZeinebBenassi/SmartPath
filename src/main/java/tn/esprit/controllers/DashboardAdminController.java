@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import tn.esprit.entity.User;
+import tn.esprit.services.NotificationService;
 import tn.esprit.services.UserService;
 
 import java.time.LocalDate;
@@ -16,15 +17,20 @@ import java.util.Locale;
 
 public class DashboardAdminController {
 
+    // ── Labels / zones principales ───────────────────────────────────────
     @FXML private Label     adminNameLabel;
     @FXML private Label     pageTitle;
     @FXML private Label     dateLabel;
     @FXML private StackPane contentArea;
     @FXML private VBox      dashboardView;
+
+    // ── Cartes du dashboard ──────────────────────────────────────────────
     @FXML private Label totalUsers;
     @FXML private Label totalEtudiants;
     @FXML private Label totalProfs;
     @FXML private Label totalOffres;
+
+    // ── Boutons sidebar ──────────────────────────────────────────────────
     @FXML private Button btnDashboard;
     @FXML private Button btnUsers;
     @FXML private VBox   usersSubMenu;
@@ -32,24 +38,39 @@ public class DashboardAdminController {
     @FXML private Button btnGestionEtudiants;
     @FXML private Button btnFilieres;
     @FXML private Button btnOffres;
+
+    // ── Statistiques (bouton toggle + sous-menu) ─────────────────────────
     @FXML private Button btnStatistiques;
     @FXML private VBox   statsSubMenu;
     @FXML private Button btnStatistiquesUsers;
     @FXML private Button btnStatistiquesQuiz;
+
+    // ── Quiz ─────────────────────────────────────────────────────────────
     @FXML private Button btnQuizAdmin;
     @FXML private Button btnQuizHistorique;
-    @FXML private Button btnCourseFeedback; // New button
+
+    // ── Notifications ─────────────────────────────────────────────────────
+    @FXML private Button btnNotifications;  // cloche dans la topbar
+    @FXML private Label  lblNotifBadge;     // badge rouge compteur
+
+    // ── Autres ───────────────────────────────────────────────────────────
     @FXML private Button btnProfil;
     @FXML private Button btnVueEtudiant;
 
+    // ── TableView (caché, compatibilité FXML) ────────────────────────────
+    @FXML private TableView<?>      usersTable;
+    @FXML private TableColumn<?,?> colNom, colPrenom, colEmail, colType, colStatus, colActions;
+
+    // ── État ─────────────────────────────────────────────────────────────
     private static User currentUser;
-    private final UserService userService = new UserService();
+    private final UserService        userService  = new UserService();
+    private final NotificationService notifService = new NotificationService();
     private boolean usersMenuOpen = false;
     private boolean statsMenuOpen = false;
 
     public static void setCurrentUser(User user) { currentUser = user; }
-    public static User getCurrentUser() { return currentUser; }
 
+    // ─────────────────────────────────────────────────────────────────────
     @FXML
     public void initialize() {
         LocalDate today   = LocalDate.now();
@@ -60,6 +81,7 @@ public class DashboardAdminController {
         if (currentUser != null && adminNameLabel != null)
             adminNameLabel.setText(currentUser.getPrenom() + " " + currentUser.getNom());
         loadStats();
+        refreshNotifBadge();
         setActiveButton(btnDashboard);
         showOnly(dashboardView);
         if (pageTitle != null) pageTitle.setText("Dashboard");
@@ -74,6 +96,8 @@ public class DashboardAdminController {
         } catch (Exception e) { System.out.println("Stats dashboard : " + e.getMessage()); }
     }
 
+    // ── Navigation principale ─────────────────────────────────────────────
+
     @FXML public void showDashboard() {
         setActiveButton(btnDashboard);
         showOnly(dashboardView);
@@ -81,6 +105,8 @@ public class DashboardAdminController {
         closeUsersMenu();
         closeStatsMenu();
     }
+
+    // ── Sous-menu Utilisateurs ─────────────────────────────────────────────
 
     @FXML public void toggleUsersMenu() {
         if (usersSubMenu == null) return;
@@ -106,6 +132,8 @@ public class DashboardAdminController {
         navigate("/tn/esprit/interfaces/GestionOffres.fxml", "Offres de stage");
     }
 
+    // ── Sous-menu Statistiques ─────────────────────────────────────────────
+
     @FXML public void toggleStatsMenu() {
         if (statsSubMenu == null) return;
         statsMenuOpen = !statsMenuOpen;
@@ -125,22 +153,54 @@ public class DashboardAdminController {
         navigate("/tn/esprit/interfaces/QuizStatistiques.fxml", "📊 Statistiques Quiz");
     }
 
+    // ── Quiz ──────────────────────────────────────────────────────────────
+
     @FXML public void showQuizAdmin() {
         setActiveButton(btnQuizAdmin);
-        tn.esprit.utils.feature_cours_et_quiz.AppSession.setCurrentUser(currentUser);
-        tn.esprit.controllers.feature_cours_et_quiz.AppShellController.setInitialTab("quiz");
-        navigate("/tn/esprit/feature_cours_et_quiz/app-shell.fxml", "Quiz - Gestion");
+        navigate("/tn/esprit/interfaces/QuestionContent.fxml", "Quiz - Gestion des questions");
     }
 
     @FXML public void showQuizHistorique() {
         setActiveButton(btnQuizHistorique);
-        navigate("/tn/esprit/interfaces/QuizHistorique.fxml", "📋 Historique du Quiz");
+        navigate("/tn/esprit/interfaces/QuizHistorique.fxml", "📋 Historique Quiz");
     }
 
-    @FXML public void showCourseFeedback() {
-        setActiveButton(btnCourseFeedback);
-        navigate("/tn/esprit/interfaces/CourseFeedbackView.fxml", "Course Reviews & Feedback");
+    // ── Notifications ──────────────────────────────────────────────────────
+
+    /** Ouvre le panneau de notifications dans le contentArea. */
+    @FXML public void showNotifications() {
+        if (pageTitle != null) pageTitle.setText("🔔 Notifications");
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                    getClass().getResource("/tn/esprit/interfaces/Notifications.fxml"));
+            Parent view = loader.load();
+            NotificationsController ctrl = loader.getController();
+            // Mise à jour du badge en temps réel quand l'utilisateur marque comme lu
+            ctrl.setOnUnreadCountChanged(count -> {
+                if (lblNotifBadge != null) {
+                    lblNotifBadge.setText(count > 0 ? String.valueOf(count) : "");
+                    lblNotifBadge.setVisible(count > 0);
+                    lblNotifBadge.setManaged(count > 0);
+                }
+            });
+            if (contentArea != null) contentArea.getChildren().setAll(view);
+        } catch (Exception e) {
+            System.out.println("Erreur showNotifications : " + e.getMessage());
+        }
+        // Après ouverture, rafraîchir le badge (peut avoir changé)
+        refreshNotifBadge();
     }
+
+    /** Rafraîchit le badge rouge de la cloche avec le nombre de notifications non lues. */
+    public void refreshNotifBadge() {
+        if (lblNotifBadge == null) return;
+        int unread = notifService.countUnread();
+        lblNotifBadge.setText(unread > 0 ? String.valueOf(unread) : "");
+        lblNotifBadge.setVisible(unread > 0);
+        lblNotifBadge.setManaged(unread > 0);
+    }
+
+    // ── Profil / logout ────────────────────────────────────────────────────
 
     @FXML public void showProfil() {
         setActiveButton(btnProfil);
@@ -163,6 +223,8 @@ public class DashboardAdminController {
             btnDashboard.getScene().setRoot(root);
         } catch (Exception e) { e.printStackTrace(); }
     }
+
+    // ── Utilitaires privés ─────────────────────────────────────────────────
 
     private void navigate(String fxml, String title) {
         try {
@@ -213,7 +275,7 @@ public class DashboardAdminController {
 
     private void setActiveButton(Button active) {
         Button[] all = {btnDashboard, btnUsers, btnFilieres, btnOffres,
-                        btnQuizAdmin, btnQuizHistorique, btnCourseFeedback, btnStatistiques, btnProfil};
+                        btnQuizAdmin, btnQuizHistorique, btnStatistiques, btnProfil};
         for (Button b : all) {
             if (b == null) continue;
             if (b == active) {
