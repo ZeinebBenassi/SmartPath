@@ -30,28 +30,21 @@ public class DashboardAdminController {
     @FXML private Label totalProfs;
     @FXML private Label totalOffres;
 
-    // ── Boutons sidebar ──────────────────────────────────────────────────
+    // ── Boutons sidebar principaux ───────────────────────────────────────
     @FXML private Button btnDashboard;
     @FXML private Button btnUsers;
     @FXML private VBox   usersSubMenu;
     @FXML private Button btnGestionProfs;
     @FXML private Button btnGestionEtudiants;
-    @FXML private Button btnFilieres;
     @FXML private Button btnOffres;
-
-    // ── Statistiques (bouton toggle + sous-menu) ─────────────────────────
     @FXML private Button btnStatistiques;
-    @FXML private VBox   statsSubMenu;
-    @FXML private Button btnStatistiquesUsers;
-    @FXML private Button btnStatistiquesQuiz;
 
-    // ── Quiz ─────────────────────────────────────────────────────────────
-    @FXML private Button btnQuizAdmin;
-    @FXML private Button btnQuizHistorique;
+    // ── Quiz de personnalité ───────────────────────────
+    @FXML private Button btnQuizPersonnalite;
 
     // ── Notifications ─────────────────────────────────────────────────────
-    @FXML private Button btnNotifications;  // cloche dans la topbar
-    @FXML private Label  lblNotifBadge;     // badge rouge compteur
+    @FXML private Button btnNotifications;
+    @FXML private Label  lblNotifBadge;
 
     // ── Autres ───────────────────────────────────────────────────────────
     @FXML private Button btnProfil;
@@ -63,19 +56,17 @@ public class DashboardAdminController {
 
     // ── État ─────────────────────────────────────────────────────────────
     private static User currentUser;
-    private final UserService        userService  = new UserService();
+    private final UserService         userService  = new UserService();
     private final NotificationService notifService = new NotificationService();
     private boolean usersMenuOpen = false;
-    private boolean statsMenuOpen = false;
 
     public static void setCurrentUser(User user) { currentUser = user; }
 
-    // ─────────────────────────────────────────────────────────────────────
     @FXML
     public void initialize() {
-        LocalDate today   = LocalDate.now();
-        String dayName    = today.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRENCH);
-        String formatted  = dayName.substring(0,1).toUpperCase() + dayName.substring(1)
+        LocalDate today  = LocalDate.now();
+        String dayName   = today.getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.FRENCH);
+        String formatted = dayName.substring(0,1).toUpperCase() + dayName.substring(1)
                 + " " + today.format(DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale.FRENCH));
         if (dateLabel   != null) dateLabel.setText(formatted);
         if (currentUser != null && adminNameLabel != null)
@@ -103,7 +94,6 @@ public class DashboardAdminController {
         showOnly(dashboardView);
         if (pageTitle != null) pageTitle.setText("Dashboard");
         closeUsersMenu();
-        closeStatsMenu();
     }
 
     // ── Sous-menu Utilisateurs ─────────────────────────────────────────────
@@ -114,7 +104,6 @@ public class DashboardAdminController {
         usersSubMenu.setVisible(usersMenuOpen);
         usersSubMenu.setManaged(usersMenuOpen);
         styleToggle(btnUsers, usersMenuOpen);
-        if (usersMenuOpen) closeStatsMenu();
     }
 
     @FXML public void showProfsFromMenu()     { navigate("/tn/esprit/interfaces/GestionProfs.fxml",    "Gestion des professeurs"); }
@@ -122,60 +111,46 @@ public class DashboardAdminController {
     @FXML public void showEtudiants()         { navigate("/tn/esprit/interfaces/GestionEtudiants.fxml","Gestion des étudiants"); }
     @FXML public void showProfs()             { navigate("/tn/esprit/interfaces/GestionProfs.fxml",    "Gestion des professeurs"); }
 
-    @FXML public void showFilieres() {
-        setActiveButton(btnFilieres);
-        navigate("/tn/esprit/interfaces/FiliereContent.fxml", "Gestion des filières");
-    }
-
     @FXML public void showOffres() {
         setActiveButton(btnOffres);
         navigate("/tn/esprit/interfaces/GestionOffres.fxml", "Offres de stage");
     }
 
-    // ── Sous-menu Statistiques ─────────────────────────────────────────────
-
-    @FXML public void toggleStatsMenu() {
-        if (statsSubMenu == null) return;
-        statsMenuOpen = !statsMenuOpen;
-        statsSubMenu.setVisible(statsMenuOpen);
-        statsSubMenu.setManaged(statsMenuOpen);
-        styleToggle(btnStatistiques, statsMenuOpen);
-        if (statsMenuOpen) closeUsersMenu();
-    }
-
     @FXML public void showStatistiquesUsers() {
         setActiveButton(btnStatistiques);
-        navigate("/tn/esprit/interfaces/Statistiques.fxml", "📈 Statistiques Utilisateurs");
+        navigate("/tn/esprit/interfaces/Statistiques.fxml", "Statistiques Utilisateurs");
     }
 
-    @FXML public void showStatistiquesQuiz() {
-        setActiveButton(btnStatistiques);
-        navigate("/tn/esprit/interfaces/QuizStatistiques.fxml", "📊 Statistiques Quiz");
-    }
+    // ── Quiz de personnalité ─────────────────────────────────────
 
-    // ── Quiz ──────────────────────────────────────────────────────────────
-
-    @FXML public void showQuizAdmin() {
-        setActiveButton(btnQuizAdmin);
-        navigate("/tn/esprit/interfaces/QuestionContent.fxml", "Quiz - Gestion des questions");
-    }
-
-    @FXML public void showQuizHistorique() {
-        setActiveButton(btnQuizHistorique);
-        navigate("/tn/esprit/interfaces/QuizHistorique.fxml", "📋 Historique Quiz");
+    @FXML public void toggleQuizMenu() {
+        // Clic sur "Quiz de personnalité" -> ouvre le dashboard Quiz
+        setActiveButton(btnQuizPersonnalite);
+        closeUsersMenu();
+        try {
+            FXMLLoader loader = new FXMLLoader(
+                getClass().getResource("/tn/esprit/interfaces/QuizDashboard.fxml"));
+            Parent view = loader.load();
+            QuizDashboardController ctrl = loader.getController();
+            ctrl.setDashboardController(this);
+            if (contentArea != null) {
+                contentArea.getChildren().setAll(view);
+                if (pageTitle != null) pageTitle.setText("🧠  Quiz de Personnalité");
+            }
+        } catch (Exception e) {
+            System.out.println("QuizDashboard load : " + e.getMessage());
+        }
     }
 
     // ── Notifications ──────────────────────────────────────────────────────
 
-    /** Ouvre le panneau de notifications dans le contentArea. */
     @FXML public void showNotifications() {
-        if (pageTitle != null) pageTitle.setText("🔔 Notifications");
+        if (pageTitle != null) pageTitle.setText("Notifications");
         try {
             FXMLLoader loader = new FXMLLoader(
                     getClass().getResource("/tn/esprit/interfaces/Notifications.fxml"));
             Parent view = loader.load();
             NotificationsController ctrl = loader.getController();
-            // Mise à jour du badge en temps réel quand l'utilisateur marque comme lu
             ctrl.setOnUnreadCountChanged(count -> {
                 if (lblNotifBadge != null) {
                     lblNotifBadge.setText(count > 0 ? String.valueOf(count) : "");
@@ -187,11 +162,9 @@ public class DashboardAdminController {
         } catch (Exception e) {
             System.out.println("Erreur showNotifications : " + e.getMessage());
         }
-        // Après ouverture, rafraîchir le badge (peut avoir changé)
         refreshNotifBadge();
     }
 
-    /** Rafraîchit le badge rouge de la cloche avec le nombre de notifications non lues. */
     public void refreshNotifBadge() {
         if (lblNotifBadge == null) return;
         int unread = notifService.countUnread();
@@ -254,13 +227,7 @@ public class DashboardAdminController {
         styleToggle(btnUsers, false);
     }
 
-    private void closeStatsMenu() {
-        if (statsSubMenu == null) return;
-        statsMenuOpen = false;
-        statsSubMenu.setVisible(false);
-        statsSubMenu.setManaged(false);
-        styleToggle(btnStatistiques, false);
-    }
+
 
     private void styleToggle(Button btn, boolean active) {
         if (btn == null) return;
@@ -274,8 +241,7 @@ public class DashboardAdminController {
     }
 
     private void setActiveButton(Button active) {
-        Button[] all = {btnDashboard, btnUsers, btnFilieres, btnOffres,
-                        btnQuizAdmin, btnQuizHistorique, btnStatistiques, btnProfil};
+        Button[] all = {btnDashboard, btnUsers, btnOffres, btnStatistiques, btnQuizPersonnalite, btnProfil};
         for (Button b : all) {
             if (b == null) continue;
             if (b == active) {
@@ -286,5 +252,13 @@ public class DashboardAdminController {
                 if (!b.getStyleClass().contains("nav-btn")) b.getStyleClass().add("nav-btn");
             }
         }
+    }
+
+    // ── Compatibilité actions rapides dashboard ────────────────────────────
+    @FXML public void showFilieres() {
+        navigate("/tn/esprit/interfaces/FiliereContent.fxml", "Gestion des filières");
+    }
+    @FXML public void showStatistiquesQuiz() {
+        navigate("/tn/esprit/interfaces/QuizStatistiques.fxml", "Statistiques Quiz");
     }
 }

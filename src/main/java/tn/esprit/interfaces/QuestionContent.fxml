@@ -4,63 +4,122 @@
 <?import javafx.scene.layout.*?>
 
 <!--
-    QuestionContent.fxml — Version SANS sidebar pour chargement dans contentArea du DashboardAdmin
-    Controller : QuestionController (même controller, même logique)
+    QuestionContent.fxml — Version SANS sidebar
+    Design miroir du template Symfony questions/index.html.twig
+    Controller : QuestionController
 -->
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="tn.esprit.controllers.QuestionController"
       spacing="0"
-      style="-fx-background-color: #F4F7FB;">
+      style="-fx-background-color: #f5f7fb;">
 
-    <!-- BARRE DE CONTRÔLES -->
-    <HBox alignment="CENTER_LEFT" spacing="14"
-          style="-fx-background-color: white; -fx-padding: 14 20;
-                 -fx-border-color: transparent transparent #E2E8F0 transparent;
-                 -fx-border-width: 0 0 1 0;">
+    <!-- ══════════════════════════════════════════
+         TOOLBAR : recherche + stats + bouton ajout
+    ══════════════════════════════════════════ -->
+    <HBox alignment="CENTER_LEFT" spacing="12"
+          style="-fx-background-color: white;
+                 -fx-padding: 12 20;
+                 -fx-border-color: transparent transparent #e2e8f0 transparent;
+                 -fx-border-width: 0 0 1 0;
+                 -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.05),4,0,0,2);">
 
-        <HBox alignment="CENTER_LEFT" spacing="0" prefWidth="220"
-              style="-fx-background-color: #F8FAFC; -fx-background-radius: 20;
-                     -fx-border-color: #E2E8F0; -fx-border-radius: 20;
-                     -fx-border-width: 1; -fx-padding: 6 12;">
-            <Label text="🔍 " style="-fx-text-fill: #CBD5E1; -fx-font-size: 13px;"/>
-            <TextField fx:id="txtSearch" promptText="Rechercher une question..." prefWidth="180"
-                       style="-fx-background-color: transparent; -fx-border-width: 0; -fx-font-size: 13px;"/>
+        <!-- Champ recherche -->
+        <HBox alignment="CENTER_LEFT" spacing="0" prefWidth="260"
+              style="-fx-background-color: #f8fafc;
+                     -fx-background-radius: 10;
+                     -fx-border-color: #e2e8f0;
+                     -fx-border-radius: 10;
+                     -fx-border-width: 1.5;
+                     -fx-padding: 7 12;">
+            <Label text="🔍" style="-fx-text-fill: #94a3b8; -fx-font-size: 13px; -fx-padding: 0 4 0 0;"/>
+            <TextField fx:id="txtSearch"
+                       promptText="Rechercher par texte ou catégorie…"
+                       prefWidth="220"
+                       style="-fx-background-color: transparent; -fx-border-width: 0;
+                              -fx-font-size: 13px; -fx-text-fill: #1e293b;"/>
         </HBox>
 
-        <ComboBox fx:id="cbSort" promptText="Trier par..." prefWidth="160" onAction="#handleSort"
-                  style="-fx-background-color: white; -fx-border-color: #E2E8F0;
-                         -fx-border-radius: 8; -fx-background-radius: 8;
-                         -fx-padding: 5 10; -fx-font-size: 12px;"/>
+        <!-- Tri -->
+        <ComboBox fx:id="cbSort" promptText="Trier par…" prefWidth="155" onAction="#handleSort"
+                  style="-fx-background-color: white;
+                         -fx-border-color: #e2e8f0; -fx-border-radius: 8;
+                         -fx-background-radius: 8; -fx-padding: 5 10;
+                         -fx-font-size: 12px;"/>
 
         <Pane HBox.hgrow="ALWAYS"/>
 
-        <Label fx:id="lblStats" text=""
-               style="-fx-font-size: 12px; -fx-text-fill: #2563eb; -fx-font-weight: bold;"/>
+        <!-- Stats -->
+        <HBox spacing="8" alignment="CENTER_LEFT">
+            <Label fx:id="lblStats" text=""
+                   style="-fx-background-color: #d1fae5; -fx-text-fill: #065f46;
+                          -fx-font-size: 11px; -fx-font-weight: bold;
+                          -fx-background-radius: 50; -fx-padding: 3 10;"/>
+            <Label fx:id="lblCount" text="0 questions"
+                   style="-fx-background-color: #eff6ff; -fx-text-fill: #2563eb;
+                          -fx-font-size: 11px; -fx-font-weight: bold;
+                          -fx-background-radius: 50; -fx-padding: 3 10;"/>
+        </HBox>
 
-        <Label fx:id="lblCount" text="0 questions"
-               style="-fx-font-size: 12px; -fx-text-fill: #64748B;"/>
-
+        <!-- Bouton Ajouter -->
         <Button text="➕  Ajouter" onAction="#handleAdd"
                 style="-fx-background-color: #2563eb; -fx-text-fill: white;
                        -fx-font-weight: bold; -fx-font-size: 13px;
-                       -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;
-                       -fx-effect: dropshadow(gaussian,rgba(99,102,241,0.35),8,0,0,3);"/>
+                       -fx-background-radius: 10; -fx-padding: 9 18;
+                       -fx-cursor: hand;
+                       -fx-effect: dropshadow(gaussian,rgba(37,99,235,0.35),8,0,0,3);"/>
     </HBox>
 
-    <!-- LISTE DES QUESTIONS -->
+    <!-- ══════════════════════════════════════════
+         CARD CONTENEUR (miroir sp-list-card)
+    ══════════════════════════════════════════ -->
     <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                style="-fx-background-color: transparent; -fx-background: #F4F7FB; -fx-border-width: 0;">
-        <VBox fx:id="vboxQuestions" spacing="10" style="-fx-padding: 18;">
+                style="-fx-background-color: transparent;
+                       -fx-background: #f5f7fb;
+                       -fx-border-width: 0;">
+        <VBox spacing="0" style="-fx-padding: 20;">
 
-            <VBox fx:id="vboxEmpty" alignment="CENTER" spacing="12"
-                  style="-fx-padding: 60 0;" visible="false" managed="false">
-                <Label text="❓" style="-fx-font-size: 48px;"/>
-                <Label text="Aucune question trouvée"
-                       style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #94A3B8;"/>
-                <Label text="Cliquez sur « Nouvelle Question » pour commencer"
-                       style="-fx-font-size: 12px; -fx-text-fill: #CBD5E1;"/>
+            <!-- En-tête de la liste -->
+            <HBox alignment="CENTER_LEFT"
+                  style="-fx-background-color: #f8fafc;
+                         -fx-border-color: #e2e8f0;
+                         -fx-border-width: 1 1 0 1;
+                         -fx-border-radius: 14 14 0 0;
+                         -fx-background-radius: 14 14 0 0;
+                         -fx-padding: 10 16;">
+                <Label text="📋 Liste des Questions"
+                       style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #1e293b;"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblActiveCount" text=""
+                       style="-fx-background-color: #d1fae5; -fx-text-fill: #065f46;
+                              -fx-font-size: 11px; -fx-font-weight: bold;
+                              -fx-background-radius: 50; -fx-padding: 3 10;"/>
+                <Label text=" " style="-fx-font-size:1px;"/>
+                <Label fx:id="lblTotalCount" text=""
+                       style="-fx-background-color: #eff6ff; -fx-text-fill: #2563eb;
+                              -fx-font-size: 11px; -fx-font-weight: bold;
+                              -fx-background-radius: 50; -fx-padding: 3 10;"/>
+            </HBox>
+
+            <!-- Corps : cartes questions injectées dynamiquement -->
+            <VBox fx:id="vboxQuestions" spacing="0"
+                  style="-fx-background-color: white;
+                         -fx-border-color: #e2e8f0;
+                         -fx-border-width: 0 1 1 1;
+                         -fx-border-radius: 0 0 14 14;
+                         -fx-background-radius: 0 0 14 14;
+                         -fx-padding: 12 12 12 12;">
+
+                <!-- État vide -->
+                <VBox fx:id="vboxEmpty" alignment="CENTER" spacing="10"
+                      style="-fx-padding: 60 0;" visible="false" managed="false">
+                    <Label text="❓" style="-fx-font-size: 44px;"/>
+                    <Label text="Aucune question"
+                           style="-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+                    <Label text="Cliquez sur ➕ Ajouter pour commencer"
+                           style="-fx-font-size: 12px; -fx-text-fill: #94a3b8;"/>
+                </VBox>
+
             </VBox>
-
         </VBox>
     </ScrollPane>
 

@@ -50,6 +50,23 @@
 }
 .nav-btn:hover { -fx-background-color: #F0F5FF; -fx-text-fill: #2563EB; }
 
+/* Sous-items de menu (sous-menus déroulants) */
+.nav-sub-btn {
+    -fx-background-color: transparent; -fx-text-fill: #64748B; -fx-font-size: 12px;
+    -fx-padding: 8 12; -fx-background-radius: 8; -fx-cursor: hand;
+    -fx-alignment: CENTER_LEFT; -fx-max-width: Infinity;
+    -fx-border-color: transparent; -fx-border-radius: 8;
+}
+.nav-sub-btn:hover {
+    -fx-background-color: #EEF2FF; -fx-text-fill: #2563EB;
+}
+.nav-sub-btn-active {
+    -fx-background-color: #EEF2FF; -fx-text-fill: #2563EB; -fx-font-weight: bold;
+    -fx-font-size: 12px; -fx-padding: 8 12; -fx-background-radius: 8; -fx-cursor: hand;
+    -fx-alignment: CENTER_LEFT; -fx-max-width: Infinity;
+    -fx-border-color: #BFDBFE; -fx-border-radius: 8; -fx-border-width: 1;
+}
+
 .nav-btn-active {
     -fx-background-color: #EEF2FF; -fx-text-fill: #2563EB; -fx-font-weight: bold;
     -fx-font-size: 13px; -fx-padding: 10 14; -fx-background-radius: 8; -fx-cursor: hand;

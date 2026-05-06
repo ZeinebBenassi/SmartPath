@@ -3,6 +3,7 @@ package tn.esprit.controllers;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -20,158 +21,327 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * QuestionController — design miroir de Symfony questions/index.html.twig
+ * Chaque carte reproduit :
+ *   - bulle n° (violet/gris si inactif)
+ *   - icône catégorie
+ *   - titre + badges statut + catégorie
+ *   - grille 2×2 réponses A B C D
+ *   - footer actions : Toggle | Modifier | Supprimer
+ */
 public class QuestionController implements Initializable {
 
+    /* ── FXML injectés ── */
     @FXML private VBox      vboxQuestions;
     @FXML private VBox      vboxEmpty;
     @FXML private TextField txtSearch;
-    @FXML private Label     lblStats;
-    @FXML private Label     lblCount;
+    @FXML private Label     lblStats;       // badge « N actives » toolbar
+    @FXML private Label     lblCount;       // badge « N total »  toolbar
+    @FXML private Label     lblActiveCount; // badge « N Actives » en-tête liste
+    @FXML private Label     lblTotalCount;  // badge « N Total »  en-tête liste
     @FXML private ComboBox<String> cbSort;
 
     private final QuestionService questionService = new QuestionService();
     private List<Question> allQuestions;
 
-    private static final Map<String, String> CAT_COLORS = Map.of(
-        "analytique","#6366F1","creatif","#6366F1","algorithmique","#6366F1",
-        "technique","#6366F1","reseaux","#6366F1","securite","#6366F1",
-        "pratique","#6366F1","donnees","#6366F1"
-    );
-    private static final Map<String, String> CAT_ICONS = Map.of(
-        "analytique","🧠","creatif","🎨","algorithmique","⚙️",
-        "technique","🔧","reseaux","🌐","securite","🔒",
-        "pratique","💡","donnees","📊"
-    );
+    /* ── Icônes par catégorie (identiques aux emojis Twig) ── */
+    private static final Map<String, String> CAT_ICONS = new HashMap<>();
+    static {
+        CAT_ICONS.put("technique",    "🔧");
+        CAT_ICONS.put("approche",     "💡");
+        CAT_ICONS.put("creativite",   "🎨");
+        CAT_ICONS.put("creativité",   "🎨");
+        CAT_ICONS.put("analytique",   "🧠");
+        CAT_ICONS.put("analyse",      "🧠");
+        CAT_ICONS.put("mathematique", "📐");
+        CAT_ICONS.put("mathématique", "📐");
+        CAT_ICONS.put("securite",     "🔒");
+        CAT_ICONS.put("sécurité",     "🔒");
+        CAT_ICONS.put("reseaux",      "🌐");
+        CAT_ICONS.put("réseaux",      "🌐");
+        CAT_ICONS.put("donnees",      "📊");
+        CAT_ICONS.put("données",      "📊");
+        CAT_ICONS.put("algorithmique","⚙️");
+        CAT_ICONS.put("algorithme",   "⚙️");
+        CAT_ICONS.put("pratique",     "🛠️");
+    }
 
+    /* Couleurs A B C D — identiques aux classes .letter-X du CSS Symfony */
+    private static final String[] LETTER_COLORS =
+        {"#6366f1", "#2563eb", "#8b5cf6", "#06b6d4"};
+    private static final String[] LETTERS = {"A", "B", "C", "D"};
+
+    /* ════════════════════════════════════════════════
+       INITIALISATION
+    ════════════════════════════════════════════════ */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         if (cbSort != null)
-            cbSort.getItems().addAll("Texte A→Z","Texte Z→A","Actif d'abord","Inactif d'abord");
+            cbSort.getItems().addAll("Texte A→Z", "Texte Z→A", "Actif d'abord", "Inactif d'abord");
         loadData();
-        if (txtSearch != null) setupSearch();
+        if (txtSearch != null)
+            txtSearch.textProperty().addListener((obs, o, n) -> afficherQuestions(getCurrentFiltered()));
     }
 
+    /* ════════════════════════════════════════════════
+       CHARGEMENT DES DONNÉES
+    ════════════════════════════════════════════════ */
     private void loadData() {
         try {
             allQuestions = questionService.afficher();
-            if (lblStats != null) {
-                try { lblStats.setText(questionService.countActiveQuestions() + " active(s)"); }
-                catch (Exception ignored) { lblStats.setText(allQuestions.size() + " question(s)"); }
-            }
+            int active = 0;
+            try { active = questionService.countActiveQuestions(); } catch (Exception ignored) {}
+
+            /* Badges toolbar */
+            if (lblStats != null) lblStats.setText("✓ " + active + " actives");
+            if (lblCount != null) lblCount.setText(allQuestions.size() + " total");
+
+            /* Badges en-tête liste */
+            if (lblActiveCount != null) lblActiveCount.setText("✓ " + active + " Actives");
+            if (lblTotalCount  != null) lblTotalCount .setText(allQuestions.size() + " Total");
+
             afficherQuestions(allQuestions);
         } catch (SQLException e) {
             showError("Erreur chargement : " + e.getMessage());
         }
     }
 
+    /* ════════════════════════════════════════════════
+       RENDU DE LA LISTE
+    ════════════════════════════════════════════════ */
     private void afficherQuestions(List<Question> questions) {
         vboxQuestions.getChildren().clear();
         vboxQuestions.getChildren().add(vboxEmpty);
-        if (lblCount != null)
-            lblCount.setText(questions.size() + " question" + (questions.size() > 1 ? "s" : ""));
+
         if (questions.isEmpty()) {
-            vboxEmpty.setVisible(true); vboxEmpty.setManaged(true); return;
+            vboxEmpty.setVisible(true); vboxEmpty.setManaged(true);
+            return;
         }
         vboxEmpty.setVisible(false); vboxEmpty.setManaged(false);
+
         int n = 1;
-        for (Question q : questions) vboxQuestions.getChildren().add(createQuestionCard(q, n++));
+        for (Question q : questions) {
+            VBox card = buildQuestionCard(q, n++);
+            /* Séparateur entre cartes */
+            if (n > 2) {
+                Separator sep = new Separator();
+                sep.setStyle("-fx-padding: 0; -fx-background-color: #e2e8f0;");
+                vboxQuestions.getChildren().add(sep);
+            }
+            vboxQuestions.getChildren().add(card);
+        }
     }
 
-    private VBox createQuestionCard(Question q, int numero) {
-        String color = "#6366F1";
+    /* ════════════════════════════════════════════════
+       CONSTRUCTION D'UNE CARTE QUESTION
+       (miroir exact du bloc .q-card du Twig)
+    ════════════════════════════════════════════════ */
+    private VBox buildQuestionCard(Question q, int numero) {
+        boolean active = q.isActive();
         String icon = CAT_ICONS.getOrDefault(
             q.getCategory() != null ? q.getCategory().toLowerCase() : "", "❓");
 
+        /* Card root */
         VBox card = new VBox(0);
-        card.setStyle("-fx-background-color: white; -fx-background-radius: 12;" +
-                      "-fx-effect: dropshadow(gaussian,rgba(0,0,0,0.07),8,0,0,2);");
+        card.setStyle(
+            "-fx-background-color: white;" +
+            "-fx-opacity: " + (active ? "1.0" : "0.65") + ";" +
+            "-fx-border-color: " + (active ? "#e2e8f0" : "#e2e8f0") + ";" +
+            "-fx-border-width: 0 0 0 0;" +   // pas de bordure interne, c'est le conteneur qui borde
+            "-fx-background-radius: 0;"
+        );
 
-        HBox header = new HBox(12);
-        header.setAlignment(Pos.CENTER);
-        header.setStyle("-fx-padding: 12 16; -fx-background-color: white; -fx-background-radius: 12 12 0 0;");
+        /* ── Header : num | icon | titre + badges | actions ── */
+        HBox head = new HBox(10);
+        head.setAlignment(Pos.CENTER_LEFT);
+        head.setStyle("-fx-padding: 10 14 7 14; -fx-background-color: white;");
 
-        Label lblNum = new Label(String.valueOf(numero));
-        lblNum.setMinWidth(28); lblNum.setMaxWidth(28); lblNum.setMinHeight(28); lblNum.setMaxHeight(28);
-        lblNum.setAlignment(Pos.CENTER);
-        lblNum.setStyle("-fx-background-color: " + color + "; -fx-text-fill: white; -fx-font-size: 12px;" +
-                        "-fx-font-weight: bold; -fx-background-radius: 50%; -fx-alignment: CENTER;");
+        // Bulle numéro
+        Label num = new Label(String.valueOf(numero));
+        num.setMinSize(32, 32); num.setMaxSize(32, 32);
+        num.setAlignment(Pos.CENTER);
+        num.setStyle(
+            "-fx-background-color: " + (active ? "#6366f1" : "#94a3b8") + ";" +
+            "-fx-text-fill: white; -fx-font-size: 11px; -fx-font-weight: bold;" +
+            "-fx-background-radius: 50; -fx-alignment: CENTER;");
 
-        Label lblIcon = new Label(icon);
-        lblIcon.setMinWidth(22); lblIcon.setMaxWidth(22);
-        lblIcon.setStyle("-fx-font-size: 16px;");
+        // Bulle icône catégorie
+        Label ico = new Label(icon);
+        ico.setMinSize(32, 32); ico.setMaxSize(32, 32);
+        ico.setAlignment(Pos.CENTER);
+        ico.setStyle(
+            "-fx-background-color: #f1f5f9; -fx-font-size: 14px;" +
+            "-fx-background-radius: 50; -fx-alignment: CENTER;");
 
-        VBox centerBox = new VBox(3);
-        HBox.setHgrow(centerBox, Priority.ALWAYS);
+        // Bloc info (titre + badges)
+        VBox info = new VBox(4);
+        HBox.setHgrow(info, Priority.ALWAYS);
+        info.setMaxWidth(Double.MAX_VALUE);
 
-        Label lblText = new Label(q.getText());
-        lblText.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1E293B; -fx-wrap-text: true;");
-        lblText.setWrapText(true); lblText.setMaxWidth(Double.MAX_VALUE);
+        Label title = new Label(q.getText() != null ? q.getText() : "");
+        title.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1e293b; -fx-wrap-text: true;");
+        title.setWrapText(true); title.setMaxWidth(Double.MAX_VALUE);
 
-        HBox badges = new HBox(6);
-        badges.setAlignment(Pos.CENTER_LEFT);
+        HBox meta = new HBox(6);
+        meta.setAlignment(Pos.CENTER_LEFT);
 
-        Label lblCat = new Label(q.getCategory() != null ? q.getCategory() : "");
-        lblCat.setStyle("-fx-background-color: " + color + "1A; -fx-text-fill: " + color + ";" +
-                        "-fx-font-size: 10px; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 2 8;");
+        // Badge statut
+        Label bStatut = new Label(active ? "✅ Actif" : "🚫 Inactif");
+        bStatut.setStyle(
+            "-fx-background-color: " + (active ? "#d1fae5" : "#fee2e2") + ";" +
+            "-fx-text-fill: " + (active ? "#065f46" : "#991b1b") + ";" +
+            "-fx-font-size: 10px; -fx-font-weight: bold;" +
+            "-fx-background-radius: 50; -fx-padding: 2 8;");
 
-        Label lblStatut = new Label(q.isActive() ? "✅ Actif" : "⛔ Inactif");
-        lblStatut.setStyle("-fx-background-color: " + (q.isActive() ? "#DCFCE7" : "#FEE2E2") + ";" +
-                           "-fx-text-fill: " + (q.isActive() ? "#16A34A" : "#DC2626") + ";" +
-                           "-fx-font-size: 10px; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 2 8;");
-        badges.getChildren().addAll(lblCat, lblStatut);
-        centerBox.getChildren().addAll(lblText, badges);
+        // Badge catégorie
+        Label bCat = new Label(q.getCategory() != null ? q.getCategory() : "");
+        bCat.setStyle(
+            "-fx-background-color: #ede9fe; -fx-text-fill: #5b21b6;" +
+            "-fx-font-size: 10px; -fx-font-weight: bold;" +
+            "-fx-background-radius: 50; -fx-padding: 2 8;");
 
-        Button btnEdit   = makeBtn("✏", "#EEF2FF", "#6366F1"); btnEdit.setOnAction(e -> handleEdit(q));
-        Button btnToggle = makeBtn(q.isActive() ? "⏸" : "▶", "#FFF7ED", "#F59E0B"); btnToggle.setOnAction(e -> handleToggle(q));
-        Button btnDelete = makeBtn("🗑", "#FEE2E2", "#EF4444"); btnDelete.setOnAction(e -> handleDelete(q));
+        // Nb réponses
+        int nbRep = q.getAnswers() != null ? q.getAnswers().size() : 0;
+        Label bRep = new Label(nbRep + " réponse" + (nbRep > 1 ? "s" : ""));
+        bRep.setStyle("-fx-font-size: 10px; -fx-text-fill: #94a3b8;");
 
-        HBox actions = new HBox(5, btnEdit, btnToggle, btnDelete);
-        actions.setAlignment(Pos.CENTER);
+        meta.getChildren().addAll(bStatut, bCat, bRep);
+        info.getChildren().addAll(title, meta);
 
-        header.getChildren().addAll(lblNum, lblIcon, centerBox, actions);
+        // Boutons d'action rapides (icônes) — à droite du header
+        HBox actionsRight = new HBox(5);
+        actionsRight.setAlignment(Pos.CENTER);
 
+        Button btnToggle = makeIconBtn(
+            active ? "⏸" : "▶",
+            active ? "#d1fae5" : "#f1f5f9",
+            active ? "#065f46" : "#475569",
+            active ? "1px solid #6ee7b7" : "1px solid #e2e8f0");
+        btnToggle.setTooltip(new Tooltip(active ? "Désactiver" : "Activer"));
+        btnToggle.setOnAction(e -> handleToggle(q));
+
+        Button btnEdit = makeIconBtn("✏️", "#eff6ff", "#2563eb", "none");
+        btnEdit.setTooltip(new Tooltip("Modifier"));
+        btnEdit.setOnAction(e -> handleEdit(q));
+
+        Button btnDel = makeIconBtn("🗑️", "#fee2e2", "#991b1b", "none");
+        btnDel.setTooltip(new Tooltip("Supprimer"));
+        btnDel.setOnAction(e -> handleDelete(q));
+
+        actionsRight.getChildren().addAll(btnToggle, btnEdit, btnDel);
+        head.getChildren().addAll(num, ico, info, actionsRight);
+
+        /* ── Grille réponses A B C D (miroir .q-answers) ── */
         if (q.getAnswers() != null && !q.getAnswers().isEmpty()) {
             Separator sep = new Separator();
+            sep.setStyle("-fx-padding: 0;");
+
             GridPane grid = new GridPane();
-            grid.setHgap(8); grid.setVgap(6);
-            grid.setStyle("-fx-padding: 10 16 14 16;");
-            ColumnConstraints c1 = new ColumnConstraints(); c1.setPercentWidth(50);
-            ColumnConstraints c2 = new ColumnConstraints(); c2.setPercentWidth(50);
-            grid.getColumnConstraints().addAll(c1, c2);
-            String[] letters = {"A","B","C","D"};
+            grid.setHgap(8); grid.setVgap(7);
+            grid.setPadding(new Insets(8, 14, 12, 14));
+            grid.setStyle("-fx-background-color: white;");
+
+            ColumnConstraints cc = new ColumnConstraints();
+            cc.setPercentWidth(50);
+            grid.getColumnConstraints().addAll(cc, new ColumnConstraints() {{ setPercentWidth(50); }});
+
             List<Answer> answers = q.getAnswers();
             for (int i = 0; i < Math.min(answers.size(), 4); i++) {
                 Answer a = answers.get(i);
-                HBox ab = new HBox(6);
-                ab.setAlignment(Pos.CENTER_LEFT);
-                ab.setStyle("-fx-background-color: #F8FAFC; -fx-background-radius: 8; -fx-padding: 6 10;" +
-                            "-fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1;");
-                Label ll = new Label(letters[i]);
-                ll.setStyle("-fx-background-color: " + color + "; -fx-text-fill: white; -fx-font-size: 10px;" +
-                            "-fx-font-weight: bold; -fx-background-radius: 4; -fx-padding: 1 5;");
-                Label la = new Label(a.getText());
-                la.setStyle("-fx-font-size: 11px; -fx-text-fill: #475569; -fx-wrap-text: true;");
-                la.setWrapText(true); HBox.setHgrow(la, Priority.ALWAYS);
-                Label lp = new Label("+" + a.getPoints() + "pt");
-                lp.setStyle("-fx-font-size: 9px; -fx-text-fill: " + color + "; -fx-font-weight: bold;");
-                ab.getChildren().addAll(ll, la, lp);
-                grid.add(ab, i % 2, i / 2);
+
+                HBox cell = new HBox(7);
+                cell.setAlignment(Pos.CENTER_LEFT);
+                cell.setStyle(
+                    "-fx-background-color: #f8fafc;" +
+                    "-fx-border-color: #e2e8f0; -fx-border-radius: 9;" +
+                    "-fx-background-radius: 9; -fx-padding: 6 10;");
+
+                // Carré lettre coloré
+                Label lLetter = new Label(LETTERS[i]);
+                lLetter.setMinSize(24, 24); lLetter.setMaxSize(24, 24);
+                lLetter.setAlignment(Pos.CENTER);
+                lLetter.setStyle(
+                    "-fx-background-color: " + LETTER_COLORS[i] + ";" +
+                    "-fx-text-fill: white; -fx-font-size: 10px; -fx-font-weight: bold;" +
+                    "-fx-background-radius: 6; -fx-alignment: CENTER;");
+
+                // Texte de la réponse
+                Label lText = new Label(a.getText() != null ? a.getText() : "");
+                lText.setStyle("-fx-font-size: 11px; -fx-text-fill: #374151; -fx-font-weight: 500; -fx-wrap-text: true;");
+                lText.setWrapText(true); HBox.setHgrow(lText, Priority.ALWAYS); lText.setMaxWidth(Double.MAX_VALUE);
+
+                // Points
+                Label lPts = new Label(a.getPoints() > 0 ? "+" + a.getPoints() + "pt" : "0pt");
+                lPts.setStyle(
+                    "-fx-font-size: 10px; -fx-font-weight: bold;" +
+                    "-fx-text-fill: " + (a.getPoints() > 0 ? "#10b981" : "#94a3b8") + ";");
+
+                cell.getChildren().addAll(lLetter, lText, lPts);
+                grid.add(cell, i % 2, i / 2);
             }
-            card.getChildren().addAll(header, sep, grid);
+            card.getChildren().addAll(head, sep, grid);
         } else {
-            card.getChildren().add(header);
+            card.getChildren().add(head);
         }
+
+        /* ── Footer actions texte (miroir .q-footer) ── */
+        HBox footer = new HBox(8);
+        footer.setAlignment(Pos.CENTER_LEFT);
+        footer.setStyle(
+            "-fx-padding: 6 14;" +
+            "-fx-background-color: #f8fafc;" +
+            "-fx-border-color: #f1f5f9 transparent transparent transparent;" +
+            "-fx-border-width: 1 0 0 0;");
+
+        Button ftToggle = makeFooterBtn(
+            active ? "👁 Désactiver" : "👁 Activer",
+            active ? "#d1fae5" : "#f1f5f9",
+            active ? "#065f46" : "#475569",
+            active ? "1px solid #6ee7b7" : "1px solid #e2e8f0");
+        ftToggle.setOnAction(e -> handleToggle(q));
+
+        Button ftEdit = makeFooterBtn("✏️ Modifier", "#eff6ff", "#2563eb", "none");
+        ftEdit.setOnAction(e -> handleEdit(q));
+
+        Button ftDel = makeFooterBtn("🗑️ Supprimer", "#fee2e2", "#991b1b", "none");
+        ftDel.setOnAction(e -> handleDelete(q));
+
+        footer.getChildren().addAll(ftToggle, ftEdit, ftDel);
+        card.getChildren().add(footer);
+
         return card;
     }
 
-    private Button makeBtn(String text, String bg, String fg) {
-        Button btn = new Button(text);
-        btn.setMinWidth(32); btn.setMaxWidth(32); btn.setMinHeight(32); btn.setMaxHeight(32);
-        btn.setStyle("-fx-background-color: " + bg + "; -fx-text-fill: " + fg + ";" +
-                     "-fx-font-size: 12px; -fx-background-radius: 8; -fx-cursor: hand;");
-        return btn;
+    /* ════════════════════════════════════════════════
+       HELPERS BOUTONS
+    ════════════════════════════════════════════════ */
+    private Button makeIconBtn(String text, String bg, String fg, String border) {
+        Button b = new Button(text);
+        b.setMinSize(30, 30); b.setMaxSize(30, 30);
+        b.setStyle(
+            "-fx-background-color: " + bg + ";" +
+            "-fx-text-fill: " + fg + ";" +
+            "-fx-font-size: 12px; -fx-background-radius: 8;" +
+            "-fx-cursor: hand;" +
+            (border.equals("none") ? "" : "-fx-border-color: " + border.replace("1px solid ","") + "; -fx-border-radius: 8;"));
+        return b;
     }
 
+    private Button makeFooterBtn(String text, String bg, String fg, String border) {
+        Button b = new Button(text);
+        b.setStyle(
+            "-fx-background-color: " + bg + ";" +
+            "-fx-text-fill: " + fg + ";" +
+            "-fx-font-size: 11px; -fx-font-weight: bold;" +
+            "-fx-background-radius: 8; -fx-padding: 5 12; -fx-cursor: hand;" +
+            (border.equals("none") ? "" : "-fx-border-color: " + border.replace("1px solid ","") + "; -fx-border-radius: 8;"));
+        return b;
+    }
+
+    /* ════════════════════════════════════════════════
+       ACTIONS
+    ════════════════════════════════════════════════ */
     @FXML private void handleSort() {
         if (cbSort == null || cbSort.getValue() == null) return;
         List<Question> sorted = new ArrayList<>(getCurrentFiltered());
@@ -185,20 +355,17 @@ public class QuestionController implements Initializable {
     }
 
     private List<Question> getCurrentFiltered() {
-        String search = txtSearch != null && txtSearch.getText() != null ? txtSearch.getText().toLowerCase() : "";
+        String s = txtSearch != null && txtSearch.getText() != null
+            ? txtSearch.getText().toLowerCase() : "";
         return allQuestions.stream().filter(q ->
-            search.isEmpty()
-            || (q.getText()     != null && q.getText().toLowerCase().contains(search))
-            || (q.getCategory() != null && q.getCategory().toLowerCase().contains(search))
+            s.isEmpty()
+            || (q.getText()     != null && q.getText().toLowerCase().contains(s))
+            || (q.getCategory() != null && q.getCategory().toLowerCase().contains(s))
         ).collect(Collectors.toList());
     }
 
-    private void setupSearch() {
-        txtSearch.textProperty().addListener((obs, o, n) -> afficherQuestions(getCurrentFiltered()));
-    }
-
-    @FXML private void handleAdd()  { openQuestionForm(null); }
-    private void handleEdit(Question q) { openQuestionForm(q); }
+    @FXML private void handleAdd()            { openQuestionForm(null); }
+    private void      handleEdit(Question q)  { openQuestionForm(q);    }
 
     private void handleToggle(Question q) {
         try { questionService.toggleActive(q.getId()); loadData(); }
@@ -208,8 +375,10 @@ public class QuestionController implements Initializable {
     private void handleDelete(Question q) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Confirmation");
-        alert.setHeaderText("Supprimer la question ?");
-        alert.setContentText("\"" + q.getText() + "\"\nCette action est irréversible.");
+        alert.setHeaderText("⚠️ Supprimer cette question ?");
+        String txt = q.getText() != null ? q.getText() : "";
+        alert.setContentText("\"" + (txt.length() > 70 ? txt.substring(0,70)+"…" : txt) +
+            "\"\n\nCette action est irréversible.");
         alert.showAndWait().ifPresent(r -> {
             if (r == ButtonType.OK) {
                 try { questionService.supprimer(q.getId()); loadData(); }
@@ -232,35 +401,26 @@ public class QuestionController implements Initializable {
 
     @FXML private void handleStartQuizFromMenu() { handleStartQuiz(); }
 
-    /**
-     * Navigation depuis la sidebar de QuestionView.fxml (standalone).
-     * Quand QuestionContent.fxml est chargé dans le contentArea du Dashboard,
-     * ces méthodes ne sont pas appelées (pas de sidebar).
-     */
     @FXML private void goToDashboard() {
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(
                     getClass().getResource("/tn/esprit/interfaces/DashboardAdmin.fxml")));
-            if (vboxQuestions != null && vboxQuestions.getScene() != null) {
+            if (vboxQuestions != null && vboxQuestions.getScene() != null)
                 vboxQuestions.getScene().setRoot(root);
-            }
         } catch (IOException e) { showError("Navigation impossible : " + e.getMessage()); }
     }
 
     @FXML private void goToFilieres() {
-        // Charge FiliereContent.fxml (sans sidebar)
         try {
             Parent root = FXMLLoader.load(Objects.requireNonNull(
                     getClass().getResource("/tn/esprit/interfaces/FiliereContent.fxml")));
             if (vboxQuestions != null && vboxQuestions.getScene() != null) {
-                // Si on est dans un contentArea (StackPane parent), on remplace le contenu
                 javafx.scene.Node parent = vboxQuestions.getParent();
-                while (parent != null && !(parent instanceof StackPane)) {
+                while (parent != null && !(parent instanceof StackPane))
                     parent = parent.getParent();
-                }
-                if (parent instanceof StackPane) {
+                if (parent instanceof StackPane)
                     ((StackPane) parent).getChildren().setAll(root);
-                } else {
+                else {
                     Stage stage = (Stage) vboxQuestions.getScene().getWindow();
                     stage.setScene(new Scene(root));
                 }
@@ -289,9 +449,7 @@ public class QuestionController implements Initializable {
     public void refreshData() { loadData(); }
 
     private void showError(String msg) {
-        Alert a = new Alert(Alert.AlertType.ERROR); a.setHeaderText(null); a.setContentText(msg); a.show();
-    }
-    private void showInfo(String msg) {
-        Alert a = new Alert(Alert.AlertType.INFORMATION); a.setHeaderText(null); a.setContentText(msg); a.show();
+        Alert a = new Alert(Alert.AlertType.ERROR);
+        a.setHeaderText(null); a.setContentText(msg); a.show();
     }
 }

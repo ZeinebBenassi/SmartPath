@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<ScrollPane fitToWidth="true"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="tn.esprit.controllers.QuizDashboardController"
+            style="-fx-background-color:#f4f7fb; -fx-background:#f4f7fb; -fx-border-width:0;">
+
+    <VBox spacing="24" style="-fx-padding:28 32 32 32; -fx-background-color:#f4f7fb;">
+
+        <!-- ══ TITRE ══ -->
+        <VBox spacing="4">
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="🎯" style="-fx-font-size:26px;"/>
+                <HBox spacing="0">
+                    <Label text="Gestion du " style="-fx-font-size:22px; -fx-font-weight:900; -fx-text-fill:#1e293b;"/>
+                    <Label text="Quiz" style="-fx-font-size:22px; -fx-font-weight:900; -fx-text-fill:#2563eb;"/>
+                    <Label text=" de Personnalité" style="-fx-font-size:22px; -fx-font-weight:900; -fx-text-fill:#1e293b;"/>
+                </HBox>
+            </HBox>
+            <Label text="Gérez les questions, les filières et consultez les statistiques en temps réel"
+                   style="-fx-font-size:13px; -fx-text-fill:#64748b;"/>
+        </VBox>
+
+        <!-- ══ 4 CARTES STATS ══ -->
+        <HBox spacing="16">
+            <!-- Questions -->
+            <VBox HBox.hgrow="ALWAYS" spacing="8" alignment="CENTER_LEFT"
+                  style="-fx-background-color:white; -fx-background-radius:14;
+                         -fx-border-color:#e2e8f0; -fx-border-radius:14; -fx-border-width:1;
+                         -fx-padding:20 24; -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.05),8,0,0,2);">
+                <HBox alignment="CENTER_LEFT" spacing="14">
+                    <Label text="❓" style="-fx-font-size:28px;
+                                           -fx-background-color:#f3f0ff; -fx-background-radius:10;
+                                           -fx-padding:8 10;"/>
+                    <VBox spacing="2">
+                        <Label fx:id="lblTotalQuestions" text="—"
+                               style="-fx-font-size:30px; -fx-font-weight:900; -fx-text-fill:#1e293b;"/>
+                        <Label text="Questions"
+                               style="-fx-font-size:12px; -fx-text-fill:#64748b;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+            <!-- Filières -->
+            <VBox HBox.hgrow="ALWAYS" spacing="8" alignment="CENTER_LEFT"
+                  style="-fx-background-color:white; -fx-background-radius:14;
+                         -fx-border-color:#e2e8f0; -fx-border-radius:14; -fx-border-width:1;
+                         -fx-padding:20 24; -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.05),8,0,0,2);">
+                <HBox alignment="CENTER_LEFT" spacing="14">
+                    <Label text="🎓" style="-fx-font-size:28px;
+                                           -fx-background-color:#ecfdf5; -fx-background-radius:10;
+                                           -fx-padding:8 10;"/>
+                    <VBox spacing="2">
+                        <Label fx:id="lblTotalFilieres" text="—"
+                               style="-fx-font-size:30px; -fx-font-weight:900; -fx-text-fill:#1e293b;"/>
+                        <Label text="Filières"
+                               style="-fx-font-size:12px; -fx-text-fill:#64748b;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+            <!-- Quiz passés -->
+            <VBox HBox.hgrow="ALWAYS" spacing="8" alignment="CENTER_LEFT"
+                  style="-fx-background-color:white; -fx-background-radius:14;
+                         -fx-border-color:#e2e8f0; -fx-border-radius:14; -fx-border-width:1;
+                         -fx-padding:20 24; -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.05),8,0,0,2);">
+                <HBox alignment="CENTER_LEFT" spacing="14">
+                    <Label text="👥" style="-fx-font-size:28px;
+                                           -fx-background-color:#eff6ff; -fx-background-radius:10;
+                                           -fx-padding:8 10;"/>
+                    <VBox spacing="2">
+                        <Label fx:id="lblTotalQuizPasses" text="—"
+                               style="-fx-font-size:30px; -fx-font-weight:900; -fx-text-fill:#1e293b;"/>
+                        <Label text="Quiz passés"
+                               style="-fx-font-size:12px; -fx-text-fill:#64748b;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+            <!-- Moyenne / jour -->
+            <VBox HBox.hgrow="ALWAYS" spacing="8" alignment="CENTER_LEFT"
+                  style="-fx-background-color:white; -fx-background-radius:14;
+                         -fx-border-color:#e2e8f0; -fx-border-radius:14; -fx-border-width:1;
+                         -fx-padding:20 24; -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.05),8,0,0,2);">
+                <HBox alignment="CENTER_LEFT" spacing="14">
+                    <Label text="📊" style="-fx-font-size:28px;
+                                           -fx-background-color:#fff7ed; -fx-background-radius:10;
+                                           -fx-padding:8 10;"/>
+                    <VBox spacing="2">
+                        <Label fx:id="lblMoyenneJour" text="—"
+                               style="-fx-font-size:30px; -fx-font-weight:900; -fx-text-fill:#1e293b;"/>
+                        <Label text="Moyenne / jour"
+                               style="-fx-font-size:12px; -fx-text-fill:#64748b;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+        </HBox>
+
+        <!-- ══ 3 CARTES ACTIONS (Questions | Filières | Statistiques) ══ -->
+        <HBox spacing="16">
+
+            <!-- Questions -->
+            <VBox HBox.hgrow="ALWAYS" spacing="0"
+                  style="-fx-background-color:white; -fx-background-radius:16;
+                         -fx-border-color:#e2e8f0; -fx-border-radius:16; -fx-border-width:1;
+                         -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,3);">
+                <!-- Header violet -->
+                <HBox alignment="CENTER_LEFT" spacing="10"
+                      style="-fx-background-color:#7c3aed; -fx-background-radius:16 16 0 0; -fx-padding:16 20;">
+                    <Label text="❓" style="-fx-font-size:18px;"/>
+                    <Label text="Questions"
+                           style="-fx-font-size:16px; -fx-font-weight:900; -fx-text-fill:white;"/>
+                </HBox>
+                <!-- Body -->
+                <VBox spacing="16" style="-fx-padding:20;">
+                    <Label text="Créez et gérez les questions du quiz de personnalité avec leurs réponses associées"
+                           style="-fx-font-size:12px; -fx-text-fill:#64748b; -fx-wrap-text:true;"
+                           wrapText="true"/>
+                    <VBox spacing="8">
+                        <Button maxWidth="Infinity" onAction="#voirQuestions"
+                                text="📋  Voir les questions"
+                                style="-fx-background-color:#2563eb; -fx-text-fill:white;
+                                       -fx-font-weight:bold; -fx-font-size:12px;
+                                       -fx-background-radius:8; -fx-padding:10 0; -fx-cursor:hand;"/>
+                        <Button maxWidth="Infinity" onAction="#nouvelleQuestion"
+                                text="➕  Nouvelle question"
+                                style="-fx-background-color:#10b981; -fx-text-fill:white;
+                                       -fx-font-weight:bold; -fx-font-size:12px;
+                                       -fx-background-radius:8; -fx-padding:10 0; -fx-cursor:hand;"/>
+                    </VBox>
+                </VBox>
+            </VBox>
+
+            <!-- Filières -->
+            <VBox HBox.hgrow="ALWAYS" spacing="0"
+                  style="-fx-background-color:white; -fx-background-radius:16;
+                         -fx-border-color:#e2e8f0; -fx-border-radius:16; -fx-border-width:1;
+                         -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,3);">
+                <!-- Header vert -->
+                <HBox alignment="CENTER_LEFT" spacing="10"
+                      style="-fx-background-color:#059669; -fx-background-radius:16 16 0 0; -fx-padding:16 20;">
+                    <Label text="🎓" style="-fx-font-size:18px;"/>
+                    <Label text="Filières"
+                           style="-fx-font-size:16px; -fx-font-weight:900; -fx-text-fill:white;"/>
+                </HBox>
+                <!-- Body -->
+                <VBox spacing="16" style="-fx-padding:20;">
+                    <Label text="Gérez les filières informatiques, leurs traits de personnalité et leurs débouchés"
+                           style="-fx-font-size:12px; -fx-text-fill:#64748b; -fx-wrap-text:true;"
+                           wrapText="true"/>
+                    <VBox spacing="8">
+                        <Button maxWidth="Infinity" onAction="#voirFilieres"
+                                text="📋  Voir les filières"
+                                style="-fx-background-color:#2563eb; -fx-text-fill:white;
+                                       -fx-font-weight:bold; -fx-font-size:12px;
+                                       -fx-background-radius:8; -fx-padding:10 0; -fx-cursor:hand;"/>
+                        <Button maxWidth="Infinity" onAction="#nouvelleFiliere"
+                                text="➕  Nouvelle filière"
+                                style="-fx-background-color:#10b981; -fx-text-fill:white;
+                                       -fx-font-weight:bold; -fx-font-size:12px;
+                                       -fx-background-radius:8; -fx-padding:10 0; -fx-cursor:hand;"/>
+                    </VBox>
+                </VBox>
+            </VBox>
+
+            <!-- Statistiques -->
+            <VBox HBox.hgrow="ALWAYS" spacing="0"
+                  style="-fx-background-color:white; -fx-background-radius:16;
+                         -fx-border-color:#e2e8f0; -fx-border-radius:16; -fx-border-width:1;
+                         -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),10,0,0,3);">
+                <!-- Header bleu cyan -->
+                <HBox alignment="CENTER_LEFT" spacing="10"
+                      style="-fx-background-color:#0891b2; -fx-background-radius:16 16 0 0; -fx-padding:16 20;">
+                    <Label text="📊" style="-fx-font-size:18px;"/>
+                    <Label text="Statistiques"
+                           style="-fx-font-size:16px; -fx-font-weight:900; -fx-text-fill:white;"/>
+                </HBox>
+                <!-- Body -->
+                <VBox spacing="16" style="-fx-padding:20;">
+                    <Label text="Analysez les résultats du quiz, les tendances et les profils des étudiants"
+                           style="-fx-font-size:12px; -fx-text-fill:#64748b; -fx-wrap-text:true;"
+                           wrapText="true"/>
+                    <VBox spacing="8">
+                        <Button maxWidth="Infinity" onAction="#voirStatistiques"
+                                text="📈  Voir les statistiques"
+                                style="-fx-background-color:#2563eb; -fx-text-fill:white;
+                                       -fx-font-weight:bold; -fx-font-size:12px;
+                                       -fx-background-radius:8; -fx-padding:10 0; -fx-cursor:hand;"/>
+                        <Button maxWidth="Infinity" onAction="#voirHistorique"
+                                text="📋  Tous les résultats"
+                                style="-fx-background-color:#6366f1; -fx-text-fill:white;
+                                       -fx-font-weight:bold; -fx-font-size:12px;
+                                       -fx-background-radius:8; -fx-padding:10 0; -fx-cursor:hand;"/>
+                    </VBox>
+                </VBox>
+            </VBox>
+
+        </HBox>
+
+        <!-- ══ TOP 5 FILIÈRES ══ -->
+        <VBox spacing="0"
+              style="-fx-background-color:white; -fx-background-radius:16;
+                     -fx-border-color:#e2e8f0; -fx-border-radius:16; -fx-border-width:1;
+                     -fx-effect:dropshadow(gaussian,rgba(0,0,0,0.05),8,0,0,2);">
+            <!-- Header -->
+            <HBox alignment="CENTER_LEFT"
+                  style="-fx-padding:16 24; -fx-background-color:#f8fafc;
+                         -fx-background-radius:16 16 0 0;
+                         -fx-border-color:transparent transparent #e2e8f0 transparent;
+                         -fx-border-width:0 0 1 0;">
+                <Label text="🏆  Top 5 Filières Recommandées"
+                       style="-fx-font-size:14px; -fx-font-weight:900; -fx-text-fill:#1e293b;"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+                <Label text="RANG" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8; -fx-padding:0 120 0 0;"/>
+                <Label text="FILIÈRE" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8; -fx-padding:0 0 0 0;"/>
+                <Pane HBox.hgrow="ALWAYS"/>
+                <Label text="RECOMMANDATIONS" style="-fx-font-size:11px; -fx-font-weight:bold; -fx-text-fill:#94a3b8;"/>
+            </HBox>
+            <!-- Lignes dynamiques -->
+            <VBox fx:id="vboxTopFilieres" spacing="0" style="-fx-padding:0 0 8 0;"/>
+        </VBox>
+
+    </VBox>
+</ScrollPane>

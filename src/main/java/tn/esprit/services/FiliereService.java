@@ -38,8 +38,8 @@ public class FiliereService implements ICrud<Filiere> {
     public void ajouter(Filiere f) throws SQLException {
         ensureImageColumn();
         String sql = Boolean.TRUE.equals(imageColumnExists)
-                ? "INSERT INTO filiere (nom, categorie, niveau, description, debouches, competences, icon, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
-                : "INSERT INTO filiere (nom, categorie, niveau, description, debouches, competences, icon) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                ? "INSERT INTO filiere (nom, categorie, niveau, description, debouches, competences, icon, image, traits) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'null')"
+                : "INSERT INTO filiere (nom, categorie, niveau, description, debouches, competences, icon, traits) VALUES (?, ?, ?, ?, ?, ?, ?, 'null')";
         try (PreparedStatement ps = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, f.getNom());
             ps.setString(2, f.getCategorie());

@@ -49,11 +49,6 @@
                             text="👨‍🎓  Gestion Étudiants"/>
                 </VBox>
 
-                <!-- Filières -->
-                <Button fx:id="btnFilieres" maxWidth="Infinity"
-                        onAction="#showFilieres"
-                        styleClass="nav-btn" text="📚  Filières"/>
-
                 <!-- Offres de stage -->
                 <Button fx:id="btnOffres" maxWidth="Infinity"
                         onAction="#showOffres"
@@ -61,31 +56,17 @@
 
                 <!-- ── Statistiques (sous-menu toggle) ── -->
                 <Button fx:id="btnStatistiques" maxWidth="Infinity"
-                        onAction="#toggleStatsMenu"
-                        styleClass="nav-btn" text="📊  Statistiques  ▾"/>
-                <VBox fx:id="statsSubMenu" managed="false" visible="false" spacing="4"
-                      style="-fx-padding:4 0 4 14;">
-                    <Button fx:id="btnStatistiquesUsers" maxWidth="Infinity"
-                            onAction="#showStatistiquesUsers"
-                            styleClass="nav-sub-btn"
-                            text="📈  Statistiques Users"/>
-                    <Button fx:id="btnStatistiquesQuiz" maxWidth="Infinity"
-                            onAction="#showStatistiquesQuiz"
-                            styleClass="nav-sub-btn"
-                            text="🧩  Statistiques Quiz"/>
-                </VBox>
+                        onAction="#showStatistiquesUsers"
+                        styleClass="nav-btn" text="📊  Statistiques Users"/>
 
                     <!-- ── SECTION : QUIZ ── -->
                     <Label text="QUIZ" styleClass="sidebar-section-label"
                            style="-fx-padding:14 0 4 8;"/>
 
-                    <Button fx:id="btnQuizAdmin" maxWidth="Infinity"
-                        onAction="#showQuizAdmin"
-                        styleClass="nav-btn" text="🧠  Questions du Quiz"/>
-
-                    <Button fx:id="btnQuizHistorique" maxWidth="Infinity"
-                        onAction="#showQuizHistorique"
-                        styleClass="nav-btn" text="📋  Historique Quiz"/>
+                    <!-- Quiz de personnalité -->
+                    <Button fx:id="btnQuizPersonnalite" maxWidth="Infinity"
+                        onAction="#toggleQuizMenu"
+                        styleClass="nav-btn" text="🧠  Quiz de personnalité"/>
 
                 <!-- Profil -->
                 <Button fx:id="btnProfil" maxWidth="Infinity"

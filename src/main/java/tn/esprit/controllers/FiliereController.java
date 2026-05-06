@@ -46,6 +46,11 @@ public class FiliereController implements Initializable {
         "sciences",     "🔬", "langues",      "🌍",
         "economie",     "📈", "gestion",      "🏢"
     );
+    // Dossier Symfony pour résoudre les chemins web /uploads/filieres/
+    private static final String SYMFONY_UPLOAD_DIR =
+        "C:/Users/GIGABYTE/Desktop/dev/integration-web-java/" +
+        "Esprit-PIDEV-3A40-2025-2026-SmartPath/public/uploads/filieres/";
+
     private static final List<String> NIVEAU_ORDER = List.of(
         "Bac","Bac+1","Bac+2","Bac+3","Bac+4","Bac+5",
         "Licence","Master","Doctorat","Débutant","Intermédiaire","Avancé","Expert"
@@ -132,8 +137,26 @@ public class FiliereController implements Initializable {
         boolean loaded = false;
         if (f.getImage() != null && !f.getImage().isEmpty()) {
             try {
-                File imgFile = new File(f.getImage());
-                if (imgFile.exists()) {
+                // Résoudre le chemin physique du fichier image :
+                // 1. Chemin web /uploads/filieres/xxx → reconstruire depuis SYMFONY_UPLOAD_DIR
+                // 2. Chemin absolu Windows C:\... → utiliser directement
+                File imgFile;
+                String imgPath = f.getImage();
+                if (imgPath.startsWith("/uploads/filieres/")) {
+                    String filename = imgPath.substring("/uploads/filieres/".length());
+                    imgFile = new File(SYMFONY_UPLOAD_DIR + filename);
+                } else if (imgPath.startsWith("/uploads/")) {
+                    // Autre sous-dossier uploads — construire depuis la racine Symfony
+                    imgFile = new File(
+                        "C:/Users/GIGABYTE/Desktop/dev/integration-web-java/" +
+                        "Esprit-PIDEV-3A40-2025-2026-SmartPath/public" +
+                        imgPath.replace('/', File.separatorChar));
+                } else {
+                    // Chemin absolu local (ancien format JavaFX)
+                    imgFile = new File(imgPath);
+                }
+
+                if (imgFile.exists() && imgFile.isFile()) {
                     Image img = new Image(imgFile.toURI().toString(), CW, 140, false, true);
                     if (!img.isError()) {
                         ImageView iv = new ImageView(img);
