@@ -1,8 +1,11 @@
 package tn.esprit.controllers;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
@@ -11,9 +14,11 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
+import javafx.stage.Stage;
 import tn.esprit.services.QuizStatisticsService;
 import tn.esprit.services.QuizStatisticsService.FiliereStatEntry;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 
@@ -613,5 +618,28 @@ public class QuizStatisticsController implements Initializable {
 
     private void setLabel(Label lbl, String text) {
         if (lbl != null) lbl.setText(text);
+    }
+
+    @FXML private void goToQuizDashboard() {
+        try {
+            Parent root = FXMLLoader.load(Objects.requireNonNull(
+                    getClass().getResource("/tn/esprit/interfaces/QuizDashboard.fxml")));
+            if (vboxContent != null && vboxContent.getScene() != null) {
+                javafx.scene.Node contentArea = vboxContent.getScene().getRoot().lookup("#contentArea");
+                if (contentArea instanceof StackPane) {
+                    ((StackPane) contentArea).getChildren().setAll(root);
+                    javafx.scene.Node titleNode = vboxContent.getScene().getRoot().lookup("#pageTitle");
+                    if (titleNode instanceof Label)
+                        ((Label) titleNode).setText("Quiz de Personnalité");
+                } else {
+                    Stage stage = (Stage) vboxContent.getScene().getWindow();
+                    stage.setScene(new Scene(root));
+                }
+            }
+        } catch (IOException e) {
+            new javafx.scene.control.Alert(
+                    javafx.scene.control.Alert.AlertType.ERROR,
+                    "Navigation impossible : " + e.getMessage()).show();
+        }
     }
 }

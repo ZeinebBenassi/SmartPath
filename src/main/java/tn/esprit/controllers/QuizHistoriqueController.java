@@ -4,13 +4,18 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.stage.Stage;
 import tn.esprit.entity.QuizResult;
 import tn.esprit.services.QuizHistoriqueService;
 
+import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -395,6 +400,27 @@ public class QuizHistoriqueController implements Initializable {
             int end = start;
             while (end < fragment.length() && fragment.charAt(end) != ',' && fragment.charAt(end) != '}') end++;
             return fragment.substring(start, end).trim();
+        }
+    }
+
+    @FXML private void goToQuizDashboard() {
+        try {
+            Parent root = FXMLLoader.load(Objects.requireNonNull(
+                    getClass().getResource("/tn/esprit/interfaces/QuizDashboard.fxml")));
+            if (table != null && table.getScene() != null) {
+                javafx.scene.Node contentArea = table.getScene().getRoot().lookup("#contentArea");
+                if (contentArea instanceof StackPane) {
+                    ((StackPane) contentArea).getChildren().setAll(root);
+                    javafx.scene.Node titleNode = table.getScene().getRoot().lookup("#pageTitle");
+                    if (titleNode instanceof Label)
+                        ((Label) titleNode).setText("Quiz de Personnalité");
+                } else {
+                    Stage stage = (Stage) table.getScene().getWindow();
+                    stage.setScene(new Scene(root));
+                }
+            }
+        } catch (IOException e) {
+            new Alert(Alert.AlertType.ERROR, "Navigation impossible : " + e.getMessage()).show();
         }
     }
 }

@@ -11,6 +11,12 @@ public class Filiere {
     private String competences;
     private String icon;
     private String image;
+    /**
+     * Traits de personnalité stockés en JSON, ex:
+     * {"analytique":5,"pratique":3,"creatif":1,...}
+     * Identique au champ `traits` JSON de l'entité Symfony Filiere.
+     */
+    private String traits;
 
     public Filiere() {}
 
@@ -41,6 +47,8 @@ public class Filiere {
     public void   setCompetences(String c)       { this.competences = c; }
     public String getIcon()                      { return icon; }
     public void   setIcon(String icon)           { this.icon = icon; }
-    public String getImage()                     { return image; }
-    public void   setImage(String image)         { this.image = image; }
+    public String getImage()                      { return image; }
+    public void   setImage(String image)          { this.image = image; }
+    public String getTraits()                      { return traits; }
+    public void   setTraits(String traits)         { this.traits = traits; }
 }

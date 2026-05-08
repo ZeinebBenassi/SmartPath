@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<HBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      alignment="CENTER" spacing="6"
+      style="-fx-background-color: transparent;">
+    
+    <!-- Bouton Moins -->
+    <Button fx:id="btnMinus"
+            prefWidth="32" minWidth="32" maxWidth="32"
+            prefHeight="32" minHeight="32" maxHeight="32"
+            text="−"
+            style="-fx-font-size: 16px; -fx-font-weight: bold;
+                   -fx-background-color: #EF4444; -fx-text-fill: white;
+                   -fx-border-radius: 6; -fx-background-radius: 6;
+                   -fx-cursor: hand;
+                   -fx-padding: 0;"/>
+    
+    <!-- Champ texte numérique -->
+    <TextField fx:id="valueField"
+               prefWidth="50" minWidth="50" maxWidth="50"
+               prefHeight="32" minHeight="32"
+               text="0" promptText="0"
+               style="-fx-background-color: white; -fx-border-color: #93C5FD;
+                      -fx-border-radius: 6; -fx-background-radius: 6;
+                      -fx-padding: 5 4; -fx-font-size: 14px; -fx-font-weight: bold;
+                      -fx-alignment: center; -fx-text-fill: #1D4ED8;"/>
+    
+    <!-- Bouton Plus -->
+    <Button fx:id="btnPlus"
+            prefWidth="32" minWidth="32" maxWidth="32"
+            prefHeight="32" minHeight="32" maxHeight="32"
+            text="+"
+            style="-fx-font-size: 16px; -fx-font-weight: bold;
+                   -fx-background-color: #10B981; -fx-text-fill: white;
+                   -fx-border-radius: 6; -fx-background-radius: 6;
+                   -fx-cursor: hand;
+                   -fx-padding: 0;"/>
+    
+</HBox>

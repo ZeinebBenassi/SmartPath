@@ -48,6 +48,13 @@
 
         <Pane HBox.hgrow="ALWAYS"/>
 
+        <!-- Retour au dashboard du quiz -->
+        <Button text="Dashboard Quiz" onAction="#goToQuizDashboard"
+                style="-fx-background-color: #f1f5f9; -fx-text-fill: #0f172a;
+                       -fx-font-weight: bold; -fx-font-size: 12px;
+                       -fx-background-radius: 10; -fx-padding: 8 14;
+                       -fx-cursor: hand;"/>
+
         <!-- Stats -->
         <HBox spacing="8" alignment="CENTER_LEFT">
             <Label fx:id="lblStats" text=""

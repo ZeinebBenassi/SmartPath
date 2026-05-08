@@ -101,7 +101,7 @@
     <center>
         <VBox styleClass="app-content">
             <HBox alignment="CENTER_LEFT" styleClass="topbar-modern">
-                <Label fx:id="pageTitle" styleClass="topbar-title" text="Dashboard"/>
+                <Label fx:id="pageTitle" id="pageTitle" styleClass="topbar-title" text="Dashboard"/>
                 <Pane HBox.hgrow="ALWAYS"/>
                 <Label fx:id="dateLabel" styleClass="topbar-date" text=""/>
 
@@ -124,7 +124,7 @@
                 </StackPane>
             </HBox>
 
-            <StackPane fx:id="contentArea" style="-fx-padding:24 28;" VBox.vgrow="ALWAYS">
+            <StackPane fx:id="contentArea" id="contentArea" style="-fx-padding:24 28;" VBox.vgrow="ALWAYS">
 
                 <!-- Vue Dashboard par défaut -->
                 <VBox fx:id="dashboardView" spacing="22">

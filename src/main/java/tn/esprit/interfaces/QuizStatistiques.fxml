@@ -26,6 +26,10 @@
                    style="-fx-font-size:12px; -fx-text-fill:#64748b;"/>
         </VBox>
         <Pane HBox.hgrow="ALWAYS"/>
+        <Button text="Dashboard Quiz" onAction="#goToQuizDashboard"
+                style="-fx-background-color:#f1f5f9; -fx-text-fill:#0f172a;
+                       -fx-font-weight:700; -fx-font-size:12px;
+                       -fx-background-radius:10; -fx-padding:8 14; -fx-cursor:hand;"/>
     </HBox>
 
     <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"

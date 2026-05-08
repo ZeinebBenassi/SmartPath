@@ -10,23 +10,21 @@ import java.util.List;
 public class FiliereService implements ICrud<Filiere> {
 
     private final Connection cnx = MyDatabase.getInstance().getConnection();
-    private static Boolean imageColumnExists = null;
+    private static Boolean imageColumnExists  = null;
+    private static Boolean traitsColumnExists = null;
 
     public FiliereService() {
         ensureImageColumn();
+        ensureTraitsColumn();
     }
 
     private void ensureImageColumn() {
         if (imageColumnExists != null) return;
         try (ResultSet rs = cnx.getMetaData().getColumns(null, null, "filiere", "image")) {
-            if (rs.next()) {
-                imageColumnExists = true;
-                return;
-            }
+            if (rs.next()) { imageColumnExists = true; return; }
         } catch (Exception ignored) {}
-
         try (Statement st = cnx.createStatement()) {
-            st.executeUpdate("ALTER TABLE filiere ADD COLUMN image VARCHAR(500) NULL");
+            st.executeUpdate("ALTER TABLE filiere ADD COLUMN IF NOT EXISTS image VARCHAR(500) NULL");
             imageColumnExists = true;
         } catch (SQLException e) {
             imageColumnExists = false;
@@ -34,23 +32,50 @@ public class FiliereService implements ICrud<Filiere> {
         }
     }
 
+    /** Crée la colonne traits si absente (compatible MySQL 8+). */
+    private void ensureTraitsColumn() {
+        if (traitsColumnExists != null) return;
+        try (ResultSet rs = cnx.getMetaData().getColumns(null, null, "filiere", "traits")) {
+            if (rs.next()) { traitsColumnExists = true; return; }
+        } catch (Exception ignored) {}
+        try (Statement st = cnx.createStatement()) {
+            st.executeUpdate("ALTER TABLE filiere ADD COLUMN IF NOT EXISTS traits JSON NULL");
+            traitsColumnExists = true;
+            System.out.println("[FiliereService] Colonne traits ajoutée à la table filiere.");
+        } catch (SQLException e) {
+            traitsColumnExists = false;
+            System.out.println("[FiliereService] traits column unavailable: " + e.getMessage());
+        }
+    }
+
     @Override
     public void ajouter(Filiere f) throws SQLException {
         ensureImageColumn();
-        String sql = Boolean.TRUE.equals(imageColumnExists)
-                ? "INSERT INTO filiere (nom, categorie, niveau, description, debouches, competences, icon, image, traits) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'null')"
-                : "INSERT INTO filiere (nom, categorie, niveau, description, debouches, competences, icon, traits) VALUES (?, ?, ?, ?, ?, ?, ?, 'null')";
-        try (PreparedStatement ps = cnx.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, f.getNom());
-            ps.setString(2, f.getCategorie());
-            ps.setString(3, f.getNiveau());
-            ps.setString(4, f.getDescription());
-            ps.setString(5, f.getDebouches());
-            ps.setString(6, f.getCompetences());
-            ps.setString(7, f.getIcon());
-            if (Boolean.TRUE.equals(imageColumnExists)) {
-                ps.setString(8, f.getImage());
-            }
+        ensureTraitsColumn();
+        String traitsJson = (f.getTraits() != null) ? f.getTraits() : null;
+        boolean withImage  = Boolean.TRUE.equals(imageColumnExists);
+        boolean withTraits = Boolean.TRUE.equals(traitsColumnExists);
+
+        // Construire dynamiquement le SQL selon les colonnes disponibles
+        StringBuilder cols = new StringBuilder("INSERT INTO filiere (nom, categorie, niveau, description, debouches, competences, icon");
+        if (withImage)  cols.append(", image");
+        if (withTraits) cols.append(", traits");
+        cols.append(") VALUES (?, ?, ?, ?, ?, ?, ?");
+        if (withImage)  cols.append(", ?");
+        if (withTraits) cols.append(", ?");
+        cols.append(")");
+
+        try (PreparedStatement ps = cnx.prepareStatement(cols.toString(), Statement.RETURN_GENERATED_KEYS)) {
+            int idx = 1;
+            ps.setString(idx++, f.getNom());
+            ps.setString(idx++, f.getCategorie());
+            ps.setString(idx++, f.getNiveau());
+            ps.setString(idx++, f.getDescription());
+            ps.setString(idx++, f.getDebouches());
+            ps.setString(idx++, f.getCompetences());
+            ps.setString(idx++, f.getIcon());
+            if (withImage)  ps.setString(idx++, f.getImage());
+            if (withTraits) ps.setString(idx++, traitsJson);
             ps.executeUpdate();
             ResultSet rs = ps.getGeneratedKeys();
             if (rs.next()) f.setId(rs.getInt(1));
@@ -69,23 +94,28 @@ public class FiliereService implements ICrud<Filiere> {
     @Override
     public void modifier(Filiere f) throws SQLException {
         ensureImageColumn();
-        String sql = Boolean.TRUE.equals(imageColumnExists)
-                ? "UPDATE filiere SET nom=?, categorie=?, niveau=?, description=?, debouches=?, competences=?, icon=?, image=? WHERE id=?"
-                : "UPDATE filiere SET nom=?, categorie=?, niveau=?, description=?, debouches=?, competences=?, icon=? WHERE id=?";
-        try (PreparedStatement ps = cnx.prepareStatement(sql)) {
-            ps.setString(1, f.getNom());
-            ps.setString(2, f.getCategorie());
-            ps.setString(3, f.getNiveau());
-            ps.setString(4, f.getDescription());
-            ps.setString(5, f.getDebouches());
-            ps.setString(6, f.getCompetences());
-            ps.setString(7, f.getIcon());
-            if (Boolean.TRUE.equals(imageColumnExists)) {
-                ps.setString(8, f.getImage());
-                ps.setInt(9, f.getId());
-            } else {
-                ps.setInt(8, f.getId());
-            }
+        ensureTraitsColumn();
+        String traitsJson = (f.getTraits() != null) ? f.getTraits() : null;
+        boolean withImage  = Boolean.TRUE.equals(imageColumnExists);
+        boolean withTraits = Boolean.TRUE.equals(traitsColumnExists);
+
+        StringBuilder sql = new StringBuilder("UPDATE filiere SET nom=?, categorie=?, niveau=?, description=?, debouches=?, competences=?, icon=?");
+        if (withImage)  sql.append(", image=?");
+        if (withTraits) sql.append(", traits=?");
+        sql.append(" WHERE id=?");
+
+        try (PreparedStatement ps = cnx.prepareStatement(sql.toString())) {
+            int idx = 1;
+            ps.setString(idx++, f.getNom());
+            ps.setString(idx++, f.getCategorie());
+            ps.setString(idx++, f.getNiveau());
+            ps.setString(idx++, f.getDescription());
+            ps.setString(idx++, f.getDebouches());
+            ps.setString(idx++, f.getCompetences());
+            ps.setString(idx++, f.getIcon());
+            if (withImage)  ps.setString(idx++, f.getImage());
+            if (withTraits) ps.setString(idx++, traitsJson);
+            ps.setInt(idx, f.getId());
             ps.executeUpdate();
         }
     }
@@ -120,6 +150,11 @@ public class FiliereService implements ICrud<Filiere> {
             f.setImage(rs.getString("image"));
         } catch (SQLException ignored) {
             f.setImage(null);
+        }
+        try {
+            f.setTraits(rs.getString("traits"));
+        } catch (SQLException ignored) {
+            f.setTraits(null);
         }
         return f;
     }

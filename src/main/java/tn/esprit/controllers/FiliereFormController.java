@@ -7,7 +7,9 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
+import org.json.JSONObject;
 import tn.esprit.entity.Filiere;
+import tn.esprit.interfaces.NumericSpinner;
 import tn.esprit.services.FiliereService;
 
 import java.io.File;
@@ -35,6 +37,18 @@ public class FiliereFormController implements Initializable {
     @FXML private Button           btnSave;
     @FXML private Button           btnCancel;
 
+    // ── Champs Traits de Personnalité (identiques au formulaire Symfony) ──────
+    @FXML private NumericSpinner traitAnalytique;
+    @FXML private NumericSpinner traitPratique;
+    @FXML private NumericSpinner traitCreatif;
+    @FXML private NumericSpinner traitTechnique;
+    @FXML private NumericSpinner traitMathematique;
+    @FXML private NumericSpinner traitAlgorithmique;
+    @FXML private NumericSpinner traitSystemes;
+    @FXML private NumericSpinner traitReseaux;
+    @FXML private NumericSpinner traitSecurite;
+    @FXML private NumericSpinner traitDonnees;
+
     private final FiliereService filiereService = new FiliereService();
     private FiliereController    parentController;
     private Filiere              currentFiliere;
@@ -43,6 +57,13 @@ public class FiliereFormController implements Initializable {
     private static final String[] CATEGORIES = {"informatique","mathematiques","sciences","ingenierie","gestion"};
     private static final String[] NIVEAUX    = {"Licence","Master","Doctorat","BTS","DUT","Ingénieur"};
     private static final String[] ICONS      = {"💻","📊","🔒","🌐","🤖","🎨","⚙","🧮","🗄","📱"};
+
+    // ── Clés JSON exactement identiques à celles de Symfony ──────────────────
+    private static final String[] TRAIT_KEYS = {
+        "analytique","pratique","creatif","technique",
+        "mathematique","algorithmique","systemes","reseaux",
+        "securite","donnees"
+    };
 
     // ── Dossier partagé avec Symfony : public/uploads/filieres/ ──────────────
     private static final String SYMFONY_UPLOAD_DIR =
@@ -54,6 +75,8 @@ public class FiliereFormController implements Initializable {
         cbCategorie.getItems().addAll(CATEGORIES);
         cbNiveau.getItems().addAll(NIVEAUX);
         cbIcon.getItems().addAll(ICONS);
+        
+        // La validation des traits est maintenant gérée par NumericSpinner
     }
 
     public void initData(Filiere filiere, FiliereController parent) {
@@ -62,6 +85,8 @@ public class FiliereFormController implements Initializable {
 
         if (filiere == null) {
             lblTitle.setText("➕  Nouvelle Filière");
+            // Valeurs par défaut = 0 pour tous les traits
+            setAllTraitsToZero();
         } else {
             lblTitle.setText("✏  Modifier la Filière");
             txtNom.setText(filiere.getNom());
@@ -71,14 +96,17 @@ public class FiliereFormController implements Initializable {
             txtDebouches.setText(filiere.getDebouches());
             txtCompetences.setText(filiere.getCompetences());
             cbIcon.setValue(filiere.getIcon());
+
+            // ── Charger les traits depuis le JSON stocké en BDD ──────────────
+            loadTraitsFromJson(filiere.getTraits());
+
+            // ── Charger l'image ───────────────────────────────────────────────
             if (filiere.getImage() != null && !filiere.getImage().isEmpty()) {
                 selectedImagePath = filiere.getImage();
-                // Afficher seulement le nom du fichier dans le champ texte
                 String displayName = filiere.getImage().contains("/")
                     ? filiere.getImage().substring(filiere.getImage().lastIndexOf('/') + 1)
                     : filiere.getImage().substring(filiere.getImage().lastIndexOf('\\') + 1);
                 txtImage.setText(displayName);
-                // Aperçu : si chemin web, reconstruire le chemin physique pour l'aperçu
                 if (filiere.getImage().startsWith("/uploads/")) {
                     String physicalPath = SYMFONY_UPLOAD_DIR +
                         filiere.getImage().substring("/uploads/filieres/".length());
@@ -89,6 +117,68 @@ public class FiliereFormController implements Initializable {
             }
         }
     }
+
+    // ── Helpers traits ────────────────────────────────────────────────────────
+
+    /** Retourne les 10 NumericSpinner dans le même ordre que TRAIT_KEYS. */
+    private NumericSpinner[] getTraitFields() {
+        return new NumericSpinner[]{
+            traitAnalytique, traitPratique, traitCreatif, traitTechnique,
+            traitMathematique, traitAlgorithmique, traitSystemes, traitReseaux,
+            traitSecurite, traitDonnees
+        };
+    }
+
+    private void setAllTraitsToZero() {
+        for (NumericSpinner spinner : getTraitFields()) {
+            if (spinner != null) spinner.setValue(0);
+        }
+    }
+
+    /**
+     * Lit le JSON stocké en BDD (ou null) et remplit les champs.
+     * Format attendu : {"analytique":5,"pratique":3,...}
+     */
+    private void loadTraitsFromJson(String traitsJson) {
+        if (traitsJson == null || traitsJson.isBlank() || traitsJson.equals("null")) {
+            setAllTraitsToZero();
+            return;
+        }
+        try {
+            JSONObject obj = new JSONObject(traitsJson);
+            NumericSpinner[] fields = getTraitFields();
+            for (int i = 0; i < TRAIT_KEYS.length; i++) {
+                String key = TRAIT_KEYS[i];
+                int    val = obj.optInt(key, 0);
+                // Clamp 0-5
+                val = Math.max(0, Math.min(5, val));
+                if (fields[i] != null) fields[i].setValue(val);
+            }
+        } catch (Exception e) {
+            System.err.println("[FiliereForm] Impossible de lire les traits JSON : " + e.getMessage());
+            setAllTraitsToZero();
+        }
+    }
+
+    /**
+     * Construit le JSON des traits à partir des champs du formulaire.
+     * Produit : {"analytique":5,"pratique":3,...}
+     */
+    private String buildTraitsJson() {
+        JSONObject obj    = new JSONObject();
+        NumericSpinner[] fields = getTraitFields();
+        for (int i = 0; i < TRAIT_KEYS.length; i++) {
+            int val = 0;
+            if (fields[i] != null) {
+                val = fields[i].getValue();
+                val = Math.max(0, Math.min(5, val));
+            }
+            obj.put(TRAIT_KEYS[i], val);
+        }
+        return obj.toString();
+    }
+
+    // ── Gestion image ─────────────────────────────────────────────────────────
 
     @FXML private void handleChooseImage() {
         FileChooser fc = new FileChooser();
@@ -127,7 +217,10 @@ public class FiliereFormController implements Initializable {
         }
     }
 
+    // ── Sauvegarde ────────────────────────────────────────────────────────────
+
     @FXML private void handleSave() {
+        // Validation champs obligatoires
         if (txtNom.getText() == null || txtNom.getText().trim().isEmpty()) {
             showWarning("Le nom de la filière est obligatoire."); txtNom.requestFocus(); return;
         }
@@ -143,74 +236,59 @@ public class FiliereFormController implements Initializable {
         f.setCompetences(txtCompetences.getText());
         f.setIcon(cbIcon.getValue() != null ? cbIcon.getValue() : "🎓");
 
-        // ── Gestion image : copier dans Symfony si c'est un chemin absolu local ──
+        // ── Traits : construire le JSON et l'affecter ─────────────────────────
+        String traitsJson = buildTraitsJson();
+        f.setTraits(traitsJson);
+        System.out.println("[FiliereForm] Traits JSON sauvegardé : " + traitsJson);
+
+        // ── Gestion image ─────────────────────────────────────────────────────
         if (selectedImagePath != null && !selectedImagePath.startsWith("/uploads/")) {
-            // Chemin absolu Windows → copier dans public/uploads/filieres/ et stocker /uploads/...
             String webPath = copyImageToSymfony(selectedImagePath);
             if (webPath != null) {
                 f.setImage(webPath);
             } else {
-                // Copie échouée : on garde quand même le chemin absolu comme fallback
-                // (l'extension Twig Symfony essaiera de le résoudre)
                 f.setImage(selectedImagePath);
                 showWarning("L'image n'a pas pu être copiée vers Symfony.\n" +
                     "Elle sera stockée avec son chemin local.");
             }
         } else {
-            // Déjà un chemin web /uploads/... ou null → conserver tel quel
             f.setImage(selectedImagePath);
         }
 
         try {
-            if (currentFiliere == null) { filiereService.ajouter(f);  showInfo("Filière ajoutée !"); }
-            else                        { filiereService.modifier(f); showInfo("Filière modifiée !"); }
+            if (currentFiliere == null) { filiereService.ajouter(f);  showInfo("Filière ajoutée avec ses traits !"); }
+            else                        { filiereService.modifier(f); showInfo("Filière modifiée avec ses traits !"); }
+            if (parentController != null) parentController.refreshData();
             closeWindow();
         } catch (SQLException e) {
             showError("Erreur BDD : " + e.getMessage());
         }
     }
 
-    /**
-     * Copie le fichier source dans SYMFONY_UPLOAD_DIR.
-     * Retourne "/uploads/filieres/nom_timestamp.ext" ou null si échec.
-     */
+    /** Copie l'image dans le dossier Symfony et retourne le chemin web /uploads/filieres/... */
     private String copyImageToSymfony(String sourcePath) {
         try {
             File source = new File(sourcePath);
             if (!source.exists() || !source.isFile()) return null;
 
-            // S'assurer que le dossier de destination existe
             File destDir = new File(SYMFONY_UPLOAD_DIR);
-            if (!destDir.exists()) {
-                destDir.mkdirs();
-            }
+            if (!destDir.exists()) destDir.mkdirs();
 
-            // Construire un nom de fichier unique : stem_timestamp.ext
             String name     = source.getName();
-            String ext      = name.contains(".")
-                ? name.substring(name.lastIndexOf('.') + 1).toLowerCase()
-                : "jpg";
-            String stem     = name.contains(".")
-                ? name.substring(0, name.lastIndexOf('.'))
-                : name;
-            // Slugifier le stem : ne garder que lettres, chiffres, tirets, underscores
+            String ext      = name.contains(".") ? name.substring(name.lastIndexOf('.') + 1).toLowerCase() : "jpg";
+            String stem     = name.contains(".") ? name.substring(0, name.lastIndexOf('.')) : name;
             String slug     = stem.replaceAll("[^a-zA-Z0-9_-]", "_");
             String filename = slug + "_" + System.currentTimeMillis() + "." + ext;
             File   dest     = new File(destDir, filename);
 
-            // Copie binaire robuste
             try (InputStream  in  = new FileInputStream(source);
                  OutputStream out = new FileOutputStream(dest)) {
                 byte[] buf = new byte[8192];
                 int    n;
-                while ((n = in.read(buf)) != -1) {
-                    out.write(buf, 0, n);
-                }
+                while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
             }
-
             System.out.println("[FiliereForm] Image copiée : " + dest.getAbsolutePath());
             return "/uploads/filieres/" + filename;
-
         } catch (Exception e) {
             System.err.println("[FiliereForm] Copie image échouée : " + e.getMessage());
             return null;

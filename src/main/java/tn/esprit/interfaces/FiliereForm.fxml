@@ -2,101 +2,382 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import tn.esprit.interfaces.NumericSpinner?>
 
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="tn.esprit.controllers.FiliereFormController"
-      prefWidth="520" style="-fx-background-color: #FFFFFF;" spacing="0">
+      prefWidth="900" prefHeight="780"
+      minWidth="820" minHeight="650"
+      style="-fx-background-color: #F1F5F9;" spacing="0">
 
-    <HBox style="-fx-background-color: linear-gradient(to right,#2563eb,#3b82f6); -fx-padding: 20 24;">
+    <!-- ══════════ HEADER ══════════ -->
+    <HBox style="-fx-background-color: linear-gradient(to right,#1d4ed8,#3b82f6);
+                 -fx-padding: 18 28; -fx-alignment: CENTER_LEFT;" spacing="14">
+        <Label text="🎓" style="-fx-font-size: 22px;"/>
         <Label fx:id="lblTitle" text="➕  Nouvelle Filière"
-               style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;"/>
+               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"/>
     </HBox>
 
+    <!-- ══════════ SCROLLABLE BODY ══════════ -->
     <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS"
-                style="-fx-background-color: transparent; -fx-background: #FFFFFF; -fx-border-width: 0;">
-        <VBox spacing="16" style="-fx-padding: 24 28;">
+                hbarPolicy="NEVER" vbarPolicy="AS_NEEDED"
+                pannable="true"
+                style="-fx-background-color: #F1F5F9; -fx-background: #F1F5F9; -fx-border-width: 0; -fx-padding: 0;">
 
-            <VBox spacing="5">
-                <Label text="Nom de la filière *" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
-                <TextField fx:id="txtNom" promptText="Ex : Génie Logiciel" maxWidth="Infinity"
-                           style="-fx-background-color: #F8FAFC; -fx-background-radius: 8;
-                                  -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1;
-                                  -fx-padding: 8 12; -fx-font-size: 13px;"/>
-            </VBox>
+        <VBox spacing="14" style="-fx-padding: 20 24 20 24; -fx-background-color: #F1F5F9;">
 
-            <HBox spacing="14">
-                <VBox spacing="5" HBox.hgrow="ALWAYS">
-                    <Label text="Catégorie *" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
-                    <ComboBox fx:id="cbCategorie" maxWidth="Infinity"/>
-                </VBox>
-                <VBox spacing="5" HBox.hgrow="ALWAYS">
-                    <Label text="Niveau *" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
-                    <ComboBox fx:id="cbNiveau" maxWidth="Infinity"/>
-                </VBox>
+            <!-- ── CARTE 1 : Infos générales ── -->
+            <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                         -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.07),8,0,0,2);
+                         -fx-padding: 18 20 18 20;" spacing="14">
+
+                <Label text="📋  Informations générales"
+                       style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1E293B;
+                              -fx-border-color: transparent transparent #E2E8F0 transparent;
+                              -fx-border-width: 1; -fx-padding: 0 0 10 0;"/>
+
+                <!-- Nom -->
                 <VBox spacing="5">
-                    <Label text="Icône" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
-                    <ComboBox fx:id="cbIcon" prefWidth="80"/>
-                </VBox>
-            </HBox>
-
-            <VBox spacing="5">
-                <Label text="Description" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
-                <TextArea fx:id="txtDescription" promptText="Description de la filière..." prefRowCount="3" wrapText="true"
-                          style="-fx-background-color: #F8FAFC; -fx-background-radius: 8;
-                                 -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1;
-                                 -fx-padding: 8 12; -fx-font-size: 13px;"/>
-            </VBox>
-
-            <VBox spacing="5">
-                <Label text="Débouchés professionnels" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
-                <TextArea fx:id="txtDebouches" promptText="Ex : Développeur, Architecte..." prefRowCount="2" wrapText="true"
-                          style="-fx-background-color: #F8FAFC; -fx-background-radius: 8;
-                                 -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1;
-                                 -fx-padding: 8 12; -fx-font-size: 13px;"/>
-            </VBox>
-
-            <VBox spacing="5">
-                <Label text="Image de la filière (optionnelle)" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
-                <HBox spacing="10" alignment="CENTER_LEFT">
-                    <TextField fx:id="txtImage" promptText="Chemin non sélectionné..." HBox.hgrow="ALWAYS"
-                               editable="false"
+                    <Label text="Nom de la filière *" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <TextField fx:id="txtNom" promptText="Ex : Génie Logiciel"
                                style="-fx-background-color: #F8FAFC; -fx-background-radius: 8;
                                       -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1;
-                                      -fx-padding: 8 12; -fx-font-size: 12px;"/>
-                    <Button text="📁 Choisir" onAction="#handleChooseImage"
+                                      -fx-padding: 10 14; -fx-font-size: 13px;"/>
+                </VBox>
+
+                <!-- Catégorie / Niveau / Icône -->
+                <HBox spacing="12">
+                    <VBox spacing="5" HBox.hgrow="ALWAYS" minWidth="0">
+                        <Label text="Catégorie *" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                        <ComboBox fx:id="cbCategorie" maxWidth="Infinity"
+                                  style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0;
+                                         -fx-border-radius: 8; -fx-background-radius: 8;"/>
+                    </VBox>
+                    <VBox spacing="5" HBox.hgrow="ALWAYS" minWidth="0">
+                        <Label text="Niveau *" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                        <ComboBox fx:id="cbNiveau" maxWidth="Infinity"
+                                  style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0;
+                                         -fx-border-radius: 8; -fx-background-radius: 8;"/>
+                    </VBox>
+                    <VBox spacing="5">
+                        <Label text="Icône" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                        <ComboBox fx:id="cbIcon" prefWidth="90"
+                                  style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0;
+                                         -fx-border-radius: 8; -fx-background-radius: 8;"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Description -->
+                <VBox spacing="5">
+                    <Label text="Description" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                    <TextArea fx:id="txtDescription" promptText="Description de la filière..."
+                              prefRowCount="3" wrapText="true"
+                              style="-fx-background-color: #F8FAFC; -fx-background-radius: 8;
+                                     -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1;
+                                     -fx-padding: 10 14; -fx-font-size: 13px;"/>
+                </VBox>
+
+                <!-- Débouchés + Compétences côte à côte -->
+                <HBox spacing="12">
+                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                        <Label text="Débouchés professionnels" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                        <TextArea fx:id="txtDebouches" promptText="Ex : Développeur, Architecte..."
+                                  prefRowCount="2" wrapText="true"
+                                  style="-fx-background-color: #F8FAFC; -fx-background-radius: 8;
+                                         -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1;
+                                         -fx-padding: 10 14; -fx-font-size: 12px;"/>
+                    </VBox>
+                    <VBox spacing="5" HBox.hgrow="ALWAYS">
+                        <Label text="Compétences développées" style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
+                        <TextArea fx:id="txtCompetences" promptText="Ex : Java, Spring Boot, SQL..."
+                                  prefRowCount="2" wrapText="true"
+                                  style="-fx-background-color: #F8FAFC; -fx-background-radius: 8;
+                                         -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1;
+                                         -fx-padding: 10 14; -fx-font-size: 12px;"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <!-- ── CARTE 2 : Image ── -->
+            <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                         -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.07),8,0,0,2);
+                         -fx-padding: 18 20 18 20;" spacing="10">
+
+                <Label text="🖼  Image de la filière (optionnelle)"
+                       style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1E293B;
+                              -fx-border-color: transparent transparent #E2E8F0 transparent;
+                              -fx-border-width: 1; -fx-padding: 0 0 10 0;"/>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <TextField fx:id="txtImage" promptText="Aucun fichier sélectionné..."
+                               editable="false" HBox.hgrow="ALWAYS"
+                               style="-fx-background-color: #F8FAFC; -fx-background-radius: 8;
+                                      -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1;
+                                      -fx-padding: 9 14; -fx-font-size: 12px; -fx-text-fill: #64748B;"/>
+                    <Button text="📁  Choisir" onAction="#handleChooseImage"
                             style="-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold;
-                                   -fx-background-radius: 8; -fx-padding: 8 16; -fx-cursor: hand;"/>
+                                   -fx-background-radius: 8; -fx-padding: 9 18; -fx-cursor: hand; -fx-font-size: 12px;"/>
                     <Button text="✕" onAction="#handleRemoveImage"
                             style="-fx-background-color: #FEE2E2; -fx-text-fill: #EF4444;
-                                   -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 12; -fx-cursor: hand;"/>
+                                   -fx-font-weight: bold; -fx-background-radius: 8;
+                                   -fx-padding: 9 14; -fx-cursor: hand;"/>
                 </HBox>
-                <StackPane fx:id="imgPreviewPane" prefHeight="120" maxWidth="Infinity"
-                           style="-fx-background-color: #F1F5F9; -fx-background-radius: 8;
-                                  -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1;">
-                    <Label fx:id="lblNoImage" text="Aucune image sélectionnée"
+
+                <StackPane fx:id="imgPreviewPane" prefHeight="110" maxWidth="Infinity"
+                           style="-fx-background-color: #F8FAFC; -fx-background-radius: 10;
+                                  -fx-border-color: #E2E8F0; -fx-border-radius: 10; -fx-border-width: 1;
+                                  -fx-border-style: dashed;">
+                    <Label fx:id="lblNoImage" text="📷  Aucune image sélectionnée"
                            style="-fx-text-fill: #CBD5E1; -fx-font-size: 12px;"/>
                 </StackPane>
             </VBox>
 
-            <VBox spacing="5">
-                <Label text="Compétences développées" style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #475569;"/>
-                <TextArea fx:id="txtCompetences" promptText="Ex : Java, Spring Boot, SQL..." prefRowCount="2" wrapText="true"
-                          style="-fx-background-color: #F8FAFC; -fx-background-radius: 8;
-                                 -fx-border-color: #E2E8F0; -fx-border-radius: 8; -fx-border-width: 1;
-                                 -fx-padding: 8 12; -fx-font-size: 13px;"/>
+            <!-- ── CARTE 3 : Traits de personnalité ── -->
+            <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                         -fx-effect: dropshadow(gaussian,rgba(0,0,0,0.07),8,0,0,2);" spacing="0">
+
+                <!-- En-tête traits -->
+                <HBox alignment="CENTER_LEFT" spacing="10"
+                      style="-fx-background-color: #EFF6FF; -fx-padding: 14 20;
+                             -fx-background-radius: 12 12 0 0;
+                             -fx-border-color: transparent transparent #DBEAFE transparent;
+                             -fx-border-width: 1;">
+                    <Label text="🎯" style="-fx-font-size: 16px;"/>
+                    <VBox spacing="1" HBox.hgrow="ALWAYS">
+                        <Label text="Pondération des Traits de Personnalité"
+                               style="-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #1E3A8A;"/>
+                        <Label text="Évaluez chaque trait de 0 (sans rapport) à 5 (essentiel pour cette filière)"
+                               style="-fx-font-size: 11px; -fx-text-fill: #3B82F6;"/>
+                    </VBox>
+                    <Label text="0 → 5"
+                           style="-fx-background-color: #2563eb; -fx-text-fill: white;
+                                  -fx-font-size: 11px; -fx-font-weight: bold;
+                                  -fx-padding: 4 12; -fx-background-radius: 20;"/>
+                </HBox>
+
+                <!-- Grille des traits : 2 colonnes, 5 lignes -->
+                <GridPane hgap="12" vgap="12"
+                          style="-fx-padding: 16 20 16 20;"
+                          fx:id="traitsGrid">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                        <ColumnConstraints hgrow="ALWAYS" percentWidth="50"/>
+                    </columnConstraints>
+
+                    <!-- ── Ligne 0 : Analytique / Pratique ── -->
+                    <HBox GridPane.columnIndex="0" GridPane.rowIndex="0"
+                          spacing="10" alignment="CENTER_LEFT"
+                          minHeight="62"
+                          style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0;
+                                 -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10 12;">
+                        <Label text="🔍" style="-fx-font-size: 20px; -fx-min-width: 28;"/>
+                        <VBox HBox.hgrow="ALWAYS" spacing="1">
+                            <Label text="Analytique"
+                                   style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                            <Label text="Analyse logique"
+                                   style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </VBox>
+                        <HBox alignment="CENTER_RIGHT" spacing="8">
+                            <NumericSpinner fx:id="traitAnalytique"/>
+                            <Label text="/5" style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </HBox>
+                    </HBox>
+
+                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="0"
+                          spacing="10" alignment="CENTER_LEFT"
+                          minHeight="62"
+                          style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0;
+                                 -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10 12;">
+                        <Label text="🔧" style="-fx-font-size: 20px; -fx-min-width: 28;"/>
+                        <VBox HBox.hgrow="ALWAYS" spacing="1">
+                            <Label text="Pratique"
+                                   style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                            <Label text="Implémentation"
+                                   style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </VBox>
+                        <HBox alignment="CENTER_RIGHT" spacing="8">
+                            <NumericSpinner fx:id="traitPratique"/>
+                            <Label text="/5" style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </HBox>
+                    </HBox>
+
+                    <!-- ── Ligne 1 : Créatif / Technique ── -->
+                    <HBox GridPane.columnIndex="0" GridPane.rowIndex="1"
+                          spacing="10" alignment="CENTER_LEFT"
+                          minHeight="62"
+                          style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0;
+                                 -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10 12;">
+                        <Label text="🎨" style="-fx-font-size: 20px; -fx-min-width: 28;"/>
+                        <VBox HBox.hgrow="ALWAYS" spacing="1">
+                            <Label text="Créatif"
+                                   style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                            <Label text="Design et innovation"
+                                   style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </VBox>
+                        <HBox alignment="CENTER_RIGHT" spacing="8">
+                            <NumericSpinner fx:id="traitCreatif"/>
+                            <Label text="/5" style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </HBox>
+                    </HBox>
+
+                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="1"
+                          spacing="10" alignment="CENTER_LEFT"
+                          minHeight="62"
+                          style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0;
+                                 -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10 12;">
+                        <Label text="⚙" style="-fx-font-size: 20px; -fx-min-width: 28;"/>
+                        <VBox HBox.hgrow="ALWAYS" spacing="1">
+                            <Label text="Technique"
+                                   style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                            <Label text="Maîtrise avancée"
+                                   style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </VBox>
+                        <HBox alignment="CENTER_RIGHT" spacing="8">
+                            <NumericSpinner fx:id="traitTechnique"/>
+                            <Label text="/5" style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </HBox>
+                    </HBox>
+
+                    <!-- ── Ligne 2 : Mathématique / Algorithmique ── -->
+                    <HBox GridPane.columnIndex="0" GridPane.rowIndex="2"
+                          spacing="10" alignment="CENTER_LEFT"
+                          minHeight="62"
+                          style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0;
+                                 -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10 12;">
+                        <Label text="📐" style="-fx-font-size: 20px; -fx-min-width: 28;"/>
+                        <VBox HBox.hgrow="ALWAYS" spacing="1">
+                            <Label text="Mathématique"
+                                   style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                            <Label text="Calcul et modélisation"
+                                   style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </VBox>
+                        <HBox alignment="CENTER_RIGHT" spacing="8">
+                            <NumericSpinner fx:id="traitMathematique"/>
+                            <Label text="/5" style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </HBox>
+                    </HBox>
+
+                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="2"
+                          spacing="10" alignment="CENTER_LEFT"
+                          minHeight="62"
+                          style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0;
+                                 -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10 12;">
+                        <Label text="🤖" style="-fx-font-size: 20px; -fx-min-width: 28;"/>
+                        <VBox HBox.hgrow="ALWAYS" spacing="1">
+                            <Label text="Algorithmique"
+                                   style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                            <Label text="Algorithmes et optimisation"
+                                   style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </VBox>
+                        <HBox alignment="CENTER_RIGHT" spacing="8">
+                            <NumericSpinner fx:id="traitAlgorithmique"/>
+                            <Label text="/5" style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </HBox>
+                    </HBox>
+
+                    <!-- ── Ligne 3 : Systèmes / Réseaux ── -->
+                    <HBox GridPane.columnIndex="0" GridPane.rowIndex="3"
+                          spacing="10" alignment="CENTER_LEFT"
+                          minHeight="62"
+                          style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0;
+                                 -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10 12;">
+                        <Label text="🖥" style="-fx-font-size: 20px; -fx-min-width: 28;"/>
+                        <VBox HBox.hgrow="ALWAYS" spacing="1">
+                            <Label text="Systèmes"
+                                   style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                            <Label text="Infrastructure système"
+                                   style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </VBox>
+                        <HBox alignment="CENTER_RIGHT" spacing="8">
+                            <NumericSpinner fx:id="traitSystemes"/>
+                            <Label text="/5" style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </HBox>
+                    </HBox>
+
+                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="3"
+                          spacing="10" alignment="CENTER_LEFT"
+                          minHeight="62"
+                          style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0;
+                                 -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10 12;">
+                        <Label text="🌐" style="-fx-font-size: 20px; -fx-min-width: 28;"/>
+                        <VBox HBox.hgrow="ALWAYS" spacing="1">
+                            <Label text="Réseaux"
+                                   style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                            <Label text="Protocoles et connectivité"
+                                   style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </VBox>
+                        <HBox alignment="CENTER_RIGHT" spacing="8">
+                            <NumericSpinner fx:id="traitReseaux"/>
+                            <Label text="/5" style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </HBox>
+                    </HBox>
+
+                    <!-- ── Ligne 4 : Sécurité / Données ── -->
+                    <HBox GridPane.columnIndex="0" GridPane.rowIndex="4"
+                          spacing="10" alignment="CENTER_LEFT"
+                          minHeight="62"
+                          style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0;
+                                 -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10 12;">
+                        <Label text="🔒" style="-fx-font-size: 20px; -fx-min-width: 28;"/>
+                        <VBox HBox.hgrow="ALWAYS" spacing="1">
+                            <Label text="Sécurité"
+                                   style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                            <Label text="Protection et cryptographie"
+                                   style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </VBox>
+                        <HBox alignment="CENTER_RIGHT" spacing="8">
+                            <NumericSpinner fx:id="traitSecurite"/>
+                            <Label text="/5" style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </HBox>
+                    </HBox>
+
+                    <HBox GridPane.columnIndex="1" GridPane.rowIndex="4"
+                          spacing="10" alignment="CENTER_LEFT"
+                          minHeight="62"
+                          style="-fx-background-color: #F8FAFC; -fx-border-color: #E2E8F0;
+                                 -fx-border-radius: 10; -fx-background-radius: 10; -fx-padding: 10 12;">
+                        <Label text="📊" style="-fx-font-size: 20px; -fx-min-width: 28;"/>
+                        <VBox HBox.hgrow="ALWAYS" spacing="1">
+                            <Label text="Données"
+                                   style="-fx-font-size: 12px; -fx-font-weight: bold; -fx-text-fill: #1E293B;"/>
+                            <Label text="Analyse des données"
+                                   style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </VBox>
+                        <HBox alignment="CENTER_RIGHT" spacing="8">
+                            <NumericSpinner fx:id="traitDonnees"/>
+                            <Label text="/5" style="-fx-font-size: 10px; -fx-text-fill: #94A3B8;"/>
+                        </HBox>
+                    </HBox>
+
+                </GridPane>
+
+                <!-- Conseil bas de section -->
+                <HBox alignment="CENTER" style="-fx-padding: 0 20 14 20;">
+                    <Label text="💡  Définissez au moins 3 traits › 0 pour un meilleur matching étudiant ↔ filière"
+                           wrapText="true"
+                           style="-fx-background-color: #FFF7ED; -fx-background-radius: 8;
+                                  -fx-border-color: #FED7AA; -fx-border-radius: 8; -fx-border-width: 1;
+                                  -fx-font-size: 11px; -fx-text-fill: #92400E; -fx-padding: 8 14;"/>
+                </HBox>
+
             </VBox>
+
         </VBox>
     </ScrollPane>
 
+    <!-- ══════════ FOOTER ══════════ -->
     <HBox spacing="12" alignment="CENTER_RIGHT"
-          style="-fx-background-color: #F8FAFC; -fx-padding: 16 24;
-                 -fx-border-color: #E2E8F0 transparent transparent transparent; -fx-border-width: 1;">
+          style="-fx-background-color: white; -fx-padding: 14 24;
+                 -fx-border-color: #E2E8F0 transparent transparent transparent;
+                 -fx-border-width: 1;">
         <Button fx:id="btnCancel" text="Annuler" onAction="#handleCancel"
-                style="-fx-background-color: #F8FAFC; -fx-text-fill: #64748B; -fx-background-radius: 20;
-                       -fx-padding: 9 20; -fx-cursor: hand; -fx-border-color: #E2E8F0; -fx-border-radius: 20; -fx-border-width: 1;"/>
+                style="-fx-background-color: white; -fx-text-fill: #64748B; -fx-background-radius: 8;
+                       -fx-padding: 10 24; -fx-cursor: hand; -fx-border-color: #E2E8F0;
+                       -fx-border-radius: 8; -fx-border-width: 1; -fx-font-size: 13px;"/>
         <Button fx:id="btnSave" text="💾  Enregistrer" onAction="#handleSave"
                 style="-fx-background-color: #2563eb; -fx-text-fill: white; -fx-font-weight: bold;
-                       -fx-font-size: 13px; -fx-background-radius: 20; -fx-padding: 9 20; -fx-cursor: hand;"/>
+                       -fx-font-size: 13px; -fx-background-radius: 8; -fx-padding: 10 28; -fx-cursor: hand;"/>
     </HBox>
 
 </VBox>

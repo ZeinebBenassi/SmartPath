@@ -4,10 +4,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import tn.esprit.services.FiliereService;
 import tn.esprit.services.QuestionService;
 import tn.esprit.services.QuizHistoriqueService;
@@ -15,6 +18,7 @@ import tn.esprit.services.QuizStatisticsService;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class QuizDashboardController {
 
@@ -192,7 +196,7 @@ public class QuizDashboardController {
     }
 
     @FXML public void nouvelleQuestion() {
-        navigateDashboard("/tn/esprit/interfaces/QuestionContent.fxml", "Quiz - Nouvelle Question");
+        openQuestionForm();
     }
 
     @FXML public void voirFilieres() {
@@ -200,7 +204,7 @@ public class QuizDashboardController {
     }
 
     @FXML public void nouvelleFiliere() {
-        navigateDashboard("/tn/esprit/interfaces/FiliereContent.fxml", "Quiz - Nouvelle Filière");
+        openFiliereForm();
     }
 
     @FXML public void voirStatistiques() {
@@ -236,6 +240,61 @@ public class QuizDashboardController {
             );
         } catch (Exception e) {
             System.out.println("QuizDashboard nav " + fxml + " : " + e.getMessage());
+        }
+    }
+
+    private void openQuestionForm() {
+        try {
+            FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(
+                    getClass().getResource("/tn/esprit/interfaces/QuestionForm.fxml")));
+            Parent root = loader.load();
+            QuestionFormController ctrl = loader.getController();
+            ctrl.initData(null, null);
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            if (vboxTopFilieres != null && vboxTopFilieres.getScene() != null)
+                stage.initOwner(vboxTopFilieres.getScene().getWindow());
+            stage.setTitle("Nouvelle Question");
+            stage.setScene(new Scene(root));
+            stage.setWidth(650);
+            stage.setHeight(750);
+            stage.setMinWidth(600);
+            stage.setMinHeight(600);
+            stage.showAndWait();
+
+            loadStats();
+            loadTopFilieres();
+        } catch (Exception e) {
+            System.out.println("Ouverture QuestionForm : " + e.getMessage());
+        }
+    }
+
+    private void openFiliereForm() {
+        try {
+            FXMLLoader loader = new FXMLLoader(Objects.requireNonNull(
+                    getClass().getResource("/tn/esprit/interfaces/FiliereForm.fxml")));
+            Parent root = loader.load();
+            FiliereFormController ctrl = loader.getController();
+            ctrl.initData(null, null);
+
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            if (vboxTopFilieres != null && vboxTopFilieres.getScene() != null)
+                stage.initOwner(vboxTopFilieres.getScene().getWindow());
+            stage.setTitle("Nouvelle Filière");
+            stage.setScene(new Scene(root));
+            stage.setWidth(920);
+            stage.setHeight(780);
+            stage.setMinWidth(820);
+            stage.setMinHeight(650);
+            stage.setResizable(true);
+            stage.showAndWait();
+
+            loadStats();
+            loadTopFilieres();
+        } catch (Exception e) {
+            System.out.println("Ouverture FiliereForm : " + e.getMessage());
         }
     }
 }

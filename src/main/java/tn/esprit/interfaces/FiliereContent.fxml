@@ -39,6 +39,13 @@
 
         <Pane HBox.hgrow="ALWAYS"/>
 
+        <!-- Retour au dashboard du quiz -->
+        <Button text="Dashboard Quiz" onAction="#goToQuizDashboard"
+                style="-fx-background-color: #F1F5F9; -fx-text-fill: #0F172A;
+                       -fx-font-weight: bold; -fx-font-size: 12px;
+                       -fx-background-radius: 8; -fx-padding: 8 14;
+                       -fx-cursor: hand;"/>
+
         <Label fx:id="lblCount" text="0 filières"
                style="-fx-font-size: 12px; -fx-text-fill: #64748B;"/>
         <!-- lblStats retiré ici pour éviter le doublon avec lblCount -->

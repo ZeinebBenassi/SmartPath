@@ -152,7 +152,7 @@ public class QuestionController implements Initializable {
             "-fx-background-radius: 0;"
         );
 
-        /* ── Header : num | icon | titre + badges | actions ── */
+        /* ── Header : num | icon | titre + badges ── */
         HBox head = new HBox(10);
         head.setAlignment(Pos.CENTER_LEFT);
         head.setStyle("-fx-padding: 10 14 7 14; -fx-background-color: white;");
@@ -209,28 +209,7 @@ public class QuestionController implements Initializable {
         meta.getChildren().addAll(bStatut, bCat, bRep);
         info.getChildren().addAll(title, meta);
 
-        // Boutons d'action rapides (icônes) — à droite du header
-        HBox actionsRight = new HBox(5);
-        actionsRight.setAlignment(Pos.CENTER);
-
-        Button btnToggle = makeIconBtn(
-            active ? "⏸" : "▶",
-            active ? "#d1fae5" : "#f1f5f9",
-            active ? "#065f46" : "#475569",
-            active ? "1px solid #6ee7b7" : "1px solid #e2e8f0");
-        btnToggle.setTooltip(new Tooltip(active ? "Désactiver" : "Activer"));
-        btnToggle.setOnAction(e -> handleToggle(q));
-
-        Button btnEdit = makeIconBtn("✏️", "#eff6ff", "#2563eb", "none");
-        btnEdit.setTooltip(new Tooltip("Modifier"));
-        btnEdit.setOnAction(e -> handleEdit(q));
-
-        Button btnDel = makeIconBtn("🗑️", "#fee2e2", "#991b1b", "none");
-        btnDel.setTooltip(new Tooltip("Supprimer"));
-        btnDel.setOnAction(e -> handleDelete(q));
-
-        actionsRight.getChildren().addAll(btnToggle, btnEdit, btnDel);
-        head.getChildren().addAll(num, ico, info, actionsRight);
+        head.getChildren().addAll(num, ico, info);
 
         /* ── Grille réponses A B C D (miroir .q-answers) ── */
         if (q.getAnswers() != null && !q.getAnswers().isEmpty()) {
@@ -316,18 +295,6 @@ public class QuestionController implements Initializable {
     /* ════════════════════════════════════════════════
        HELPERS BOUTONS
     ════════════════════════════════════════════════ */
-    private Button makeIconBtn(String text, String bg, String fg, String border) {
-        Button b = new Button(text);
-        b.setMinSize(30, 30); b.setMaxSize(30, 30);
-        b.setStyle(
-            "-fx-background-color: " + bg + ";" +
-            "-fx-text-fill: " + fg + ";" +
-            "-fx-font-size: 12px; -fx-background-radius: 8;" +
-            "-fx-cursor: hand;" +
-            (border.equals("none") ? "" : "-fx-border-color: " + border.replace("1px solid ","") + "; -fx-border-radius: 8;"));
-        return b;
-    }
-
     private Button makeFooterBtn(String text, String bg, String fg, String border) {
         Button b = new Button(text);
         b.setStyle(
@@ -407,6 +374,25 @@ public class QuestionController implements Initializable {
                     getClass().getResource("/tn/esprit/interfaces/DashboardAdmin.fxml")));
             if (vboxQuestions != null && vboxQuestions.getScene() != null)
                 vboxQuestions.getScene().setRoot(root);
+        } catch (IOException e) { showError("Navigation impossible : " + e.getMessage()); }
+    }
+
+    @FXML private void goToQuizDashboard() {
+        try {
+            Parent root = FXMLLoader.load(Objects.requireNonNull(
+                    getClass().getResource("/tn/esprit/interfaces/QuizDashboard.fxml")));
+            if (vboxQuestions != null && vboxQuestions.getScene() != null) {
+                javafx.scene.Node contentArea = vboxQuestions.getScene().getRoot().lookup("#contentArea");
+                if (contentArea instanceof StackPane) {
+                    ((StackPane) contentArea).getChildren().setAll(root);
+                    javafx.scene.Node titleNode = vboxQuestions.getScene().getRoot().lookup("#pageTitle");
+                    if (titleNode instanceof Label)
+                        ((Label) titleNode).setText("Quiz de Personnalité");
+                } else {
+                    Stage stage = (Stage) vboxQuestions.getScene().getWindow();
+                    stage.setScene(new Scene(root));
+                }
+            }
         } catch (IOException e) { showError("Navigation impossible : " + e.getMessage()); }
     }
 

@@ -291,6 +291,25 @@ public class FiliereController implements Initializable {
         } catch (IOException e) { showError("Navigation impossible : " + e.getMessage()); }
     }
 
+    @FXML private void goToQuizDashboard() {
+        try {
+            Parent root = FXMLLoader.load(Objects.requireNonNull(
+                    getClass().getResource("/tn/esprit/interfaces/QuizDashboard.fxml")));
+            if (flowCards != null && flowCards.getScene() != null) {
+                javafx.scene.Node contentArea = flowCards.getScene().getRoot().lookup("#contentArea");
+                if (contentArea instanceof StackPane) {
+                    ((StackPane) contentArea).getChildren().setAll(root);
+                    javafx.scene.Node titleNode = flowCards.getScene().getRoot().lookup("#pageTitle");
+                    if (titleNode instanceof Label)
+                        ((Label) titleNode).setText("Quiz de Personnalité");
+                } else {
+                    Stage stage = (Stage) flowCards.getScene().getWindow();
+                    stage.setScene(new Scene(root));
+                }
+            }
+        } catch (IOException e) { showError("Navigation impossible : " + e.getMessage()); }
+    }
+
     @FXML private void goToQuestions() {
         // Charge QuestionContent.fxml (sans sidebar) — remplace dans la scène courante
         try {
@@ -336,7 +355,11 @@ public class FiliereController implements Initializable {
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.setTitle(filiere == null ? "Nouvelle Filière" : "Modifier la Filière");
             stage.setScene(new Scene(root));
-            stage.setResizable(false);
+            stage.setWidth(920);
+            stage.setHeight(780);
+            stage.setMinWidth(820);
+            stage.setMinHeight(650);
+            stage.setResizable(true);
             stage.showAndWait();
             loadData();
         } catch (IOException e) { showError("Impossible d'ouvrir le formulaire : " + e.getMessage()); }
