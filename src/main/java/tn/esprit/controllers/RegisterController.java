@@ -8,14 +8,12 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.stage.FileChooser;
-import tn.esprit.entity.Etudiant;
 import tn.esprit.services.CloudinaryService;
-import tn.esprit.services.UserService;
+import tn.esprit.services.SymfonyAuthService;
 import tn.esprit.utils.FormValidator;
 
 import java.io.File;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.regex.Pattern;
 
 public class RegisterController {
@@ -58,8 +56,8 @@ public class RegisterController {
     @FXML private ComboBox<String> niveauCombo;   // ✅ nouveau
 
     // ── Services ──────────────────────────────────────────────────────────────
-    private final UserService      userService = new UserService();
-    private final CloudinaryService cloudinary  = new CloudinaryService();
+    private final SymfonyAuthService  authService = new SymfonyAuthService();
+    private final CloudinaryService   cloudinary  = new CloudinaryService();
 
     // ── Regex ─────────────────────────────────────────────────────────────────
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
@@ -193,37 +191,21 @@ public class RegisterController {
             return;
         }
 
-        // Vérifier si l'email existe déjà
-        if (userService.emailExists(email)) {
-            setError(emailError, "Cet email est déjà utilisé");
-            setMessageLabel("Cet email est déjà utilisé.", "red");
-            return;
-        }
-
-        // Créer l'étudiant
-        Etudiant etudiant = new Etudiant();
-        etudiant.setNom(nom);
-        etudiant.setPrenom(prenom);
-        etudiant.setEmail(email);
-        etudiant.setPassword(pwd);
-        etudiant.setCin(cin);
-        etudiant.setTelephone(tel);
-        etudiant.setAdresse(adresse);
-        if (dateNaissancePicker.getValue() != null) {
-            etudiant.setDateNaissance(java.sql.Date.valueOf(dateNaissancePicker.getValue()));
-        }
-        etudiant.setNiveau(niveauCombo != null && niveauCombo.getValue() != null ? niveauCombo.getValue() : "L1"); // ✅ depuis ComboBox
-        etudiant.setStatus("actif");
-
         // ── Désactiver le bouton pour éviter double-clic ──────────────────────
         // On lance tout dans un thread pour ne pas bloquer l'UI
-        setMessageLabel(selectedPhotoFile != null ? "⏳ Upload photo en cours..." : "⏳ Création du compte...", "blue");
+        setMessageLabel(selectedPhotoFile != null ? "⏳ Upload photo en cours..." : "⏳ Création du compte via API...", "blue");
 
-        final Etudiant etudiantFinal = etudiant;
-        final File photoFile = selectedPhotoFile;
-        final String emailFinal = email;
+        final String nomFinal    = nom;
+        final String prenomFinal = prenom;
+        final String emailFinal  = email;
+        final String telFinal    = tel;
+        final String pwdFinal    = pwd;
+        final String userTypeFinal = "etudiant";  // Type d'utilisateur par défaut
+        final File photoFile     = selectedPhotoFile;
 
         Thread worker = new Thread(() -> {
+            String[] photoUrlHolder = new String[1];  // ✅ Workaround pour mutation de photoUrl
+
             // ── 1. Upload photo (hors UI thread) ─────────────────────────────
             if (photoFile != null) {
                 System.out.println("[Register] Upload photo : " + photoFile.getAbsolutePath());
@@ -233,13 +215,12 @@ public class RegisterController {
                     } else if (photoFile.length() == 0) {
                         System.err.println("[Register] ❌ Fichier vide : " + photoFile.getName());
                     } else {
-                        String photoUrl = cloudinary.uploadImage(
+                        photoUrlHolder[0] = cloudinary.uploadImage(
                                 photoFile,
                                 "etudiant_" + emailFinal.replaceAll("[^a-zA-Z0-9]", "_")
                         );
-                        if (photoUrl != null && !photoUrl.isBlank()) {
-                            etudiantFinal.setPhoto(photoUrl);
-                            System.out.println("[Register] ✅ Photo uploadée : " + photoUrl);
+                        if (photoUrlHolder[0] != null && !photoUrlHolder[0].isBlank()) {
+                            System.out.println("[Register] ✅ Photo uploadée : " + photoUrlHolder[0]);
                         } else {
                             System.err.println("[Register] ⚠️ Upload échoué, compte créé sans photo.");
                         }
@@ -250,18 +231,33 @@ public class RegisterController {
                 }
             }
 
-            // ── 2. Créer le compte en base (hors UI thread) ───────────────────
-            boolean success = userService.registerEtudiant(etudiantFinal);
+            // ── 2. Créer le compte via API Symfony (hors UI thread) ──────────
+            // ✅ Envoyer le mot de passe EN CLAIR à Symfony qui gère le hachage
+            System.out.println("[Register] Envoi de l'inscription à l'API Symfony...");
+            tn.esprit.entity.User user = authService.register(
+                    emailFinal, pwdFinal, nomFinal, prenomFinal, telFinal, userTypeFinal
+            );
 
             // ── 3. Retour sur le thread UI ────────────────────────────────────
             Platform.runLater(() -> {
-                if (success) {
+                if (user != null) {
+                    // ✅ Inscription réussie via API
+                    System.out.println("[Register] ✅ Inscription réussie ! Utilisateur ID: " + user.getId());
+                    
+                    // Optionnel : si la photo a été uploadée, vous pourriez faire un appel API pour la synchroniser
+                    if (photoUrlHolder[0] != null && !photoUrlHolder[0].isBlank()) {
+                        System.out.println("[Register] Photo URL pour sync future: " + photoUrlHolder[0]);
+                    }
+                    
                     setMessageLabel("✅ Compte créé avec succès ! Redirection...", "green");
                     new Thread(() -> {
                         try { Thread.sleep(1500); } catch (InterruptedException ignored) {}
                         Platform.runLater(this::goToLogin);
                     }).start();
                 } else {
+                    // ❌ Erreur d'inscription (email déjà utilisé, données invalides, ou erreur serveur)
+                    System.err.println("[Register] ❌ Erreur lors de l'inscription via API.");
+                    setError(emailError, "Cet email est déjà utilisé ou erreur serveur");
                     setMessageLabel("❌ Erreur lors de l'inscription. Vérifiez la console.", "red");
                 }
             });
@@ -284,18 +280,6 @@ public class RegisterController {
         confirmError.setText("");
         if (niveauError != null) niveauError.setText("");
         messageLabel.setText("");
-    }
-
-    private void clearAllFields() {
-        nomField.clear();
-        prenomField.clear();
-        emailField.clear();
-        cinField.clear();
-        telephoneField.clear();
-        passwordField.clear();
-        confirmPasswordField.clear();
-        adresseField.clear();
-        dateNaissancePicker.setValue(null);
     }
 
     private void setError(Label errorLabel, String message) {

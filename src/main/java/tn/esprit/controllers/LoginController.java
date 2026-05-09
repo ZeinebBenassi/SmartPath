@@ -15,6 +15,7 @@ import org.opencv.core.Rect;
 import tn.esprit.entity.User;
 import tn.esprit.services.FaceAuthService;
 import tn.esprit.services.UserService;
+import tn.esprit.services.SymfonyAuthService;
 
 import java.util.List;
 
@@ -35,8 +36,9 @@ public class LoginController {
     @FXML private VBox      passwordGroup;
 
     // ── Services ──────────────────────────────────────────────────────────────
-    private final UserService     userService  = new UserService();
-    private final FaceAuthService faceService  = FaceAuthService.getInstance();
+    private final UserService          userService = new UserService();
+    private final SymfonyAuthService   authService = new SymfonyAuthService();
+    private final FaceAuthService      faceService = FaceAuthService.getInstance();
 
     // ── État interne ──────────────────────────────────────────────────────────
     private boolean  faceMode    = false;
@@ -193,14 +195,15 @@ public class LoginController {
         String password = passwordField.getText().trim();
         if (email.isEmpty() || password.isEmpty()) { showError("Veuillez remplir tous les champs."); return; }
 
-        User user = userService.login(email, password);
+        // ✅ Utiliser l'API Symfony au lieu de la base de données locale
+        User user = authService.login(email, password);
         if (user != null) {
             System.out.println("[Login] Succès ! Type utilisateur : " + user.getType());
             if ("ban".equalsIgnoreCase(user.getStatus())) { showError("❌ Compte banni."); return; }
             navigateToDashboard(user);
         } else {
-            System.out.println("[Login] Échec : email ou mot de passe incorrect.");
-            showError("Email ou mot de passe incorrect.");
+            System.out.println("[Login] Échec 401 : email ou mot de passe incorrect.");
+            showError("❌ Email ou mot de passe incorrect. (Erreur 401)");
         }
     }
 
