@@ -73,9 +73,15 @@ public class DashboardAdminController {
             adminNameLabel.setText(currentUser.getPrenom() + " " + currentUser.getNom());
         loadStats();
         refreshNotifBadge();
-        setActiveButton(btnDashboard);
-        showOnly(dashboardView);
-        if (pageTitle != null) pageTitle.setText("Dashboard");
+        // Show user statistics view inside dashboard by default
+        try {
+            navigate("/tn/esprit/interfaces/Statistiques.fxml", "Statistiques Utilisateurs");
+        } catch (Exception ignored) {
+            // fallback to dashboard view if navigation fails
+            setActiveButton(btnDashboard);
+            showOnly(dashboardView);
+            if (pageTitle != null) pageTitle.setText("Dashboard");
+        }
     }
 
     private void loadStats() {
@@ -91,9 +97,16 @@ public class DashboardAdminController {
 
     @FXML public void showDashboard() {
         setActiveButton(btnDashboard);
-        showOnly(dashboardView);
-        if (pageTitle != null) pageTitle.setText("Dashboard");
         closeUsersMenu();
+        // Load the user statistics view into the dashboard content area
+        try {
+            navigate("/tn/esprit/interfaces/Statistiques.fxml", "Statistiques Utilisateurs");
+        } catch (Exception e) {
+            // Fallback to original dashboard view if navigation fails
+            showOnly(dashboardView);
+            if (pageTitle != null) pageTitle.setText("Dashboard");
+            System.out.println("showDashboard navigation failed: " + e.getMessage());
+        }
     }
 
     // ── Sous-menu Utilisateurs ─────────────────────────────────────────────

@@ -54,10 +54,7 @@
                         onAction="#showOffres"
                         styleClass="nav-btn" text="💼  Offres de stage"/>
 
-                <!-- ── Statistiques (sous-menu toggle) ── -->
-                <Button fx:id="btnStatistiques" maxWidth="Infinity"
-                        onAction="#showStatistiquesUsers"
-                        styleClass="nav-btn" text="📊  Statistiques Users"/>
+                <!-- Statistiques button removed: statistics view shown on dashboard by default -->
 
                     <!-- ── SECTION : QUIZ ── -->
                     <Label text="QUIZ" styleClass="sidebar-section-label"
@@ -182,7 +179,7 @@
                             <Button onAction="#showEtudiants"       styleClass="quick-action-btn" text="👨‍🎓  Gestion Étudiants"/>
                             <Button onAction="#showProfs"           styleClass="quick-action-btn" text="👨‍🏫  Gestion Professeurs"/>
                             <Button onAction="#showOffres"          styleClass="quick-action-btn" text="💼  Offres de stage"/>
-                            <Button onAction="#showStatistiquesUsers" styleClass="quick-action-btn" text="📈  Stats Users"/>
+                            <!-- Stats Users quick-action removed (now part of dashboard) -->
                             <Button onAction="#showStatistiquesQuiz"  styleClass="quick-action-btn" text="🧩  Stats Quiz"/>
                         </HBox>
                     </VBox>

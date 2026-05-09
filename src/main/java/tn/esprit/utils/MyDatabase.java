@@ -10,7 +10,7 @@ public class MyDatabase {
     // Configuration BDD
     private static final String URL      = "jdbc:mysql://localhost:3306/smartpath";
     private static final String USER     = "root";
-    private static final String PASSWORD = "";
+    private static final String PASSWORD = "yasmine";
 
     // Singleton
     private static MyDatabase instance;
